@@ -1,302 +1,266 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المعماري | The Architect</title>
+    <title>ادريس - Dark Apple Vibes Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-        :root {
-            --bg-color: #02040a;
-            --primary-color: #0D1117;
-            --accent-color: #00AFFF;
-            /* Electric Blue */
-            --text-color: #c9d1d9;
-            --glow-color: rgba(0, 175, 255, 0.6);
-            --border-color: rgba(0, 175, 255, 0.15);
-        }
-
+        /* --- Reset & Base --- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none;
-        }
-
-        html {
-            scroll-behavior: smooth;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Share Tech Mono', monospace;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #111, #1a1a1a);
+            color: #fff;
+            scroll-behavior: smooth;
         }
 
-        /* --- Interactive Background --- */
-        #interactive-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+        a {
+            text-decoration: none;
+            color: inherit;
         }
 
-        /* --- Loading Screen --- */
-        #loading-screen {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10001;
-            transition: opacity 0.8s ease-out;
-        }
-
-        #loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #loader-text {
-            font-size: 20px;
-            letter-spacing: 8px;
-            color: var(--accent-color);
-            text-shadow: 0 0 20px var(--glow-color);
-        }
-
-        /* --- Custom Cursor --- */
-        .cursor {
-            width: 25px;
-            height: 25px;
-            border: 1px solid var(--accent-color);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, border-color 0.3s, background-color 0.3s;
-            z-index: 10000;
-        }
-
-        .cursor.hovered {
-            width: 50px;
-            height: 50px;
-            background-color: var(--glow-color);
-            border-color: transparent;
+        img {
+            max-width: 100%;
+            display: block;
         }
 
         /* --- Header --- */
-        .header {
+        header {
             position: fixed;
             width: 100%;
-            padding: 25px 50px;
-            z-index: 1000;
-            transition: background-color 0.4s ease, padding 0.4s ease;
-        }
-
-        .header.scrolled {
-            background-color: rgba(2, 4, 10, 0.7);
-            backdrop-filter: blur(10px);
-            padding: 15px 50px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .nav-container {
+            top: 0;
+            left: 0;
+            padding: 20px 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1600px;
-            margin: 0 auto;
+            backdrop-filter: blur(12px);
+            background: rgba(17, 17, 17, 0.5);
+            z-index: 1000;
+            transition: 0.3s;
         }
 
-        .logo {
-            font-size: 24px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
+        header.scrolled {
+            background: rgba(17, 17, 17, 0.85);
         }
 
-        .nav-links {
-            display: flex;
-            gap: 40px;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
+        header h1 {
+            font-weight: 700;
             letter-spacing: 2px;
+            font-size: 1.5rem;
+        }
+
+        nav a {
+            margin-left: 30px;
+            font-weight: 500;
+            transition: 0.3s;
+            color: #aaa;
             position: relative;
         }
 
-        .nav-links a::after {
+        nav a::after {
             content: '';
             position: absolute;
-            bottom: -5px;
-            right: 0;
             width: 0;
-            height: 1px;
-            background: var(--accent-color);
-            transition: width 0.3s ease-in-out;
+            height: 2px;
+            background: #0af;
+            left: 0;
+            bottom: -5px;
+            transition: 0.3s;
         }
 
-        .nav-links a:hover::after {
+        nav a:hover::after {
             width: 100%;
         }
 
-        /* --- Hero Section --- */
+        nav a:hover {
+            color: #0af;
+        }
+
+        /* --- Hero --- */
         .hero {
             height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             text-align: center;
-            padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .hero h1 {
-            font-size: clamp(3rem, 10vw, 8rem);
-            font-weight: normal;
-            letter-spacing: 1.5vw;
-            color: #fff;
-            text-shadow: 0 0 25px var(--glow-color);
+        .hero h2 {
+            font-size: 3rem;
             margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: 0.8s;
         }
 
         .hero p {
-            font-size: clamp(1rem, 2vw, 1.5rem);
-            letter-spacing: 4px;
-        }
-
-        .terminal-cursor {
-            display: inline-block;
-            width: 10px;
-            height: 1.5rem;
-            background-color: var(--accent-color);
-            margin-left: 8px;
-            animation: blink 1s steps(1) infinite;
-        }
-
-        @keyframes blink {
-            50% {
-                opacity: 0;
-            }
-        }
-
-        /* --- General Section --- */
-        .section {
-            padding: 120px 50px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 3rem;
-            letter-spacing: 8px;
-            text-align: center;
-            margin-bottom: 80px;
+            font-size: 1.2rem;
+            color: #ccc;
+            max-width: 600px;
             opacity: 0;
             transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            transition: 0.8s 0.2s;
         }
 
-        .section-title.visible {
+        .hero.active h2,
+        .hero.active p {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* --- 3D Interactive Grid --- */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-            perspective: 1500px;
-        }
-
-        .card {
-            background: linear-gradient(145deg, var(--primary-color), #04080e);
-            border: 1px solid var(--border-color);
-            padding: 40px;
-            transform-style: preserve-3d;
-            transition: transform 0.2s, box-shadow 0.4s, border-color 0.4s;
-            position: relative;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: opacity 0.8s, transform 0.8s;
-        }
-
-        .card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .card:hover {
-            border-color: var(--accent-color);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        .card::before {
+        .hero::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle 300px at var(--mouse-x) var(--mouse-y), rgba(0, 175, 255, 0.1), transparent 80%);
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(6px);
+            z-index: -1;
+        }
+
+        /* --- Sections --- */
+        section {
+            padding: 100px 50px;
             opacity: 0;
-            transition: opacity 0.4s;
-            z-index: 1;
+            transform: translateY(50px);
+            transition: 1s;
         }
 
-        .card:hover::before {
+        section.active {
             opacity: 1;
+            transform: translateY(0);
         }
 
-        .card-content {
-            transform: translateZ(20px);
-            position: relative;
-            z-index: 2;
+        section h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0af;
+            display: inline-block;
+            padding-bottom: 5px;
         }
 
-        .card h3 {
-            color: var(--accent-color);
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
         }
 
-        .card p {
-            line-height: 1.8;
-            opacity: 0.8;
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            transition: 0.4s;
+            backdrop-filter: blur(8px);
+        }
+
+        .project-card:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 170, 255, 0.4);
+        }
+
+        /* --- Contact --- */
+        .contact form {
+            display: flex;
+            flex-direction: column;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .contact input,
+        .contact textarea {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        .contact input:focus,
+        .contact textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .contact button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #0af;
+            color: #111;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .contact button:hover {
+            background: #08c;
+            transform: scale(1.05);
+        }
+
+        /* --- Back to Top --- */
+        #backToTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #0af;
+            color: #111;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.3);
+            transition: 0.3s;
+        }
+
+        #backToTop:hover {
+            transform: scale(1.2);
         }
 
         /* --- Footer --- */
         footer {
             text-align: center;
-            padding: 50px;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.9rem;
-            letter-spacing: 3px;
-            opacity: 0.5;
+            padding: 50px 20px;
+            color: #666;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        @media(max-width: 768px) {
-            .nav-links {
-                display: none;
+        /* --- Responsive --- */
+        @media(max-width:768px) {
+            header {
+                padding: 15px 20px;
             }
 
-            .hero h1 {
-                font-size: 2.5rem;
-                letter-spacing: 10px;
+            nav a {
+                margin-left: 15px;
             }
 
-            .grid {
-                grid-template-columns: 1fr;
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+
+            section {
+                padding: 80px 20px;
             }
         }
     </style>
@@ -304,266 +268,91 @@
 
 <body>
 
-    <div id="loading-screen">
-        <div id="loader-text"></div>
-    </div>
-
-    <canvas id="interactive-bg"></canvas>
-    <div class="cursor"></div>
-
-    <header class="header">
-        <div class="nav-container">
-            <div class="logo">المعماري</div>
-            <nav class="nav-links">
-                <a href="#about">الرؤية</a>
-                <a href="#services">الخدمات</a>
-                <a href="#contact">التواصل</a>
-            </nav>
-        </div>
+    <header>
+        <h1>ادريس</h1>
+        <nav>
+            <a href="#about">عنّي</a>
+            <a href="#projects">مشاريعي</a>
+            <a href="#contact">تواصل</a>
+        </nav>
     </header>
 
-    <main>
-        <section class="hero" id="home">
-            <h1 id="hero-title" data-text="المعماري"></h1>
-            <p><span id="hero-subtitle"></span><span class="terminal-cursor"></span></p>
-        </section>
+    <section class="hero" id="hero">
+        <h2>مرحبا 👋 أنا إدريس</h2>
+        <p>هنا الموقع الشخصي الخاص بي، يمزج بين البساطة والDark vibes على طراز Apple minimalistic.</p>
+    </section>
 
-        <section class="section" id="about">
-            <h2 class="section-title">صياغة الواقع الرقمي</h2>
-            <p style="text-align: center; max-width: 800px; margin: 0 auto; line-height: 2; font-size: 1.1rem;">
-                نحن لا نكتب الكود، بل نصمم الأكوان. في الفراغ اللامتناهي للبيانات، نحن البُناة. كل سطر هو حجر أساس في
-                صروح تتحدى الممكن، وكل خوارزمية هي قانون فيزيائي لعالم جديد. نحن معماريو المستحيل.
-            </p>
-        </section>
+    <section id="about">
+        <h3>عنّي</h3>
+        <p>طالب علم ومحب للتقنية، الأمن السيبراني، الطب البشري، والفيزياء. أحب الأسلوب الداكن، البساطة، والتناظر في
+            التصميم.</p>
+    </section>
 
-        <section class="section" id="services">
-            <h2 class="section-title">مخططاتنا</h2>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-content">
-                        <h3>الأنظمة السيادية</h3>
-                        <p>بناء هياكل رقمية مكتفية ذاتيًا. أنظمة لا تخضع لأي سلطة خارجية، تعمل بقوانينها الخاصة في عزلة
-                            تامة.</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-content">
-                        <h3>الهندسة الإدراكية</h3>
-                        <p>تصميم تجارب تتلاعب بالإدراك الرقمي. واجهات تتجاوز مجرد الاستخدام، لتصبح جزءًا من وعي
-                            المستخدم.</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-content">
-                        <h3>التشفير الكمومي</h3>
-                        <p>نحت أقفال لا يمكن كسرها. حماية البيانات باستخدام مبادئ فيزياء الكم، مما يجعلها آمنة عبر
-                            الزمن.</p>
-                    </div>
-                </div>
+    <section id="projects">
+        <h3>مشاريعي</h3>
+        <div class="projects">
+            <div class="project-card">
+                <h4>مشروع 1</h4>
+                <p>وصف مختصر عن المشروع 1. تصميم Dark minimalistic.</p>
             </div>
-        </section>
+            <div class="project-card">
+                <h4>مشروع 2</h4>
+                <p>وصف مختصر عن المشروع 2. تجربة UI سلسة مع تأثيرات Glass Blur.</p>
+            </div>
+            <div class="project-card">
+                <h4>مشروع 3</h4>
+                <p>وصف مختصر عن المشروع 3. دمج الإبداع مع Dark vibes.</p>
+            </div>
+        </div>
+    </section>
 
-        <section class="section" id="contact" style="text-align:center;">
-            <h2 class="section-title">فتح قناة اتصال</h2>
-            <p style="margin-bottom: 40px;">الإشارات تصل فقط لمن يعرف التردد الصحيح.</p>
-            <a href="#" class="cta-button">ابدأ الإرسال</a>
-        </section>
-    </main>
+    <section id="contact" class="contact">
+        <h3>تواصل معي</h3>
+        <form>
+            <input type="text" placeholder="اسمك">
+            <input type="email" placeholder="ايميلك">
+            <textarea rows="5" placeholder="رسالتك"></textarea>
+            <button type="submit">أرسل</button>
+        </form>
+    </section>
+
+    <button id="backToTop">↑</button>
 
     <footer>
-        <p>&copy; 2024 المعماري. كل الحقوق محفوظة في الشيفرة المصدرية.</p>
+        &copy; 2025 إدريس - كل الحقوق محفوظة
     </footer>
 
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // --- Scroll Animations ---
+        const sections = document.querySelectorAll('section');
+        const hero = document.querySelector('.hero');
 
-            // --- 1. LOADING SCREEN ---
-            const loader = document.getElementById('loading-screen');
-            const loaderText = document.getElementById('loader-text');
-            const symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$&*";
-            let loaderInterval = setInterval(() => {
-                let text = "";
-                for (let i = 0; i < 8; i++) {
-                    text += symbols.charAt(Math.floor(Math.random() * symbols.length));
-                }
-                loaderText.textContent = text;
-            }, 100);
+        window.addEventListener('scroll', () => {
+            // Header background change
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
 
-            window.addEventListener('load', () => {
-                clearInterval(loaderInterval);
-                loaderText.textContent = "CONNECTED";
-                setTimeout(() => {
-                    loader.classList.add('hidden');
-                }, 800);
+            // Show sections
+            sections.forEach(sec => {
+                const top = sec.getBoundingClientRect().top;
+                const trigger = window.innerHeight - 100;
+                if (top < trigger) sec.classList.add('active');
             });
 
-            // --- 2. CUSTOM CURSOR ---
-            const cursor = document.querySelector('.cursor');
-            window.addEventListener('mousemove', e => {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
-            });
+            // Hero animation
+            if (hero.getBoundingClientRect().top < window.innerHeight - 100) hero.classList.add('active');
 
-            document.querySelectorAll('a, .card').forEach(el => {
-                el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-                el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
-            });
-
-            // --- 3. HEADER SCROLL ---
-            const header = document.querySelector('.header');
-            window.addEventListener('scroll', () => {
-                header.classList.toggle('scrolled', window.scrollY > 50);
-            });
-
-            // --- 4. INTERACTIVE CANVAS BACKGROUND ---
-            const canvas = document.getElementById('interactive-bg');
-            const ctx = canvas.getContext('2d');
-            let dots = [];
-            const mouse = { x: null, y: null, radius: 150 };
-
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                createDots();
-            }
-
-            class Dot {
-                constructor(x, y) {
-                    this.x = x;
-                    this.y = y;
-                    this.baseSize = 1;
-                    this.size = this.baseSize;
-                    this.baseColor = 'rgba(0, 175, 255, 0.2)';
-                    this.color = this.baseColor;
-                }
-
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.fill();
-                }
-
-                update() {
-                    let dx = mouse.x - this.x;
-                    let dy = mouse.y - this.y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < mouse.radius) {
-                        const force = (mouse.radius - distance) / mouse.radius;
-                        this.size = this.baseSize + force * 2;
-                        this.color = `rgba(0, 175, 255, ${0.2 + force * 0.6})`;
-                    } else {
-                        this.size = this.baseSize;
-                        this.color = this.baseColor;
-                    }
-                    this.draw();
-                }
-            }
-
-            function createDots() {
-                dots = [];
-                const spacing = 40;
-                for (let x = 0; x < canvas.width; x += spacing) {
-                    for (let y = 0; y < canvas.height; y += spacing) {
-                        dots.push(new Dot(x, y));
-                    }
-                }
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                dots.forEach(dot => dot.update());
-                requestAnimationFrame(animate);
-            }
-
-            window.addEventListener('mousemove', e => {
-                mouse.x = e.clientX;
-                mouse.y = e.clientY;
-            });
-
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
-            animate();
-
-
-            // --- 5. 3D CARD TILT EFFECT ---
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.addEventListener('mousemove', e => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const width = card.offsetWidth;
-                    const height = card.offsetHeight;
-                    const rotateX = (y - height / 2) / height * -15; // Max 15 deg
-                    const rotateY = (x - width / 2) / width * 15;  // Max 15 deg
-
-                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-                    card.style.setProperty('--mouse-x', `${x}px`);
-                    card.style.setProperty('--mouse-y', `${y}px`);
-                });
-
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'rotateX(0) rotateY(0) scale(1)';
-                });
-            });
-
-            // --- 6. TEXT ANIMATIONS ---
-            // Decrypt effect for hero title
-            const title = document.getElementById('hero-title');
-            const originalText = title.dataset.text;
-            let decryptedText = "";
-            let i = 0;
-            const decryptInterval = setInterval(() => {
-                if (i < originalText.length) {
-                    let randomChars = "";
-                    for (let j = i; j < originalText.length; j++) {
-                        randomChars += symbols.charAt(Math.floor(Math.random() * symbols.length));
-                    }
-                    title.textContent = decryptedText + randomChars;
-                } else {
-                    clearInterval(decryptInterval);
-                    title.textContent = originalText;
-                }
-            }, 100);
-
-            const letterInterval = setInterval(() => {
-                if (i < originalText.length) {
-                    decryptedText += originalText[i];
-                    i++;
-                } else {
-                    clearInterval(letterInterval);
-                }
-            }, 300);
-
-            // Typing effect for hero subtitle
-            const subtitle = document.getElementById('hero-subtitle');
-            const textToType = "نحن نبني الفراغ الرقمي.";
-            let j = 0;
-            function type() {
-                if (j < textToType.length) {
-                    subtitle.textContent += textToType.charAt(j);
-                    j++;
-                    setTimeout(type, 100);
-                }
-            }
-            setTimeout(type, 1000); // Start after a delay
-
-            // --- 7. SCROLL-BASED FADE-IN ANIMATIONS ---
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.2 });
-
-            document.querySelectorAll('.section-title, .card, .cta-button').forEach(el => observer.observe(el));
+            // Back to top button
+            const btn = document.getElementById('backToTop');
+            if (window.scrollY > 300) btn.style.display = 'flex';
+            else btn.style.display = 'none';
         });
+
+        // Back to top click
+        document.getElementById('backToTop').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     </script>
+
 </body>
 
 </html>
