@@ -4,49 +4,38 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#070707" />
-    <title>يوسف الثقفي</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-
+    <title>ادريس — Black Hat Showcase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;600;900&display=swap"
+        rel="stylesheet">
+    <meta name="theme-color" content="#001000">
     <style>
-        /* =======================
-   Ultimate Dark Showcase
-   ======================= */
+        /* ==========================
+     Matrix / Dark Web — Ultra
+     ========================== */
         :root {
-            --bg-1: #050507;
-            --bg-2: #0f1113;
-            --panel: rgba(255, 255, 255, 0.03);
-            --glass: rgba(255, 255, 255, 0.025);
-            --accent: #24d3ff;
-            --accent-2: #2ef08a;
-            --muted: #97a0a5;
-            --shadow: rgba(0, 0, 0, 0.65);
-            --glass-blur: 10px;
-            --ui-size: 14px;
-        }
-
-        /* Reset */
-        * {
-            box-sizing: border-box
+            --bg: #030303;
+            --panel: rgba(0, 0, 0, 0.45);
+            --neon-green: #00ff73;
+            --neon-cyan: #4af0ff;
+            --muted: #8ea19f;
+            --scary-red: #ff2e2e;
         }
 
         html,
         body {
             height: 100%;
             margin: 0;
-            background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
-            color: #eaf6fb;
-            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        body {
+            background: var(--bg);
+            font-family: Inter, "Share Tech Mono", monospace, system-ui;
+            color: #0f0;
             overflow: hidden
         }
 
-        /* Stage */
+        body {
+            background-image: radial-gradient(ellipse at 20% 10%, rgba(0, 255, 115, 0.02), transparent 5%), radial-gradient(ellipse at 80% 90%, rgba(74, 240, 255, 0.01), transparent 12%);
+        }
+
+        /* stage */
         .stage {
             position: relative;
             width: 100vw;
@@ -54,281 +43,284 @@
             display: grid;
             place-items: center;
             isolation: isolate;
-            background-image: radial-gradient(60% 40% at 10% 20%, rgba(36, 211, 255, 0.02), transparent 6%),
-                radial-gradient(40% 30% at 85% 80%, rgba(46, 240, 138, 0.015), transparent 6%);
+            overflow: hidden
         }
 
-        /* Animated gradient shift for subtle life */
-        .stage::before {
-            content: "";
-            position: absolute;
-            inset: -20%;
-            z-index: 0;
-            filter: blur(80px) saturate(1.15);
-            opacity: 0.9;
-            background: conic-gradient(from 120deg, rgba(36, 211, 255, 0.02), rgba(46, 240, 138, 0.02), rgba(74, 209, 255, 0.01));
-            animation: slow-rotate 28s linear infinite;
-        }
-
-        @keyframes slow-rotate {
-            0% {
-                transform: rotate(0)
-            }
-
-            100% {
-                transform: rotate(360deg)
-            }
-        }
-
-        /* Particles canvas (below everything) */
-        #particles-js {
+        /* Matrix canvas layers */
+        canvas.matrix {
             position: absolute;
             inset: 0;
             z-index: 1;
-            pointer-events: none;
-            opacity: 0.9;
-            mix-blend-mode: screen
+            display: block
         }
 
-        /* faint Noise overlay & scanlines for dark cyber vibe */
+        canvas.chars {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            mix-blend-mode: screen;
+            opacity: 0.9
+        }
+
+        .nebula {
+            position: absolute;
+            inset: -20%;
+            z-index: 0;
+            filter: blur(60px) saturate(1.2);
+            opacity: 0.65;
+            background:
+                radial-gradient(20% 30% at 10% 15%, rgba(0, 255, 115, 0.03), transparent 5%),
+                radial-gradient(18% 28% at 80% 78%, rgba(74, 240, 255, 0.02), transparent 6%);
+            transform: translateZ(0);
+            animation: neb 20s linear infinite;
+        }
+
+        @keyframes neb {
+            0% {
+                transform: translate3d(-2%, 0, 0)
+            }
+
+            50% {
+                transform: translate3d(2%, 0, 0)
+            }
+
+            100% {
+                transform: translate3d(-2%, 0, 0)
+            }
+        }
+
+        /* scanning overlay */
+        .scan {
+            position: absolute;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(180deg, rgba(0, 255, 115, 0.02) 0px, rgba(0, 255, 115, 0.02) 1px, transparent 1px, transparent 8px);
+            opacity: 0.04;
+            mix-blend-mode: overlay
+        }
+
+        /* static noise (flicker) */
         .noise {
             position: absolute;
             inset: 0;
             z-index: 6;
             pointer-events: none;
-            opacity: 0.04;
-            background-image: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 3px);
-            mix-blend-mode: overlay;
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(0, 0, 0, 0));
+            opacity: 0.03;
+            mix-blend-mode: overlay
         }
 
-        /* Center glass card */
-        .center {
+        /* main center panel */
+        .panel {
             position: relative;
-            z-index: 10;
-            display: grid;
-            place-items: center;
-            padding: 48px 64px;
-            border-radius: 16px;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
-            box-shadow: 0 10px 40px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
-            transform: translateZ(0);
-            max-width: min(90vw, 1200px);
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        /* Name block */
-        .glitch-wrap {
-            position: relative;
+            z-index: 8;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px
+            justify-content: center;
+            padding: 36px 48px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.30));
+            box-shadow: 0 12px 60px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(8px) saturate(0.95);
+            user-select: none;
+            transform: translateZ(0);
+        }
+
+        /* NAME */
+        .name-wrap {
+            position: relative;
+            display: inline-block;
+            line-height: 1;
+            text-align: center;
+            overflow: visible;
         }
 
         .name {
             font-weight: 900;
-            font-size: clamp(56px, 11vw, 140px);
-            line-height: 0.88;
+            font-size: clamp(44px, 10vw, 118px);
             letter-spacing: 0.01em;
-            color: linear-gradient(90deg, #eaf6fb, #cfeff7);
+            color: #dfffe8;
             position: relative;
-            text-rendering: optimizeLegibility;
-            -webkit-font-smoothing: antialiased;
-            transform: translateZ(0);
-            padding: 6px 12px;
+            padding: 6px 10px;
         }
 
-        /* layered copies for RGB-split glitch */
-        .name .layer {
+        /* layered glitch copies */
+        .name .copy {
             position: absolute;
             inset: 0;
-            display: block;
-            padding: 6px 12px;
+            left: 0;
+            top: 0;
             pointer-events: none;
-            will-change: transform, clip-path, opacity, filter;
-        }
-
-        .name .base {
-            position: relative;
-            z-index: 6;
-            color: #eaf6fb
+            mix-blend-mode: screen;
+            opacity: 0.95;
         }
 
         .name .r {
-            color: rgba(36, 211, 255, 0.95);
-            mix-blend-mode: screen;
-            z-index: 5;
-            filter: drop-shadow(0 8px 18px rgba(36, 211, 255, 0.06));
+            color: var(--neon-cyan);
+            transform: translate(0, 0);
+            filter: drop-shadow(0 8px 18px rgba(74, 240, 255, 0.06))
         }
 
         .name .g {
-            color: rgba(46, 240, 138, 0.9);
-            mix-blend-mode: screen;
-            z-index: 4;
-            filter: blur(0.2px)
+            color: var(--neon-green);
+            filter: blur(.3px)
         }
 
-        /* subtitle / micro-copy */
+        .name .base {
+            color: #d7fff0;
+            z-index: 6
+        }
+
+        /* subtitle */
         .sub {
-            font-size: var(--ui-size);
+            margin-top: 10px;
             color: var(--muted);
-            opacity: 0.95
+            font-size: 14px
         }
 
-        /* ring / orbit subtle */
-        .ring {
+        /* scary accent bars */
+        .bars {
             position: absolute;
-            z-index: 4;
-            inset: 0;
-            display: block;
+            inset: auto 0 0 0;
+            height: 6px;
+            z-index: 9;
             pointer-events: none;
-            width: calc(100% + 220px);
-            height: calc(100% + 220px);
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            transform: translateY(-6%) scale(1);
-            filter: blur(8px);
-            animation: ring-rotate 18s linear infinite;
-            mix-blend-mode: screen;
-            opacity: 0.9;
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: -60px
         }
 
-        @keyframes ring-rotate {
+        .bar {
+            width: 48px;
+            height: 6px;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+            box-shadow: 0 6px 20px rgba(0, 255, 130, 0.06);
+            opacity: 0.85;
+            transform-origin: center;
+            animation: barPulse 3s ease-in-out infinite
+        }
+
+        .bar:nth-child(2) {
+            width: 36px;
+            animation-duration: 2.6s
+        }
+
+        .bar:nth-child(3) {
+            width: 24px;
+            animation-duration: 3.6s
+        }
+
+        @keyframes barPulse {
             0% {
-                transform: translateY(-6%) rotate(0) scale(1)
-            }
-
-            100% {
-                transform: translateY(-6%) rotate(360deg) scale(1)
-            }
-        }
-
-        /* thin dynamic scan-slice */
-        .slice {
-            position: absolute;
-            inset: 0;
-            z-index: 8;
-            pointer-events: none;
-            mix-blend-mode: overlay;
-            opacity: 0.22;
-            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
-            transform: skewX(-12deg) translateX(-120%);
-            animation: slice-move 5.6s linear infinite
-        }
-
-        @keyframes slice-move {
-            0% {
-                transform: skewX(-12deg) translateX(-120%)
+                transform: scaleX(0.36)
             }
 
             50% {
-                transform: skewX(-12deg) translateX(20%)
+                transform: scaleX(1)
             }
 
             100% {
-                transform: skewX(-12deg) translateX(-120%)
+                transform: scaleX(0.36)
             }
         }
 
-        /* controls (top-left) */
+        /* controls top-left */
         .controls {
             position: fixed;
-            left: 18px;
-            top: 18px;
-            z-index: 50;
+            left: 16px;
+            top: 16px;
+            z-index: 20;
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 8px;
+            align-items: center
         }
 
-        .ctrl-btn {
-            background: var(--glass);
-            backdrop-filter: blur(6px);
-            padding: 8px;
-            border-radius: 10px;
+        .ctrl {
+            background: rgba(0, 0, 0, 0.45);
+            color: var(--muted);
+            padding: 8px 10px;
+            border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.03);
             cursor: pointer;
-            color: var(--muted);
-            font-size: 13px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            font-size: 13px
         }
 
-        .ctrl-btn:active {
-            transform: scale(0.98)
+        .ctrl.active {
+            color: var(--neon-green);
+            box-shadow: 0 8px 30px rgba(0, 255, 130, 0.04)
         }
 
-        /* small hint bottom */
-        .hint {
-            position: absolute;
-            bottom: -36px;
-            color: var(--muted);
-            font-size: 12px;
-            opacity: 0.9
-        }
-
-        /* custom cursor */
-        .cursor {
+        /* Panic flash overlay */
+        .panic {
             position: fixed;
+            inset: 0;
             z-index: 60;
             pointer-events: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: transform .12s linear, width .12s ease, height .12s ease;
-            border: 1px solid rgba(36, 211, 255, 0.95);
-            box-shadow: 0 0 12px rgba(36, 211, 255, 0.06);
-            background: rgba(36, 211, 255, 0.04);
-            mix-blend-mode: screen;
-            display: none;
+            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.06), rgba(0, 0, 0, 0) 30%);
+            opacity: 0;
+            transition: opacity .2s linear
         }
 
-        .cursor.big {
-            transform: translate(-50%, -50%) scale(2.2);
-            opacity: 0.95
+        /* hint */
+        .hint {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 30;
+            color: var(--muted);
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.02)
         }
 
-        /* accessibility / reduce motion */
+        /* tiny footer label */
+        .footer-note {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 8px;
+            z-index: 30;
+            color: rgba(150, 255, 200, 0.06);
+            font-size: 12px;
+            letter-spacing: 0.12em
+        }
+
+        /* accessibility */
         @media (prefers-reduced-motion: reduce) {
 
-            .slice,
-            .ring,
-            .stage::before,
-            #particles-js,
             .nebula,
-            .scanlines {
+            .slice,
+            .bars,
+            .panel,
+            .ring {
                 animation: none !important;
-                transition: none !important;
+                transition: none !important
             }
 
-            .cursor {
+            canvas.matrix,
+            canvas.chars {
+                opacity: 0.6
+            }
+
+            .ctrl {
                 display: none
             }
         }
 
-        /* mobile tweaks */
-        @media(max-width:720px) {
-            .center {
-                padding: 26px 28px;
-                border-radius: 12px
-            }
-
-            .ring {
-                display: none
-            }
-
-            .slice {
-                display: none
+        @media (max-width:720px) {
+            .panel {
+                padding: 22px 26px;
+                border-radius: 10px
             }
 
             .name {
-                font-size: clamp(36px, 14vw, 72px)
-            }
-
-            .cursor {
-                display: none
+                font-size: clamp(28px, 18vw, 56px)
             }
 
             body {
@@ -339,293 +331,317 @@
 </head>
 
 <body>
-    <div class="stage" role="main" aria-label="عرض اسم إدريس">
-        <!-- Background & particles -->
-        <div id="particles-js" aria-hidden="true"></div>
+    <div class="stage" role="main" aria-label="عرض اسم ادريس">
+        <div class="nebula" aria-hidden="true"></div>
+
+        <!-- Matrix drawing canvases -->
+        <canvas id="matrixCanvas" class="matrix" aria-hidden="true"></canvas>
+        <canvas id="charCanvas" class="chars" aria-hidden="true"></canvas>
+
+        <div class="scan" aria-hidden="true"></div>
         <div class="noise" aria-hidden="true"></div>
 
-        <!-- Center glass card -->
-        <div class="center" aria-hidden="false">
-            <div class="glitch-wrap" id="glitchWrap" title="يوسف" role="heading" aria-level="1">
-                <div class="ring" aria-hidden="true"></div>
-
-                <!-- Name with layered spans -->
-                <div class="name" id="mainName" data-text="يوسف" aria-hidden="false">
-                    <span class="layer base">يوسف</span>
-                    <span class="layer r" aria-hidden="true">يوسف</span>
+        <!-- center panel -->
+        <div class="panel" role="region" aria-label="اللوحة الرئيسية">
+            <div class="name-wrap" id="nameWrap">
+                <div class="name" id="name">
+                    <span class="copy base">ادريس</span>
+                    <span class="copy r">ادريس</span>
+                    <span class="copy g">ادريس</span>
                 </div>
-
-                <div class="slice" aria-hidden="true"></div>
-                <div class="sub">عم اي حد واي حد انا عمه</div>
-                <div class="hint" id="hint">اضغط / حرّك الماوس للتفاعل • اضغط space لإيقاف/تشغيل الجليتش</div>
+                <div class="sub">Black-Hat · Dark Web Vibe · Matrix Overload</div>
+            </div>
+            <div class="bars" aria-hidden="true">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
             </div>
         </div>
 
-        <!-- small control to toggle animation -->
-        <div class="controls" role="toolbar" aria-label="عناصر التحكم">
-            <button id="toggleAnim" class="ctrl-btn" aria-pressed="false" title="إيقاف/تشغيل الحركة">⏯️ حركة</button>
-            <button id="forceGlitch" class="ctrl-btn" title="اجعل الجليتش الآن">⚡ جليتش</button>
+        <div class="controls" role="toolbar" aria-label="عناصر تحكم">
+            <button class="ctrl" id="levelLow" title="Low">Low</button>
+            <button class="ctrl active" id="levelMed" title="Medium">Medium</button>
+            <button class="ctrl" id="levelHigh" title="Ultra">Ultra</button>
+            <button class="ctrl" id="panicBtn" title="Panic (GORE)">⚠️</button>
+            <button class="ctrl" id="muteBtn" title="Toggle sound">🔈</button>
         </div>
 
-        <!-- custom cursor -->
-        <div id="cursor" class="cursor" aria-hidden="true"></div>
+        <div class="panic" id="panicOverlay" aria-hidden="true"></div>
+
+        <div class="hint" role="note">Space: تشغيل/إيقاف • G: جليتش • P: Panic</div>
+        <div class="footer-note">— dark showcase —</div>
     </div>
 
     <script>
-        /* =============================
-           Enhanced interactions & effects
-           ============================= */
+        /* ====================================================
+           Matrix + Glitch Ultra — No external libs (all JS)
+           ==================================================== */
 
-        /* Utility */
-        const $ = (s) => document.querySelector(s);
-        const $$ = (s) => Array.from(document.querySelectorAll(s));
-        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+        /* Helpers */
+        const $ = sel => document.querySelector(sel);
 
-        /* ========== Particles (lightweight fallback if particles.js not loaded) ========== */
-        function initParticlesFallback(containerId) {
-            // simple canvas particles that are lightweight and graceful
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            // create canvas
-            const canvas = document.createElement('canvas');
-            canvas.style.position = 'absolute';
-            canvas.style.inset = '0';
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-            canvas.style.zIndex = '2';
-            canvas.style.pointerEvents = 'none';
-            container.appendChild(canvas);
-            const ctx = canvas.getContext('2d');
-            let w, h, particles;
+        /* State */
+        let intensity = 'medium'; // low / medium / high
+        let running = true;
+        let soundOn = false; // optional ambient sound
+        let panicTimeout = null;
 
-            function resize() {
-                w = canvas.width = container.clientWidth;
-                h = canvas.height = container.clientHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
+        /* Canvas setup */
+        const mat = $('#matrixCanvas');
+        const chars = $('#charCanvas');
+        const DPR = Math.max(1, window.devicePixelRatio || 1);
+        function fitCanvas() {
+            mat.width = Math.floor(window.innerWidth * DPR);
+            mat.height = Math.floor(window.innerHeight * DPR);
+            mat.style.width = window.innerWidth + 'px';
+            mat.style.height = window.innerHeight + 'px';
+            chars.width = mat.width;
+            chars.height = mat.height;
+            chars.style.width = mat.style.width;
+            chars.style.height = mat.style.height;
+            // re-init streams
+            initMatrix();
+        }
+        window.addEventListener('resize', fitCanvas);
 
-            function makeParticles(n) {
-                particles = new Array(n).fill(0).map(() => ({
-                    x: Math.random() * w, y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
-                    r: Math.random() * 2.5 + 1, alpha: 0.08 + Math.random() * 0.12,
-                    hue: 190 + Math.random() * 120
-                }));
-            }
-            makeParticles(60);
+        /* Matrix streams */
+        let columns = [];
+        let matrixCtx = mat.getContext('2d');
+        matrixCtx.scale(DPR, DPR);
+        let charCtx = chars.getContext('2d');
+        charCtx.scale(DPR, DPR);
 
-            let raf;
-            function loop() {
-                ctx.clearRect(0, 0, w, h);
-                for (const p of particles) {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    if (p.x < 0) p.x = w;
-                    if (p.x > w) p.x = 0;
-                    if (p.y < 0) p.y = h;
-                    if (p.y > h) p.y = 0;
-                    ctx.beginPath();
-                    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
-                    g.addColorStop(0, `hsla(${p.hue},80%,65%,${p.alpha})`);
-                    g.addColorStop(1, `hsla(${p.hue},80%,65%,0)`);
-                    ctx.fillStyle = g;
-                    ctx.fillRect(p.x - p.r * 6, p.y - p.r * 6, p.r * 12, p.r * 12);
-                }
-                raf = requestAnimationFrame(loop);
-            }
-            loop();
+        /* characters */
+        const charset = '01يهلابمكتبتشفنطقز١٢٣٤٥٦٧٨٩<>/#[]{}()@#$%&*-+=~|:;.,؟'; // mix arabic & symbols & binary
+        const glyphs = charset.split('');
 
-            // try to cleanup if necessary (not used here)
-            return () => cancelAnimationFrame(raf);
+        function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min }
+        function initMatrix() {
+            const cw = window.innerWidth;
+            const ch = window.innerHeight;
+            const fontSize = getFontSizeForIntensity();
+            const cols = Math.floor(cw / fontSize) + 1;
+            columns = new Array(cols).fill(0).map(() => ({
+                x: null,
+                y: rand(-200, 0) * Math.random(),
+                speed: fontSize * (0.35 + Math.random() * 0.9),
+                size: fontSize,
+                trail: rand(4, 20),
+                active: Math.random() > 0.2
+            }));
+            // position x
+            columns.forEach((c, i) => c.x = i * fontSize + (fontSize * 0.2));
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Try to init particles.js, else fallback
-            try {
-                if (window.particlesJS) {
-                    particlesJS("particles-js", {
-                        particles: {
-                            number: { value: 70, density: { enable: true, value_area: 900 } },
-                            color: { value: ["#24d3ff", "#2ef08a", "#77d0ff"] },
-                            shape: { type: "circle" },
-                            opacity: { value: 0.16, random: true, anim: { enable: false } },
-                            size: { value: 2.6, random: true },
-                            line_linked: { enable: true, distance: 160, color: "#0f9fbf", opacity: 0.06, width: 1 },
-                            move: { enable: true, speed: 1.1, random: true, out_mode: "out" }
-                        },
-                        interactivity: {
-                            detect_on: "canvas",
-                            events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "repulse" } },
-                            modes: { grab: { distance: 140, line_linked: { opacity: 0.15 } }, repulse: { distance: 120 } }
-                        },
-                        retina_detect: true
-                    });
-                } else {
-                    initParticlesFallback('particles-js');
+        /* intensity adjustments */
+        function getFontSizeForIntensity() {
+            if (intensity === 'low') return Math.max(12, Math.round(Math.min(window.innerWidth, window.innerHeight) / 80));
+            if (intensity === 'high') return Math.max(14, Math.round(Math.min(window.innerWidth, window.innerHeight) / 40));
+            return Math.max(13, Math.round(Math.min(window.innerWidth, window.innerHeight) / 55)); // medium
+        }
+
+        /* draw loop */
+        let lastTime = 0;
+        function loop(t) {
+            if (!running) { requestAnimationFrame(loop); return; }
+            const dt = t - lastTime; lastTime = t;
+
+            // clear with slight fade for trailing effect
+            matrixCtx.clearRect(0, 0, mat.width / DPR, mat.height / DPR);
+            matrixCtx.fillStyle = 'rgba(0,0,0,0.28)';
+            matrixCtx.fillRect(0, 0, mat.width / DPR, mat.height / DPR);
+
+            // draw each column
+            const cols = columns.length;
+            for (let i = 0; i < cols; i++) {
+                const col = columns[i];
+                if (!col.active) continue;
+                const x = col.x;
+                const y = col.y;
+                const fs = col.size;
+                // occasionally change speed and trail (produce chaos)
+                if (Math.random() < 0.005) col.speed *= (0.86 + Math.random() * 0.3);
+                matrixCtx.font = `${fs}px "Share Tech Mono", monospace`;
+                // produce a vertical trail of glyphs
+                for (let s = 0; s < col.trail; s++) {
+                    const gy = y - (s * fs);
+                    if (gy < -fs) continue;
+                    const ch = glyphs[Math.floor(Math.random() * glyphs.length)];
+                    const alpha = 1 - (s / col.trail);
+                    // head is brighter
+                    if (s === 0) {
+                        matrixCtx.fillStyle = `rgba(180,255,200,${clamp(alpha, 0.7, 1)})`;
+                        matrixCtx.fillText(ch, x, gy);
+                    } else {
+                        // tinted trail
+                        matrixCtx.fillStyle = `rgba(0,200,120,${alpha * 0.18})`;
+                        matrixCtx.fillText(ch, x, gy);
+                    }
                 }
-            } catch (e) {
-                console.warn('particles init failed, fallback', e);
-                initParticlesFallback('particles-js');
-            }
-        });
-
-        /* ========== Glitch system (clip-slice + RGB shift) ========== */
-        (function () {
-            const wrap = $('#glitchWrap');
-            const base = $('.name .base');
-            const r = $('.name .r');
-            const g = $('.name .g');
-            const slice = $('.slice');
-            let animOn = true;
-            let scheduled;
-
-            // helpers
-            const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-            const randFloat = (a, b) => a + Math.random() * (b - a);
-
-            function applySlice() {
-                // Create several clip slices applied to RGB layers differently
-                const n = rand(1, 4);
-                const clips = [];
-                for (let i = 0; i < n; i++) {
-                    const top = rand(0, 85);
-                    const h = rand(3, 18);
-                    clips.push(`inset(${top}% 0 ${100 - (top + h)}% 0)`);
+                // step
+                col.y += col.speed * (0.016 * (1 + (intensity === 'high' ? 0.6 : intensity === 'low' ? -0.25 : 0)));
+                // reset if out of bounds with some randomness
+                if (col.y > window.innerHeight + (col.trail * fs)) {
+                    if (Math.random() < 0.92) {
+                        col.y = rand(-100, 0) * Math.random();
+                        col.speed = fs * (0.35 + Math.random() * 0.9);
+                        col.trail = rand(4, 28);
+                    } else {
+                        // occasionally keep it going slower (makes sporadic long tails)
+                        col.y = -rand(10, 200);
+                    }
                 }
-                const first = clips[0] || 'inset(0 0 0 0)';
-                r.style.clipPath = clips[1] || first;
-                g.style.clipPath = clips[2] || first;
-                // small translations
-                r.style.transform = `translate(${rand(-10, 10)}px,${rand(-6, 6)}px)`;
-                g.style.transform = `translate(${rand(-6, 6)}px,${rand(-10, 10)}px)`;
-                // opacity pop
-                r.style.opacity = randFloat(0.6, 0.98);
-                g.style.opacity = randFloat(0.5, 0.9);
-                // slice flash
-                slice.style.opacity = 0.08 + Math.random() * 0.35;
-                slice.style.transform = `skewX(-12deg) translateX(${rand(-40, 40)}%)`;
-                // slight scale / shake on main
-                base.style.transform = `translate(${rand(-3, 3)}px,${rand(-2, 2)}px) scale(${randFloat(0.995, 1.02)})`;
-                // tiny glow
-                base.style.textShadow = `0 ${rand(6, 12)}px ${rand(8, 20)}px rgba(0,0,0,0.55)`;
             }
 
-            function clearSlice() {
-                r.style.clipPath = 'inset(0 0 0 0)';
-                g.style.clipPath = 'inset(0 0 0 0)';
+            // second canvas: burst characters, corruption overlays
+            charCtx.clearRect(0, 0, chars.width / DPR, chars.height / DPR);
+            charCtx.font = `${Math.max(12, Math.round(getFontSizeForIntensity() * 1.1))}px "Share Tech Mono", monospace`;
+            // draw occasional big corruption glyphs
+            if (Math.random() < (intensity === 'high' ? 0.28 : intensity === 'low' ? 0.05 : 0.12)) {
+                const gx = rand(0, window.innerWidth);
+                const gy = rand(0, window.innerHeight);
+                const gc = glyphs[Math.floor(Math.random() * glyphs.length)];
+                charCtx.fillStyle = `rgba(0,255,140,${0.08 + Math.random() * 0.18})`;
+                charCtx.fillText(gc.repeat(rand(1, 5)), gx, gy);
+            }
+            requestAnimationFrame(loop);
+        }
+
+        /* start */
+        function startMatrix() {
+            fitCanvas();
+            lastTime = performance.now();
+            requestAnimationFrame(loop);
+        }
+        startMatrix();
+
+        /* ========== Glitch slices & RGB jitter on name ========== */
+        const nameWrap = document.getElementById('nameWrap');
+        const base = document.querySelector('.name .base');
+        const r = document.querySelector('.name .r');
+        const g = document.querySelector('.name .g');
+        const panicOverlay = document.getElementById('panicOverlay');
+
+        function applyGlitch(burst = false) {
+            // quick slices + shifts + flicker
+            const slices = [];
+            const n = burst ? rand(4, 9) : rand(1, 4);
+            for (let i = 0; i < n; i++) {
+                slices.push({
+                    rTrans: `translate(${rand(-18, 18)}px,${rand(-10, 10)}px)`,
+                    gTrans: `translate(${rand(-12, 12)}px,${rand(-18, 18)}px)`,
+                    rClip: `inset(${rand(0, 70)}% 0 ${rand(0, 70)}% 0)`,
+                    gClip: `inset(${rand(0, 70)}% 0 ${rand(0, 70)}% 0)`
+                });
+            }
+            // apply one immediately
+            const s = slices[0];
+            r.style.transform = s.rTrans;
+            r.style.clipPath = s.rClip;
+            r.style.opacity = 0.8;
+            g.style.transform = s.gTrans;
+            g.style.clipPath = s.gClip;
+            g.style.opacity = 0.7;
+            base.style.transform = `translate(${rand(-4, 4)}px,${rand(-3, 3)}px)`;
+            // tiny screen shake by moving panel
+            const panel = document.querySelector('.panel');
+            panel.style.transform = `translate(${rand(-6, 6)}px,${rand(-6, 6)}px)`;
+            // flicker overlay opacity change
+            panicOverlay.style.opacity = 0.02 + Math.random() * 0.08;
+
+            // clear soon
+            setTimeout(() => {
                 r.style.transform = 'translate(0,0)';
                 g.style.transform = 'translate(0,0)';
-                r.style.opacity = 1;
-                g.style.opacity = 1;
-                base.style.transform = 'translate(0,0) scale(1)';
-                slice.style.opacity = 0.22;
-                slice.style.transform = 'skewX(-12deg) translateX(-120%)';
-                base.style.textShadow = '';
-            }
+                r.style.clipPath = 'inset(0 0 0 0)';
+                g.style.clipPath = 'inset(0 0 0 0)';
+                r.style.opacity = 1; g.style.opacity = 1;
+                base.style.transform = 'translate(0,0)';
+                const panel = document.querySelector('.panel');
+                panel.style.transform = 'translateZ(0)';
+                panicOverlay.style.opacity = 0;
+            }, burst ? rand(350, 900) : rand(80, 380));
+        }
 
-            function doGlitchShort() {
-                if (!animOn) return;
-                applySlice();
-                setTimeout(clearSlice, rand(80, 420));
-                scheduleNext();
-            }
+        /* schedule ambient glitches depending on intensity */
+        let glitchTimer = null;
+        function scheduleGlitch() {
+            clearTimeout(glitchTimer);
+            const delay = intensity === 'low' ? rand(2500, 7000) : intensity === 'high' ? rand(300, 1600) : rand(900, 3500);
+            glitchTimer = setTimeout(() => {
+                if (running) applyGlitch(Math.random() < 0.25);
+                scheduleGlitch();
+            }, delay);
+        }
+        scheduleGlitch();
 
-            function doGlitchBurst() {
-                if (!animOn) return;
-                let burst = rand(2, 6);
-                (function next(i) {
-                    if (!animOn) return;
-                    applySlice();
-                    setTimeout(() => {
-                        clearSlice();
-                        if (i > 0) next(i - 1);
-                    }, rand(120, 420));
-                })(burst);
-                scheduleNext(rand(700, 2600));
-            }
+        /* controls */
+        $('#levelLow').addEventListener('click', () => setIntensity('low'));
+        $('#levelMed').addEventListener('click', () => setIntensity('medium'));
+        $('#levelHigh').addEventListener('click', () => setIntensity('high'));
 
-            function scheduleNext(delay) {
-                clearTimeout(scheduled);
-                scheduled = setTimeout(() => { Math.random() < 0.55 ? doGlitchShort() : doGlitchBurst(); }, delay || rand(900, 4200));
-            }
+        function setIntensity(level) {
+            intensity = level;
+            $('#levelLow').classList.toggle('active', level === 'low');
+            $('#levelMed').classList.toggle('active', level === 'medium');
+            $('#levelHigh').classList.toggle('active', level === 'high');
+            // adjust columns font size
+            initMatrix();
+        }
 
-            scheduleNext();
+        /* Panic button */
+        $('#panicBtn').addEventListener('click', () => doPanic());
+        function doPanic() {
+            if (panicTimeout) return;
+            // crazy burst
+            applyGlitch(true);
+            // flood matrix with high activity for short time
+            const old = intensity;
+            setIntensity('high');
+            panicOverlay.style.opacity = 0.08;
+            // flash border around name
+            document.querySelector('.panel').style.boxShadow = '0 0 48px rgba(255,46,46,0.18)';
+            panicTimeout = setTimeout(() => {
+                setIntensity(old);
+                panicOverlay.style.opacity = 0;
+                document.querySelector('.panel').style.boxShadow = '';
+                panicTimeout = null;
+            }, 2200);
+        }
 
-            // expose for UI
-            window.triggerShowcaseGlitch = function () {
-                doGlitchBurst();
-            };
+        /* space to toggle running */
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') { e.preventDefault(); running = !running; if (running) { requestAnimationFrame(loop); } else { /* paused */ } }
+            if (e.key.toLowerCase() === 'g') { applyGlitch(true); }
+            if (e.key.toLowerCase() === 'p') { doPanic(); }
+        });
 
-            // pause/resume controls
-            const toggleBtn = $('#toggleAnim');
-            const forceBtn = $('#forceGlitch');
+        /* click glitch */
+        $('#nameWrap').addEventListener('pointerdown', () => applyGlitch(false));
 
-            toggleBtn.addEventListener('click', () => {
-                animOn = !animOn;
-                toggleBtn.setAttribute('aria-pressed', (!animOn).toString());
-                toggleBtn.textContent = animOn ? '⏯️ حركة' : '⏸️ إيقاف';
-                if (animOn) scheduleNext(); else clearTimeout(scheduled);
-            });
-            forceBtn.addEventListener('click', () => { doGlitchBurst(); });
+        /* mute button placeholder (no sound implemented by default) */
+        $('#muteBtn').addEventListener('click', () => {
+            soundOn = !soundOn;
+            $('#muteBtn').textContent = soundOn ? '🔊' : '🔈';
+        });
 
-            // keyboard: space toggles anim
-            window.addEventListener('keydown', (e) => {
-                if (e.code === 'Space') { e.preventDefault(); animOn = !animOn; toggleBtn.setAttribute('aria-pressed', (!animOn).toString()); toggleBtn.textContent = animOn ? '⏯️ حركة' : '⏸️ إيقاف'; if (animOn) scheduleNext(); else clearTimeout(scheduled); }
-                if (e.key.toLowerCase() === 'g') window.triggerShowcaseGlitch();
-            });
+        /* Utility clamp */
+        function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
-            // click/tap triggers micro glitch
-            $('#glitchWrap').addEventListener('pointerdown', () => {
-                doGlitchShort();
-            });
-        })();
-
-        /* ========== Cursor & parallax (throttled) ========== */
-        (function () {
-            const cursor = $('#cursor');
-            const center = $('.center');
-            const nebula = document.querySelector('.stage::before'); // not accessible; we apply parallax to stage background via transform on center ring instead
-            const ring = $('.ring');
-            const wrap = $('#glitchWrap');
-            let isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-            if (isTouch) { cursor.style.display = 'none'; return; }
-            cursor.style.display = 'block';
-
-            // throttle
-            let last = 0;
-            window.addEventListener('pointermove', (e) => {
-                const now = performance.now();
-                if (now - last < 12) return; // ~83fps cap
-                last = now;
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
-                // parallax center ring subtle movement
-                const nx = (e.clientX / window.innerWidth - 0.5) * 12; // -6..6
-                const ny = (e.clientY / window.innerHeight - 0.5) * 10;
-                if (ring) ring.style.transform = `translate3d(${nx}px,${ny - 6}px,0) rotate(${nx * 0.6}deg)`;
-            });
-
-            // hover enlarge
-            wrap.addEventListener('pointerenter', () => cursor.classList.add('big'));
-            wrap.addEventListener('pointerleave', () => cursor.classList.remove('big'));
-        })();
-
-        /* ========== Accessibility: handle prefers-reduced-motion (stop heavy loops) ========== */
+        /* Respect reduced motion: pause everything */
         (function () {
             if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                // stop particles if pJSDom exists
-                try { if (window.pJSDom && window.pJSDom.length) { window.pJSDom.forEach(p => p.pJS.fn.vendors.destroypJS()); } } catch (e) { }
-                // hide cursor
-                const c = $('#cursor'); if (c) c.style.display = 'none';
-                // freeze animations by toggling control as paused
-                const toggleBtn = $('#toggleAnim');
-                if (toggleBtn) { toggleBtn.setAttribute('aria-pressed', 'true'); toggleBtn.textContent = '⏸️ إيقاف'; }
+                running = false;
+                document.querySelectorAll('.ctrl').forEach(b => b.style.display = 'none');
             }
         })();
 
-        /* tiny UX: hide hint after a few seconds */
-        setTimeout(() => { const h = document.getElementById('hint'); if (h) h.style.opacity = 0; }, 5000);
+        /* initial focus: accessibility hint */
+        setTimeout(() => {
+            const h = document.querySelector('.hint');
+            if (h) h.style.opacity = 0.7;
+            setTimeout(() => { if (h) h.style.opacity = 0.0; }, 4200);
+        }, 1200);
 
     </script>
 </body>
