@@ -4,42 +4,49 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#070707" />
     <title>ادريس —</title>
 
-    <!-- Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
-
-    <!-- particles.js (CDN) -->
-    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* ========== Base ========== */
+        /* =======================
+   Ultimate Dark Showcase
+   ======================= */
         :root {
-            --bg-1: #070707;
+            --bg-1: #050507;
             --bg-2: #0f1113;
+            --panel: rgba(255, 255, 255, 0.03);
+            --glass: rgba(255, 255, 255, 0.025);
             --accent: #24d3ff;
-            /* neon cyan (eye-friendly) */
             --accent-2: #2ef08a;
-            /* subtle green hint */
-            --muted: #9aa3a8;
+            --muted: #97a0a5;
+            --shadow: rgba(0, 0, 0, 0.65);
+            --glass-blur: 10px;
+            --ui-size: 14px;
+        }
+
+        /* Reset */
+        * {
+            box-sizing: border-box
         }
 
         html,
         body {
             height: 100%;
             margin: 0;
-            background: var(--bg-1);
+            background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+            color: #eaf6fb;
             font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
-            color: #fff;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            overflow: hidden;
+            overflow: hidden
         }
 
-        /* Container fills viewport */
+        /* Stage */
         .stage {
             position: relative;
             width: 100vw;
@@ -47,212 +54,221 @@
             display: grid;
             place-items: center;
             isolation: isolate;
-            background: linear-gradient(180deg, rgba(6, 6, 6, 0.92) 0%, rgba(12, 12, 12, 0.96) 100%);
+            background-image: radial-gradient(60% 40% at 10% 20%, rgba(36, 211, 255, 0.02), transparent 6%),
+                radial-gradient(40% 30% at 85% 80%, rgba(46, 240, 138, 0.015), transparent 6%);
         }
 
-        /* Particles canvas (particles.js injects a canvas) */
-        #particles-js {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.0) 100%);
-        }
-
-        /* Subtle animated nebula / gradient layer */
-        .nebula {
+        /* Animated gradient shift for subtle life */
+        .stage::before {
+            content: "";
             position: absolute;
             inset: -20%;
             z-index: 0;
-            filter: blur(60px) saturate(1.2);
-            background:
-                radial-gradient(30% 40% at 10% 20%, rgba(36, 211, 255, 0.06), transparent 6%),
-                radial-gradient(20% 30% at 85% 80%, rgba(46, 240, 138, 0.04), transparent 6%),
-                conic-gradient(from 120deg at 50% 50%, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.02));
-            mix-blend-mode: screen;
+            filter: blur(80px) saturate(1.15);
             opacity: 0.9;
-            transform: translateZ(0);
-            animation: nebula-move 18s linear infinite;
+            background: conic-gradient(from 120deg, rgba(36, 211, 255, 0.02), rgba(46, 240, 138, 0.02), rgba(74, 209, 255, 0.01));
+            animation: slow-rotate 28s linear infinite;
         }
 
-        @keyframes nebula-move {
+        @keyframes slow-rotate {
             0% {
-                transform: translate3d(-2%, 0, 0) scale(1);
-            }
-
-            50% {
-                transform: translate3d(2%, 0, 0) scale(1.02);
+                transform: rotate(0)
             }
 
             100% {
-                transform: translate3d(-2%, 0, 0) scale(1);
+                transform: rotate(360deg)
             }
         }
 
-        /* Scanlines + noise (very subtle) */
-        .scanlines {
+        /* Particles canvas (below everything) */
+        #particles-js {
             position: absolute;
             inset: 0;
             z-index: 1;
             pointer-events: none;
-            mix-blend-mode: overlay;
-            opacity: 0.03;
-            background-image: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 3px);
-            filter: contrast(0.9);
+            opacity: 0.9;
+            mix-blend-mode: screen
         }
 
-        /* Center card holding the name (keeps minimal Apple vibe) */
+        /* faint Noise overlay & scanlines for dark cyber vibe */
+        .noise {
+            position: absolute;
+            inset: 0;
+            z-index: 6;
+            pointer-events: none;
+            opacity: 0.04;
+            background-image: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 3px);
+            mix-blend-mode: overlay;
+        }
+
+        /* Center glass card */
         .center {
             position: relative;
-            z-index: 5;
+            z-index: 10;
             display: grid;
             place-items: center;
             padding: 48px 64px;
-            border-radius: 14px;
-            backdrop-filter: blur(6px) saturate(1.05);
+            border-radius: 16px;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
-            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
-            user-select: none;
+            box-shadow: 0 10px 40px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
+            transform: translateZ(0);
+            max-width: min(90vw, 1200px);
             -webkit-user-select: none;
+            user-select: none;
         }
 
-        /* Main name - huge, clean */
+        /* Name block */
         .glitch-wrap {
             position: relative;
-            display: inline-block;
-            line-height: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px
         }
 
         .name {
             font-weight: 900;
-            font-size: clamp(48px, 10vw, 120px);
-            letter-spacing: 0.02em;
-            color: #e9f6fb;
-            text-transform: none;
+            font-size: clamp(56px, 11vw, 140px);
+            line-height: 0.88;
+            letter-spacing: 0.01em;
+            color: linear-gradient(90deg, #eaf6fb, #cfeff7);
+            position: relative;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
             transform: translateZ(0);
+            padding: 6px 12px;
         }
 
-        /* Glitch layers (CSS + JS will animate) */
-        .name::before,
-        .name::after {
-            content: attr(data-text);
+        /* layered copies for RGB-split glitch */
+        .name .layer {
             position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            clip-path: var(--clip, inset(0 0 0 0));
-            opacity: 0.9;
+            inset: 0;
+            display: block;
+            padding: 6px 12px;
             pointer-events: none;
+            will-change: transform, clip-path, opacity, filter;
         }
 
-        .name::before {
-            color: var(--accent);
+        .name .base {
+            position: relative;
+            z-index: 6;
+            color: #eaf6fb
+        }
+
+        .name .r {
+            color: rgba(36, 211, 255, 0.95);
             mix-blend-mode: screen;
-            transform: translate3d(0, 0, 0);
-            filter: drop-shadow(0 6px 14px rgba(36, 211, 255, 0.06));
+            z-index: 5;
+            filter: drop-shadow(0 8px 18px rgba(36, 211, 255, 0.06));
         }
 
-        .name::after {
-            color: var(--accent-2);
+        .name .g {
+            color: rgba(46, 240, 138, 0.9);
             mix-blend-mode: screen;
-            filter: blur(0.6px) brightness(1.05);
+            z-index: 4;
+            filter: blur(0.2px)
         }
 
-        /* small neon subtitle for vibe */
+        /* subtitle / micro-copy */
         .sub {
-            margin-top: 8px;
+            font-size: var(--ui-size);
             color: var(--muted);
-            font-weight: 500;
-            font-size: 14px;
+            opacity: 0.95
+        }
+
+        /* ring / orbit subtle */
+        .ring {
+            position: absolute;
+            z-index: 4;
+            inset: 0;
+            display: block;
+            pointer-events: none;
+            width: calc(100% + 220px);
+            height: calc(100% + 220px);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            transform: translateY(-6%) scale(1);
+            filter: blur(8px);
+            animation: ring-rotate 18s linear infinite;
+            mix-blend-mode: screen;
             opacity: 0.9;
-            text-align: center;
         }
 
-        /* Glich animation helpers (will be toggled/varied by JS) */
-        .glitch-anim-1 {
-            animation: g1 2.6s infinite linear;
-        }
-
-        .glitch-anim-2 {
-            animation: g2 3.4s infinite linear;
-        }
-
-        @keyframes g1 {
+        @keyframes ring-rotate {
             0% {
-                transform: translate(0, 0) skewX(0);
-            }
-
-            20% {
-                transform: translate(-6px, -2px) skewX(-2deg);
-            }
-
-            40% {
-                transform: translate(6px, 3px) skewX(2deg);
-            }
-
-            60% {
-                transform: translate(-3px, 1px) skewX(-1deg);
-            }
-
-            80% {
-                transform: translate(3px, -1px) skewX(1deg);
+                transform: translateY(-6%) rotate(0) scale(1)
             }
 
             100% {
-                transform: translate(0, 0) skewX(0);
+                transform: translateY(-6%) rotate(360deg) scale(1)
             }
         }
 
-        @keyframes g2 {
-            0% {
-                transform: translate(0, 0)
-            }
-
-            25% {
-                transform: translate(0, -4px)
-            }
-
-            50% {
-                transform: translate(0, 4px)
-            }
-
-            75% {
-                transform: translate(-2px, 0)
-            }
-
-            100% {
-                transform: translate(0, 0)
-            }
-        }
-
-        /* occasional slice clip effect */
+        /* thin dynamic scan-slice */
         .slice {
             position: absolute;
             inset: 0;
+            z-index: 8;
             pointer-events: none;
-            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
             mix-blend-mode: overlay;
-            opacity: 0.25;
-            transform: skewX(-10deg) translateX(-110%);
-            animation: slice-move 6s linear infinite;
+            opacity: 0.22;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
+            transform: skewX(-12deg) translateX(-120%);
+            animation: slice-move 5.6s linear infinite
         }
 
         @keyframes slice-move {
             0% {
-                transform: skewX(-10deg) translateX(-120%)
+                transform: skewX(-12deg) translateX(-120%)
             }
 
             50% {
-                transform: skewX(-10deg) translateX(20%)
+                transform: skewX(-12deg) translateX(20%)
             }
 
             100% {
-                transform: skewX(-10deg) translateX(-120%)
+                transform: skewX(-12deg) translateX(-120%)
             }
         }
 
-        /* cursor halo */
+        /* controls (top-left) */
+        .controls {
+            position: fixed;
+            left: 18px;
+            top: 18px;
+            z-index: 50;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .ctrl-btn {
+            background: var(--glass);
+            backdrop-filter: blur(6px);
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 13px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.98)
+        }
+
+        /* small hint bottom */
+        .hint {
+            position: absolute;
+            bottom: -36px;
+            color: var(--muted);
+            font-size: 12px;
+            opacity: 0.9
+        }
+
+        /* custom cursor */
         .cursor {
             position: fixed;
             z-index: 60;
@@ -260,63 +276,96 @@
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            transform: translate(-50%, -50%) scale(1);
-            transition: transform .12s linear;
-            border: 1px solid rgba(36, 211, 255, 0.9);
-            box-shadow: 0 0 10px rgba(36, 211, 255, 0.05);
+            transform: translate(-50%, -50%);
+            transition: transform .12s linear, width .12s ease, height .12s ease;
+            border: 1px solid rgba(36, 211, 255, 0.95);
+            box-shadow: 0 0 12px rgba(36, 211, 255, 0.06);
+            background: rgba(36, 211, 255, 0.04);
             mix-blend-mode: screen;
-            background: rgba(36, 211, 255, 0.06);
             display: none;
-            /* shown by JS on non-touch */
         }
 
         .cursor.big {
-            transform: translate(-50%, -50%) scale(2.6);
-            opacity: 0.9;
+            transform: translate(-50%, -50%) scale(2.2);
+            opacity: 0.95
         }
 
-        /* responsiveness tweaks */
-        @media (max-width:640px) {
-            .center {
-                padding: 28px 36px;
-                border-radius: 10px;
-            }
-
-            .sub {
-                font-size: 13px
-            }
-        }
-
-        /* Respect reduced motion */
+        /* accessibility / reduce motion */
         @media (prefers-reduced-motion: reduce) {
 
-            .nebula,
-            .scanlines,
             .slice,
-            .glitch-anim-1,
-            .glitch-anim-2 {
+            .ring,
+            .stage::before,
+            #particles-js,
+            .nebula,
+            .scanlines {
                 animation: none !important;
                 transition: none !important;
+            }
+
+            .cursor {
+                display: none
+            }
+        }
+
+        /* mobile tweaks */
+        @media(max-width:720px) {
+            .center {
+                padding: 26px 28px;
+                border-radius: 12px
+            }
+
+            .ring {
+                display: none
+            }
+
+            .slice {
+                display: none
+            }
+
+            .name {
+                font-size: clamp(36px, 14vw, 72px)
+            }
+
+            .cursor {
+                display: none
+            }
+
+            body {
+                overflow: auto
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="stage" role="main" aria-label="صفحة عرض لإسم ادريس">
-        <!-- Background layers -->
+    <div class="stage" role="main" aria-label="عرض اسم إدريس">
+        <!-- Background & particles -->
         <div id="particles-js" aria-hidden="true"></div>
-        <div class="nebula" aria-hidden="true"></div>
-        <div class="scanlines" aria-hidden="true"></div>
+        <div class="noise" aria-hidden="true"></div>
 
-        <!-- Center piece -->
+        <!-- Center glass card -->
         <div class="center" aria-hidden="false">
-            <div class="glitch-wrap" id="glitchWrap" title="ادريس">
-                <!-- main name; data-text used for pseudo-elements -->
-                <div class="name" id="mainName" data-text="ادريس">ادريس</div>
+            <div class="glitch-wrap" id="glitchWrap" title="ادريس" role="heading" aria-level="1">
+                <div class="ring" aria-hidden="true"></div>
+
+                <!-- Name with layered spans -->
+                <div class="name" id="mainName" data-text="ادريس" aria-hidden="false">
+                    <span class="layer base">ادريس</span>
+                    <span class="layer r" aria-hidden="true">ادريس</span>
+                    <span class="layer g" aria-hidden="true">ادريس</span>
+                </div>
+
                 <div class="slice" aria-hidden="true"></div>
                 <div class="sub">عرض شخصي — Dark · Minimal · Black-hat aesthetic</div>
+                <div class="hint" id="hint">اضغط / حرّك الماوس للتفاعل • اضغط space لإيقاف/تشغيل الجليتش</div>
             </div>
+        </div>
+
+        <!-- small control to toggle animation -->
+        <div class="controls" role="toolbar" aria-label="عناصر التحكم">
+            <button id="toggleAnim" class="ctrl-btn" aria-pressed="false" title="إيقاف/تشغيل الحركة">⏯️ حركة</button>
+            <button id="forceGlitch" class="ctrl-btn" title="اجعل الجليتش الآن">⚡ جليتش</button>
         </div>
 
         <!-- custom cursor -->
@@ -324,116 +373,261 @@
     </div>
 
     <script>
-        /* ========== Particles Setup ========== */
-        window.addEventListener('DOMContentLoaded', () => {
-            if (window.particlesJS) {
-                particlesJS("particles-js", {
-                    "particles": {
-                        "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
-                        "color": { "value": ["#24d3ff", "#2ef08a", "#4ad1ff"] },
-                        "shape": { "type": "circle" },
-                        "opacity": { "value": 0.18, "random": true },
-                        "size": { "value": 3, "random": true },
-                        "line_linked": { "enable": true, "distance": 160, "color": "#0f9fbf", "opacity": 0.06, "width": 1 },
-                        "move": { "enable": true, "speed": 1.2, "direction": "none", "random": true, "straight": false, "out_mode": "out" }
-                    },
-                    "interactivity": {
-                        "detect_on": "canvas",
-                        "events": {
-                            "onhover": { "enable": true, "mode": "grab" },
-                            "onclick": { "enable": true, "mode": "repulse" }
+        /* =============================
+           Enhanced interactions & effects
+           ============================= */
+
+        /* Utility */
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => Array.from(document.querySelectorAll(s));
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+        /* ========== Particles (lightweight fallback if particles.js not loaded) ========== */
+        function initParticlesFallback(containerId) {
+            // simple canvas particles that are lightweight and graceful
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            // create canvas
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'absolute';
+            canvas.style.inset = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.zIndex = '2';
+            canvas.style.pointerEvents = 'none';
+            container.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            let w, h, particles;
+
+            function resize() {
+                w = canvas.width = container.clientWidth;
+                h = canvas.height = container.clientHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            function makeParticles(n) {
+                particles = new Array(n).fill(0).map(() => ({
+                    x: Math.random() * w, y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+                    r: Math.random() * 2.5 + 1, alpha: 0.08 + Math.random() * 0.12,
+                    hue: 190 + Math.random() * 120
+                }));
+            }
+            makeParticles(60);
+
+            let raf;
+            function loop() {
+                ctx.clearRect(0, 0, w, h);
+                for (const p of particles) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = w;
+                    if (p.x > w) p.x = 0;
+                    if (p.y < 0) p.y = h;
+                    if (p.y > h) p.y = 0;
+                    ctx.beginPath();
+                    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
+                    g.addColorStop(0, `hsla(${p.hue},80%,65%,${p.alpha})`);
+                    g.addColorStop(1, `hsla(${p.hue},80%,65%,0)`);
+                    ctx.fillStyle = g;
+                    ctx.fillRect(p.x - p.r * 6, p.y - p.r * 6, p.r * 12, p.r * 12);
+                }
+                raf = requestAnimationFrame(loop);
+            }
+            loop();
+
+            // try to cleanup if necessary (not used here)
+            return () => cancelAnimationFrame(raf);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Try to init particles.js, else fallback
+            try {
+                if (window.particlesJS) {
+                    particlesJS("particles-js", {
+                        particles: {
+                            number: { value: 70, density: { enable: true, value_area: 900 } },
+                            color: { value: ["#24d3ff", "#2ef08a", "#77d0ff"] },
+                            shape: { type: "circle" },
+                            opacity: { value: 0.16, random: true, anim: { enable: false } },
+                            size: { value: 2.6, random: true },
+                            line_linked: { enable: true, distance: 160, color: "#0f9fbf", opacity: 0.06, width: 1 },
+                            move: { enable: true, speed: 1.1, random: true, out_mode: "out" }
                         },
-                        "modes": {
-                            "grab": { "distance": 140, "line_linked": { "opacity": 0.15 } },
-                            "repulse": { "distance": 120 }
-                        }
-                    },
-                    "retina_detect": true
-                });
+                        interactivity: {
+                            detect_on: "canvas",
+                            events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "repulse" } },
+                            modes: { grab: { distance: 140, line_linked: { opacity: 0.15 } }, repulse: { distance: 120 } }
+                        },
+                        retina_detect: true
+                    });
+                } else {
+                    initParticlesFallback('particles-js');
+                }
+            } catch (e) {
+                console.warn('particles init failed, fallback', e);
+                initParticlesFallback('particles-js');
             }
         });
 
-        /* ========== Glitch dynamics ========== */
+        /* ========== Glitch system (clip-slice + RGB shift) ========== */
         (function () {
-            const name = document.getElementById('mainName');
-            const wrap = document.getElementById('glitchWrap');
-            let glitchTimeout;
+            const wrap = $('#glitchWrap');
+            const base = $('.name .base');
+            const r = $('.name .r');
+            const g = $('.name .g');
+            const slice = $('.slice');
+            let animOn = true;
+            let scheduled;
 
-            // small helper: random int
-            const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            // helpers
+            const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            const randFloat = (a, b) => a + Math.random() * (b - a);
 
-            // periodically create quick 'slice' glitches by changing clip-path on pseudo elements via CSS variable
-            function triggerGlitch() {
-                // generate slices
-                const slices = [];
-                const n = r(1, 4);
+            function applySlice() {
+                // Create several clip slices applied to RGB layers differently
+                const n = rand(1, 4);
+                const clips = [];
                 for (let i = 0; i < n; i++) {
-                    const top = r(0, 80);
-                    const height = r(4, 16);
-                    slices.push(`inset(${top}% 0 ${100 - (top + height)}% 0)`);
+                    const top = rand(0, 85);
+                    const h = rand(3, 18);
+                    clips.push(`inset(${top}% 0 ${100 - (top + h)}% 0)`);
                 }
-                // apply combined clip (first slice for ::before)
-                document.documentElement.style.setProperty('--clip', slices[0] || 'inset(0 0 0 0)');
-                // add transient classes to animate
-                wrap.classList.add('glitch-anim-1');
-                name.classList.add('glitch-anim-2');
-                clearTimeout(glitchTimeout);
-                glitchTimeout = setTimeout(() => {
-                    wrap.classList.remove('glitch-anim-1');
-                    name.classList.remove('glitch-anim-2');
-                    document.documentElement.style.setProperty('--clip', 'inset(0 0 0 0)');
-                    // schedule next
-                    scheduleGlitch();
-                }, r(160, 700));
+                const first = clips[0] || 'inset(0 0 0 0)';
+                r.style.clipPath = clips[1] || first;
+                g.style.clipPath = clips[2] || first;
+                // small translations
+                r.style.transform = `translate(${rand(-10, 10)}px,${rand(-6, 6)}px)`;
+                g.style.transform = `translate(${rand(-6, 6)}px,${rand(-10, 10)}px)`;
+                // opacity pop
+                r.style.opacity = randFloat(0.6, 0.98);
+                g.style.opacity = randFloat(0.5, 0.9);
+                // slice flash
+                slice.style.opacity = 0.08 + Math.random() * 0.35;
+                slice.style.transform = `skewX(-12deg) translateX(${rand(-40, 40)}%)`;
+                // slight scale / shake on main
+                base.style.transform = `translate(${rand(-3, 3)}px,${rand(-2, 2)}px) scale(${randFloat(0.995, 1.02)})`;
+                // tiny glow
+                base.style.textShadow = `0 ${rand(6, 12)}px ${rand(8, 20)}px rgba(0,0,0,0.55)`;
             }
 
-            function scheduleGlitch() {
-                const when = r(900, 4500);
-                setTimeout(triggerGlitch, when);
+            function clearSlice() {
+                r.style.clipPath = 'inset(0 0 0 0)';
+                g.style.clipPath = 'inset(0 0 0 0)';
+                r.style.transform = 'translate(0,0)';
+                g.style.transform = 'translate(0,0)';
+                r.style.opacity = 1;
+                g.style.opacity = 1;
+                base.style.transform = 'translate(0,0) scale(1)';
+                slice.style.opacity = 0.22;
+                slice.style.transform = 'skewX(-12deg) translateX(-120%)';
+                base.style.textShadow = '';
             }
-            scheduleGlitch();
 
-            // micro glitch on click/tap for show-off
-            wrap.addEventListener('click', () => { triggerGlitch(); });
+            function doGlitchShort() {
+                if (!animOn) return;
+                applySlice();
+                setTimeout(clearSlice, rand(80, 420));
+                scheduleNext();
+            }
 
+            function doGlitchBurst() {
+                if (!animOn) return;
+                let burst = rand(2, 6);
+                (function next(i) {
+                    if (!animOn) return;
+                    applySlice();
+                    setTimeout(() => {
+                        clearSlice();
+                        if (i > 0) next(i - 1);
+                    }, rand(120, 420));
+                })(burst);
+                scheduleNext(rand(700, 2600));
+            }
+
+            function scheduleNext(delay) {
+                clearTimeout(scheduled);
+                scheduled = setTimeout(() => { Math.random() < 0.55 ? doGlitchShort() : doGlitchBurst(); }, delay || rand(900, 4200));
+            }
+
+            scheduleNext();
+
+            // expose for UI
+            window.triggerShowcaseGlitch = function () {
+                doGlitchBurst();
+            };
+
+            // pause/resume controls
+            const toggleBtn = $('#toggleAnim');
+            const forceBtn = $('#forceGlitch');
+
+            toggleBtn.addEventListener('click', () => {
+                animOn = !animOn;
+                toggleBtn.setAttribute('aria-pressed', (!animOn).toString());
+                toggleBtn.textContent = animOn ? '⏯️ حركة' : '⏸️ إيقاف';
+                if (animOn) scheduleNext(); else clearTimeout(scheduled);
+            });
+            forceBtn.addEventListener('click', () => { doGlitchBurst(); });
+
+            // keyboard: space toggles anim
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') { e.preventDefault(); animOn = !animOn; toggleBtn.setAttribute('aria-pressed', (!animOn).toString()); toggleBtn.textContent = animOn ? '⏯️ حركة' : '⏸️ إيقاف'; if (animOn) scheduleNext(); else clearTimeout(scheduled); }
+                if (e.key.toLowerCase() === 'g') window.triggerShowcaseGlitch();
+            });
+
+            // click/tap triggers micro glitch
+            $('#glitchWrap').addEventListener('pointerdown', () => {
+                doGlitchShort();
+            });
         })();
 
-        /* ========== Cursor & parallax ========== */
+        /* ========== Cursor & parallax (throttled) ========== */
         (function () {
-            const cursor = document.getElementById('cursor');
-            const stage = document.querySelector('.stage');
-            // don't show custom cursor on touch devices
-            const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+            const cursor = $('#cursor');
+            const center = $('.center');
+            const nebula = document.querySelector('.stage::before'); // not accessible; we apply parallax to stage background via transform on center ring instead
+            const ring = $('.ring');
+            const wrap = $('#glitchWrap');
+            let isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
             if (isTouch) { cursor.style.display = 'none'; return; }
             cursor.style.display = 'block';
 
-            // move cursor
-            window.addEventListener('mousemove', (e) => {
+            // throttle
+            let last = 0;
+            window.addEventListener('pointermove', (e) => {
+                const now = performance.now();
+                if (now - last < 12) return; // ~83fps cap
+                last = now;
                 cursor.style.left = e.clientX + 'px';
                 cursor.style.top = e.clientY + 'px';
-            });
-
-            // scale cursor when hovering center
-            const center = document.querySelector('.center');
-            center.addEventListener('mouseenter', () => cursor.classList.add('big'));
-            center.addEventListener('mouseleave', () => cursor.classList.remove('big'));
-
-            // subtle parallax: move nebula relative to cursor
-            const nebula = document.querySelector('.nebula');
-            window.addEventListener('mousemove', (e) => {
-                const nx = (e.clientX / window.innerWidth - 0.5) * 10; // -5 to 5
+                // parallax center ring subtle movement
+                const nx = (e.clientX / window.innerWidth - 0.5) * 12; // -6..6
                 const ny = (e.clientY / window.innerHeight - 0.5) * 10;
-                nebula.style.transform = `translate3d(${nx}px,${ny}px,0) scale(1.01)`;
+                if (ring) ring.style.transform = `translate3d(${nx}px,${ny - 6}px,0) rotate(${nx * 0.6}deg)`;
             });
+
+            // hover enlarge
+            wrap.addEventListener('pointerenter', () => cursor.classList.add('big'));
+            wrap.addEventListener('pointerleave', () => cursor.classList.remove('big'));
         })();
 
-        /* ========== Accessibility: reduce motion tweak ========== */
+        /* ========== Accessibility: handle prefers-reduced-motion (stop heavy loops) ========== */
         (function () {
             if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                // stop particles if many animations are disabled
+                // stop particles if pJSDom exists
                 try { if (window.pJSDom && window.pJSDom.length) { window.pJSDom.forEach(p => p.pJS.fn.vendors.destroypJS()); } } catch (e) { }
+                // hide cursor
+                const c = $('#cursor'); if (c) c.style.display = 'none';
+                // freeze animations by toggling control as paused
+                const toggleBtn = $('#toggleAnim');
+                if (toggleBtn) { toggleBtn.setAttribute('aria-pressed', 'true'); toggleBtn.textContent = '⏸️ إيقاف'; }
             }
         })();
+
+        /* tiny UX: hide hint after a few seconds */
+        setTimeout(() => { const h = document.getElementById('hint'); if (h) h.style.opacity = 0; }, 5000);
+
     </script>
 </body>
 
