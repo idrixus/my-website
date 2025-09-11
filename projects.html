@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ادريس - Projects</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>ادريس</h1>
+        <nav>
+            <a href="index.html">الرئيسية</a>
+            <a href="about.html">عنّي</a>
+            <a href="projects.html" class="active">مشاريعي</a>
+            <a href="contact.html">تواصل</a>
+        </nav>
+    </header>
+
+    <section id="projects">
+        <h2>مشاريعي</h2>
+        <div class="projects-grid">
+            <div class="project-card" onclick="openModal('project1')">
+                <h3>مشروع 1</h3>
+                <p>تصميم Dark Minimalistic</p>
+            </div>
+            <div class="project-card" onclick="openModal('project2')">
+                <h3>مشروع 2</h3>
+                <p>UI سلس مع Glass Blur</p>
+            </div>
+            <div class="project-card" onclick="openModal('project3')">
+                <h3>مشروع 3</h3>
+                <p>دمج الإبداع مع Dark vibes</p>
+            </div>
+            <div class="project-card" onclick="openModal('project4')">
+                <h3>مشروع 4</h3>
+                <p>تجربة تفاعلية متقدمة</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modals -->
+    <div class="modal" id="project1">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('project1')">&times;</span>
+            <h3>مشروع 1</h3>
+            <p>تفاصيل كاملة عن مشروع 1: Dark Minimalistic Design + Animations سلسة + Responsive UI.</p>
+        </div>
+    </div>
+
+    <div class="modal" id="project2">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('project2')">&times;</span>
+            <h3>مشروع 2</h3>
+            <p>تفاصيل مشروع 2: UI سلس مع تأثيرات Glass Blur متقدمة، تصميم حديث ومظلم.</p>
+        </div>
+    </div>
+
+    <div class="modal" id="project3">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('project3')">&times;</span>
+            <h3>مشروع 3</h3>
+            <p>مشروع 3 يجمع بين الإبداع وDark vibes مع Animations سلسة + Hover Effects جذابة.</p>
+        </div>
+    </div>
+
+    <div class="modal" id="project4">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('project4')">&times;</span>
+            <h3>مشروع 4</h3>
+            <p>تفاصيل مشروع 4: تجربة تفاعلية متقدمة مع Glass Blur وDark Apple Vibes.</p>
+        </div>
+    </div>
+
+    <button id="backToTop">↑</button>
+
+    <footer>
+        &copy; 2025 إدريس - كل الحقوق محفوظة
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
