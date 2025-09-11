@@ -1,165 +1,128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>يوسف الثقفي - مطور ويب</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Idrixus — مختبر الظلال</title>
+    <meta name="description" content="موقع عصري، داكن، غامض ومينيمال — تصميم متطور وديناميكي." />
     <link rel="stylesheet" href="style.css" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
-        rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
-    <div id="stars"></div>
-    <nav class="navbar">
-        <div class="nav-container">
-            <h1 class="logo">يوسف الثقفي</h1>
+    <div class="cursor" id="cursor"></div>
+
+    <header class="site-header">
+        <nav class="nav container">
+            <div class="brand">Idrixus</div>
             <ul class="nav-links">
-                <li><a href="#hero">الرئيسية</a></li>
-                <li><a href="#about">من أنا</a></li>
-                <li><a href="#skills">المهارات</a></li>
-                <li><a href="#projects">المشاريع</a></li>
-                <li><a href="#contact">تواصل معي</a></li>
+                <li><a href="#about">عنّا</a></li>
+                <li><a href="#services">خدمات</a></li>
+                <li><a href="#work">أعمال</a></li>
+                <li><a href="#contact">تواصل</a></li>
             </ul>
-        </div>
-    </nav>
+            <button class="cta" id="cta">تواصل</button>
+        </nav>
+    </header>
 
-    <section id="hero" class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">مرحباً بك في عالم يوسف</h1>
-            <p class="hero-subtitle">استكشاف الإمكانيات اللامتناهية للبرمجة والإبداع</p>
-            <a href="#about" class="cta-button">ابدأ الآن</a>
-        </div>
-    </section>
-
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">من أنا</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>
-                        أنا يوسف الثقفي، مطور شغوف أبحر في عالم البرمجة والابتكار، أصنع حلولاً مبتكرة بأحدث
-                        التقنيات. رحلتي في عالم الأكواد قادتني لإتقان لغات وأُطُر برمجية متعددة.
-                    </p>
-                    <p>عندما لا أكون مشغولاً بالبرمجة، تجدني أتأمل النجوم أو أستكشف أحدث ما في الذكاء الاصطناعي.</p>
+    <main>
+        <section class="hero">
+            <div class="container hero-inner">
+                <div class="hero-content">
+                    <h1 class="hero-title">مختبر الظلال</h1>
+                    <p class="hero-sub">نصمّم مستقبلاً غامضاً، بسيطاً، وراقيًا — تجربة رقمية بطابع داكن وهادئ.</p>
+                    <div class="hero-actions">
+                        <a class="btn ghost" href="#work">مشاهدة الأعمال</a>
+                        <a class="btn solid" href="#contact">ابدأ مشروعك</a>
+                    </div>
                 </div>
-                <div class="about-image">
+                <div class="hero-visual" aria-hidden>
                     <div class="glass-card">
-                        <i class="fas fa-rocket"></i>
+                        <div class="glow"></div>
+                        <pre class="code">// system.boot();
+// loading — 0x0f
+</pre>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="skills" class="skills">
-        <div class="container">
-            <h2 class="section-title">المهارات</h2>
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <i class="fab fa-html5"></i>
-                    <h3>HTML5</h3>
-                    <p>علامات دلالية للويب الحديث</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-css3-alt"></i>
-                    <h3>CSS3</h3>
-                    <p>تصميم متقدم ورسوم متحركة</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-js-square"></i>
-                    <h3>JavaScript</h3>
-                    <p>تفاعلات ديناميكية ومنطق برمجي</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-react"></i>
-                    <h3>React</h3>
-                    <p>تطوير واجهات مكونة</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-node-js"></i>
-                    <h3>Node.js</h3>
-                    <p>جافاسكريبت على الخادم</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-python"></i>
-                    <h3>Python</h3>
-                    <p>علوم البيانات والأتمتة</p>
+        <section id="about" class="section about">
+            <div class="container">
+                <h2 class="section-title">فلسفتنا</h2>
+                <p class="lead">نؤمن بالمساحة الفارغة، بتقليل الضوضاء البصرية، وبتقديم واجهات تخاطب العقل قبل العين.
+                    نعطي مشاريعنا طابعًا غامضًا ولكن منطقيًا وواضحًا.</p>
+            </div>
+        </section>
+
+        <section id="services" class="section services">
+            <div class="container">
+                <h2 class="section-title">خدماتنا</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3>تصميم واجهات</h3>
+                        <p>واجهات مستخدم فائقة البساطة، مع طبقات مرئية دقيقة وحركة سلسة.</p>
+                    </div>
+                    <div class="card">
+                        <h3>تجارب ديناميكية</h3>
+                        <p>تطبيقات تفاعلية مع أداء عالي وتأثيرات مخفية تكشف عند التمرير.</p>
+                    </div>
+                    <div class="card">
+                        <h3>هوية رقمية</h3>
+                        <p>بناء هويّات قوية، رمزية، وغامضة مع لهجة مرعبة أنيقة إن رغبت.</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="projects" class="projects">
-        <div class="container">
-            <h2 class="section-title">المشاريع</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-code"></i>
-                    </div>
-                    <h3>روبوت دردشة ذكي</h3>
-                    <p>ذكاء اصطناعي محادثة ذكي مبني على خوارزميات تعلم الآلة.</p>
-                    <a href="#" class="project-link">عرض المشروع</a>
-                </div>
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>تطبيق جوال</h3>
-                    <p>تطبيق جوال متعدد المنصات لتعزيز الإنتاجية.</p>
-                    <a href="#" class="project-link">عرض المشروع</a>
-                </div>
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <h3>منصة ويب</h3>
-                    <p>منصة ويب كاملة مع ميزات الوقت الحقيقي وتكامل السحابة.</p>
-                    <a href="#" class="project-link">عرض المشروع</a>
+        <section id="work" class="section work">
+            <div class="container">
+                <h2 class="section-title">أعمال مختارة</h2>
+                <div class="projects">
+                    <article class="project">
+                        <div class="thumb"></div>
+                        <h4>Project / Eclipse</h4>
+                        <p>تجربة واجهة متطورة بطابع غامق وهدوء بصري.</p>
+                    </article>
+                    <article class="project">
+                        <div class="thumb"></div>
+                        <h4>Project / Null</h4>
+                        <p>هوية رقمية معدّة للتمويه والفضول البصري.</p>
+                    </article>
+                    <article class="project">
+                        <div class="thumb"></div>
+                        <h4>Project / Atlas</h4>
+                        <p>نظام تفاعل متدرّج مع تأثيرات ضوئية دقيقة.</p>
+                    </article>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">تواصل معي</h2>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>cosmic.dev@example.com</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <span>+1 (555) 123-4567</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fab fa-github"></i>
-                        <span>github.com/cosmicdev</span>
-                    </div>
-                </div>
-                <form class="contact-form">
-                    <input type="text" placeholder="اسمك" required />
-                    <input type="email" placeholder="بريدك الإلكتروني" required />
-                    <textarea placeholder="رسالتك" required></textarea>
-                    <button type="submit" class="submit-button">إرسال الرسالة</button>
+        <section id="contact" class="section contact">
+            <div class="container">
+                <h2 class="section-title">تواصل معنا</h2>
+                <form class="contact-form" id="contactForm">
+                    <input type="text" name="name" placeholder="الاسم" required />
+                    <input type="email" name="email" placeholder="البريد الإلكتروني" required />
+                    <textarea name="message" placeholder="رسالتك" rows="4" required></textarea>
+                    <button class="btn solid" type="submit">أرسل</button>
                 </form>
+                <p class="muted">أو راسلنا عبر: <a href="mailto:hello@idrixus.example">hello@idrixus.example</a></p>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <footer class="footer">
+    <footer class="site-footer">
         <div class="container">
-            <p>© 2025 يوسف الثقفي. جميع الحقوق محفوظة.</p>
+            <small>© 2025 Idrixus — مختبر الظلال</small>
+            <div class="social muted">/ mysterious • minimal</div>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js" type="module"></script>
 </body>
 
 </html>
