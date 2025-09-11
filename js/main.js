@@ -1,282 +1,162 @@
-/* =============================
-   js/main.js
-   Yusuf — Matrix / Dark Web Auto
-   - auto quality scaling
-   - pause on hidden
-   - matrix rain + corruption + name glitch
-   - throttled pointer parallax
-   ============================= */
+/* js/main.js — lightweight particles + subtle parallax + perf */
 
-(() => {
-    // elements
-    const matrix = document.getElementById('matrix');
-    const corrupt = document.getElementById('corrupt');
-    const overlay = document.getElementById('overlay');
-    const plate = document.querySelector('.plate');
-    const nameBase = document.querySelector('.name .base');
-    const nameR = document.querySelector('.name .r');
-    const nameG = document.querySelector('.name .g');
-
-    if (!matrix || !corrupt || !overlay || !plate || !nameBase) return;
-
-    // device pixel adapt (update by PerfControl later)
+(function () {
+    const canvas = document.getElementById('dots');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     let DPR = Math.max(1, window.devicePixelRatio || 1);
-    let running = true;
+
+    // performance heuristics — reduce particles on weak devices / save-data
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const saveData = conn && conn.saveData;
+    const lowMem = navigator.deviceMemory && navigator.deviceMemory < 2;
+    const isMobile = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let PARTICLE_COUNT = 40;
+    if (saveData || lowMem) PARTICLE_COUNT = 14;
+    if (isMobile) PARTICLE_COUNT = Math.max(10, Math.floor(PARTICLE_COUNT * 0.6));
+    if (prefersReduced) PARTICLE_COUNT = 8;
+
+    let particles = [];
+    let running = true;
     if (prefersReduced) running = false;
 
-    // canvas contexts
-    const mCtx = matrix.getContext('2d');
-    const cCtx = corrupt.getContext('2d');
-    const oCtx = overlay.getContext('2d');
-
-    // characters set
-    const glyphs = ('01<>/\\|[]{}()@#$%&*+-=~:;.,؟٠١٢٣٤٥٦٧٨٩').split('');
-
-    // performance globals
-    window._perfMultiplier = 1.0;
-    window._pageHidden = false;
-
-    // fit function
-    function fitAll() {
+    function fit() {
         DPR = Math.max(1, (window.devicePixelRatio || 1) * (window._adaptiveDPR || 1));
         const w = Math.floor(window.innerWidth * DPR);
         const h = Math.floor(window.innerHeight * DPR);
-        [matrix, corrupt, overlay].forEach(c => {
-            c.width = w; c.height = h;
-            c.style.width = window.innerWidth + 'px';
-            c.style.height = window.innerHeight + 'px';
-            const ctx = c.getContext('2d');
-            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-        });
-        initColumns();
+        canvas.width = w;
+        canvas.height = h;
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
-    window.addEventListener('resize', () => { fitAll(); });
 
-    // columns for matrix
-    let columns = [];
-    function initColumns() {
+    function createParticles() {
+        particles = [];
         const w = window.innerWidth;
-        const fs = getFontSize();
-        const colCount = Math.floor(w / fs) + 2;
-        columns = Array.from({ length: colCount }, (_, i) => ({
-            x: i * fs + fs * 0.2,
-            y: rand(-200, 0) * Math.random(),
-            speed: fs * (0.36 + Math.random() * 1.1),
-            size: fs,
-            trail: rand(6, 36),
-            active: Math.random() > 0.06
-        }));
-    }
-
-    function getFontSize() {
-        // scale font by viewport size and performance
-        const base = Math.max(10, Math.round(Math.min(window.innerWidth, window.innerHeight) / 70));
-        return Math.round(base * (window._perfMultiplier || 1));
-    }
-
-    // helpers
-    function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
-    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-
-    // main loop
-    let last = performance.now();
-    function frame(now) {
-        window.__matrixFrame = frame; // expose for PerfControl resume
-        const dt = (now - last) || 16;
-        last = now;
-
-        if (!running || window._pageHidden) { requestAnimationFrame(frame); return; }
-
-        // fade for trail effect
-        mCtx.fillStyle = 'rgba(0,0,0,0.28)';
-        mCtx.fillRect(0, 0, matrix.width / DPR, matrix.height / DPR);
-
-        // draw each column
-        for (let i = 0; i < columns.length; i++) {
-            const col = columns[i];
-            if (!col.active) continue;
-            const fs = col.size;
-            mCtx.font = `${fs}px "Share Tech Mono", monospace`;
-            for (let t = 0; t < col.trail; t++) {
-                const y = col.y - (t * fs);
-                if (y < -fs) continue;
-                const char = glyphs[rand(0, glyphs.length - 1)];
-                if (t === 0) {
-                    mCtx.fillStyle = `rgba(180,255,200,${clamp(0.5 + Math.random() * 0.5, 0.6, 1)})`;
-                    mCtx.fillText(char, col.x, y);
-                } else {
-                    mCtx.fillStyle = `rgba(0,220,110,${(1 - t / col.trail) * 0.16})`;
-                    mCtx.fillText(char, col.x, y);
-                }
-            }
-            // advance
-            const speedFactor = 1 + ((window._perfMultiplier || 1) - 1) * 0.8;
-            col.y += col.speed * (0.016 * speedFactor);
-            if (col.y > window.innerHeight + (col.trail * fs)) {
-                if (Math.random() < 0.9) {
-                    col.y = rand(-100, 0) * Math.random();
-                    col.speed = fs * (0.36 + Math.random() * 1.1);
-                    col.trail = rand(6, 40);
-                } else {
-                    col.y = -rand(10, 200);
-                }
-            }
-        }
-
-        // corruption canvas (occasional big glyphs & glitch bars)
-        cCtx.clearRect(0, 0, corrupt.width / DPR, corrupt.height / DPR);
-        if (Math.random() < 0.12 * (window._perfMultiplier || 1)) {
-            const gx = rand(0, window.innerWidth);
-            const gy = rand(0, window.innerHeight);
-            cCtx.font = `${Math.max(12, Math.round(getFontSize() * 1.5))}px "Share Tech Mono", monospace`;
-            cCtx.fillStyle = `rgba(0,255,140,${0.06 + Math.random() * 0.18})`;
-            cCtx.fillText(glyphs[rand(0, glyphs.length - 1)].repeat(rand(1, 6)), gx, gy);
-        }
-        if (Math.random() < 0.14 * (window._perfMultiplier || 1)) {
-            const hh = rand(6, 40);
-            const yy = rand(0, innerHeight);
-            cCtx.fillStyle = `rgba(0,255,130,${0.02 + Math.random() * 0.05})`;
-            cCtx.fillRect(0, yy, innerWidth, hh);
-        }
-
-        // overlay: subtle vignette/glow
-        oCtx.clearRect(0, 0, overlay.width / DPR, overlay.height / DPR);
-        const grad = oCtx.createRadialGradient(innerWidth / 2, innerHeight / 2, 10, innerWidth / 2, innerHeight / 2, Math.max(innerWidth, innerHeight) / 1.1);
-        grad.addColorStop(0, 'rgba(0,255,130,0.012)');
-        grad.addColorStop(0.5, 'rgba(0,0,0,0)');
-        oCtx.fillStyle = grad;
-        oCtx.fillRect(0, 0, overlay.width / DPR, overlay.height / DPR);
-
-        requestAnimationFrame(frame);
-    }
-
-    // name glitch system
-    function doNameGlitch(burst = false) {
-        const n = burst ? rand(4, 9) : rand(1, 3);
-        for (let i = 0; i < n; i++) {
-            const delay = rand(20, 80) + i * rand(8, 60);
-            setTimeout(() => {
-                const rTrans = `translate(${rand(-16, 16)}px,${rand(-10, 10)}px)`;
-                const gTrans = `translate(${rand(-12, 12)}px,${rand(-18, 18)}px)`;
-                const rClip = `inset(${rand(0, 70)}% 0 ${rand(0, 70)}% 0)`;
-                const gClip = `inset(${rand(0, 70)}% 0 ${rand(0, 70)}% 0)`;
-                nameR.style.transform = rTrans; nameR.style.clipPath = rClip; nameR.style.opacity = 0.75;
-                nameG.style.transform = gTrans; nameG.style.clipPath = gClip; nameG.style.opacity = 0.7;
-                nameBase.style.transform = `translate(${rand(-3, 3)}px,${rand(-2, 2)}px)`;
-                plate.style.transform = `translate(${rand(-6, 6)}px,${rand(-6, 6)}px)`;
-                // reset
-                setTimeout(() => {
-                    nameR.style.transform = 'translate(0,0)'; nameR.style.clipPath = 'inset(0 0 0 0)'; nameR.style.opacity = 1;
-                    nameG.style.transform = 'translate(0,0)'; nameG.style.clipPath = 'inset(0 0 0 0)'; nameG.style.opacity = 1;
-                    nameBase.style.transform = 'translate(0,0)'; plate.style.transform = 'translateZ(0)';
-                }, burst ? rand(260, 920) : rand(60, 360));
-            }, delay);
+        const h = window.innerHeight;
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                r: 0.6 + Math.random() * 1.6,
+                vx: (Math.random() - 0.5) * 0.25,
+                vy: (Math.random() - 0.5) * 0.25,
+                alpha: 0.06 + Math.random() * 0.12
+            });
         }
     }
 
-    // schedule automatic glitches with intensity escalation
-    let glitchTimer = null;
-    let intensity = 'medium';
-    setTimeout(() => intensity = 'high', 2000);
-    setTimeout(() => intensity = 'ultra', 6500);
+    function draw() {
+        if (!running) return;
+        const w = canvas.width / DPR;
+        const h = canvas.height / DPR;
+        // subtle fade to create gentle trailing
+        ctx.clearRect(0, 0, w, h);
+        // slight vignette background tint (very subtle)
+        const g = ctx.createLinearGradient(0, 0, 0, h);
+        g.addColorStop(0, 'rgba(0,0,0,0.01)');
+        g.addColorStop(1, 'rgba(0,0,0,0.06)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
 
-    function scheduleGlitch() {
-        clearTimeout(glitchTimer);
-        const delay = intensity === 'low' ? rand(2500, 7000) : intensity === 'high' ? rand(300, 1600) : rand(900, 3500);
-        glitchTimer = setTimeout(() => {
-            doNameGlitch(Math.random() < 0.25);
-            scheduleGlitch();
-        }, delay);
-    }
-    scheduleGlitch();
+        for (const p of particles) {
+            // update
+            p.x += p.vx * (window._perfMultiplier || 1);
+            p.y += p.vy * (window._perfMultiplier || 1);
+            // wrap-around
+            if (p.x < -10) p.x = w + 10;
+            if (p.x > w + 10) p.x = -10;
+            if (p.y < -10) p.y = h + 10;
+            if (p.y > h + 10) p.y = -10;
 
-    // autoPanic bursts occasionally
-    setInterval(() => {
-        if (Math.random() < 0.14) {
-            doNameGlitch(true);
-            const old = intensity;
-            intensity = 'ultra';
-            initColumns();
-            setTimeout(() => { intensity = old; initColumns(); }, 1600 + rand(0, 1200));
+            // draw soft dot
+            const rad = p.r;
+            const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad * 6);
+            grad.addColorStop(0, `rgba(36,211,255,${p.alpha})`);
+            grad.addColorStop(1, 'rgba(36,211,255,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(p.x - rad * 6, p.y - rad * 6, rad * 12, rad * 12);
         }
-    }, 3000);
 
-    // pointer parallax (throttled)
+        requestAnimationFrame(draw);
+    }
+
+    // parallax effect for name (subtle)
+    const nameEl = document.getElementById('name');
     (function () {
-        let last = 0; const TH = 16;
+        if (!nameEl) return;
+        let last = 0;
         window.addEventListener('pointermove', (e) => {
-            const now = performance.now(); if (now - last < TH) return; last = now;
-            const nx = (e.clientX / window.innerWidth - 0.5) * 12;
-            const ny = (e.clientY / window.innerHeight - 0.5) * 8;
-            plate.style.transform = `translate(${nx}px,${ny}px)`;
+            const now = performance.now();
+            if (now - last < 12) return; // throttle ~80fps
+            last = now;
+            const nx = (e.clientX / window.innerWidth - 0.5) * 6; // -3..3
+            const ny = (e.clientY / window.innerHeight - 0.5) * 6;
+            nameEl.style.transform = `translate(${nx}px, ${ny}px)`;
+            nameEl.style.transition = 'transform 160ms linear';
         }, { passive: true });
-        // ease back
-        window.addEventListener('pointerleave', () => { plate.style.transform = 'translateZ(0)'; });
+
+        window.addEventListener('pointerleave', () => {
+            nameEl.style.transform = 'translate(0,0)';
+            nameEl.style.transition = 'transform 260ms cubic-bezier(.2,.9,.2,1)';
+        });
     })();
 
-    // PerfControl: auto-scale quality
-    window.PerfControl = {
-        detectAndApply() {
-            const conn = navigator.connection || null;
-            const slowNet = conn && (conn.saveData || (conn.effectiveType && (conn.effectiveType.includes('2g') || conn.effectiveType.includes('3g'))));
-            const lowMem = navigator.deviceMemory && navigator.deviceMemory < 2;
-            const cpu = navigator.hardwareConcurrency || 4;
-            if (slowNet || lowMem || cpu <= 2) { document.documentElement.classList.add('performance-low'); window._perfMultiplier = 0.7; }
-            else if (cpu <= 4) { document.documentElement.classList.remove('performance-low'); window._perfMultiplier = 1.0; }
-            else { document.documentElement.classList.remove('performance-low'); window._perfMultiplier = 1.25; }
-            // re-fit canvas because DPR multiplier might change
-            fitAll();
+    // simple auto subtle "glitch" on name (no heavy effects)
+    (function () {
+        if (prefersReduced) return;
+        const base = nameEl;
+        function tinyGlitch() {
+            if (!running) return;
+            base.style.filter = `drop-shadow(0 8px 18px rgba(36,211,255,0.04))`;
+            base.style.letterSpacing = '0.02em';
+            setTimeout(() => {
+                base.style.filter = '';
+                base.style.letterSpacing = '';
+            }, 320 + Math.random() * 420);
+            setTimeout(tinyGlitch, 1500 + Math.random() * 3000);
         }
-    };
-    try { window.PerfControl.detectAndApply(); } catch (e) { }
+        setTimeout(tinyGlitch, 900);
+    })();
 
-    // visibility handling
+    // visibility handling to pause when not visible
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden) { window._pageHidden = true; running = false; }
-        else { window._pageHidden = false; running = true; last = performance.now(); requestAnimationFrame(frame); }
+        if (document.hidden) { running = false; window._pageHidden = true; }
+        else { window._pageHidden = false; running = true; requestAnimationFrame(draw); }
     });
 
-    // adaptive DPR tuning (low-memory / save-data)
+    // adaptive DPR (respect save-data / low memory)
     (function () {
         const original = window.devicePixelRatio || 1;
-        function adjust() {
+        function adapt() {
             const conn = navigator.connection || null;
-            const saveData = conn && conn.saveData;
-            const lowMem = navigator.deviceMemory && navigator.deviceMemory < 2;
-            window._adaptiveDPR = (saveData || lowMem) ? Math.max(1, Math.floor(original / 1.5)) : 1;
-            fitAll();
+            const save = conn && conn.saveData;
+            const low = navigator.deviceMemory && navigator.deviceMemory < 2;
+            window._adaptiveDPR = (save || low) ? Math.max(1, Math.floor(original / 1.6)) : 1;
+            window._perfMultiplier = (save || low) ? 0.8 : 1;
+            fit(); createParticles();
         }
-        adjust();
-        const conn = navigator.connection || null;
-        if (conn && typeof conn.addEventListener === 'function') {
-            try { conn.addEventListener('change', adjust); } catch (e) { }
+        adapt();
+        const connRef = navigator.connection || null;
+        if (connRef && typeof connRef.addEventListener === 'function') {
+            try { connRef.addEventListener('change', adapt); } catch (e) { }
         }
-        window.addEventListener('visibilitychange', adjust);
+        window.addEventListener('resize', adapt);
     })();
 
-    // graceful fallback if no canvas
-    (function () {
-        try { if (!matrix.getContext) throw 0; } catch (e) {
-            [matrix, corrupt, overlay].forEach(c => c.style.display = 'none');
-            document.documentElement.classList.add('performance-low');
-            running = false;
-            return;
-        }
-    })();
+    // init
+    fit();
+    createParticles();
+    requestAnimationFrame(draw);
 
-    // initialization
-    function init() {
-        fitAll();
-        initColumns();
-        last = performance.now();
-        requestAnimationFrame(frame);
-    }
-
-    // start
-    init();
-
-    // cleanup on unload
-    window.addEventListener('beforeunload', () => { running = false; });
+    // expose small API for debugging in console
+    window.__YusufMinimal = {
+        setParticles(n) { PARTICLE_COUNT = n; createParticles(); },
+        pause() { running = false; },
+        resume() { running = true; requestAnimationFrame(draw); }
+    };
 
 })();

@@ -4,58 +4,31 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#000800" />
+    <meta name="theme-color" content="#0b0b0c" />
     <title>يوسف</title>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;600;900&display=swap"
-        rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
 
-    <!-- Main stylesheet -->
+    <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <noscript>
-        <div style="background:#000;color:#0f0;padding:18px;text-align:center;">
-            يرجى تفعيل JavaScript لعرض التأثيرات.
+    <main class="stage" role="main" aria-label="عرض اسم يوسف">
+        <!-- subtle particle canvas (performance-friendly) -->
+        <canvas id="dots" class="canvas-layer" aria-hidden="true"></canvas>
+
+        <!-- center minimal card -->
+        <div class="card" role="region" aria-label="لوحة اسم يوسف">
+            <h1 class="name" id="name" data-text="يوسف">يوسف</h1>
         </div>
-    </noscript>
 
-    <main class="stage" role="main" aria-label="عرض اسم يوسف — دارك ويب شوت كيس">
-        <!-- Ambient nebula -->
-        <div class="nebula" aria-hidden="true"></div>
-
-        <!-- Canvas layers -->
-        <canvas id="matrix" class="canvas-layer" aria-hidden="true"></canvas>
-        <canvas id="corrupt" class="canvas-layer" aria-hidden="true"></canvas>
-        <canvas id="overlay" class="canvas-layer" aria-hidden="true"></canvas>
-
-        <!-- Visual overlays -->
-        <div class="scan" aria-hidden="true"></div>
-        <div class="grain" aria-hidden="true"></div>
-
-        <!-- Center plate -->
-        <section class="plate" role="region" aria-label="اللوحة الرئيسية ليوسف">
-            <div class="orbit" aria-hidden="true"></div>
-
-            <header class="name-wrap" role="heading" aria-level="1" aria-label="يوسف">
-                <div class="name" id="mainName" data-text="يوسف" aria-hidden="false">
-                    <span class="layer base">يوسف</span>
-                    <span class="layer r">يوسف</span>
-                    <span class="layer g">يوسف</span>
-                </div>
-                <div class="sub">Black · Dark Web · Matrix Aesthetic</div>
-            </header>
-        </section>
-
-        <div class="slice" aria-hidden="true"></div>
-        <div class="glow" aria-hidden="true"></div>
-
-        <span class="note" aria-hidden="true">— deep net showcase —</span>
+        <!-- minor aria note for screen readers -->
+        <p class="sr-only">صفحة عرض بسيطة - الاسم: يوسف</p>
     </main>
 
-    <!-- Main script -->
+    <!-- Script -->
     <script src="js/main.js"></script>
 </body>
 
