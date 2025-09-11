@@ -1,92 +1,440 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ادريس - Home</title>
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Particles.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ادريس —</title>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <!-- particles.js (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js" defer></script>
+
+    <style>
+        /* ========== Base ========== */
+        :root {
+            --bg-1: #070707;
+            --bg-2: #0f1113;
+            --accent: #24d3ff;
+            /* neon cyan (eye-friendly) */
+            --accent-2: #2ef08a;
+            /* subtle green hint */
+            --muted: #9aa3a8;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: var(--bg-1);
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+
+        body {
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
+        }
+
+        /* Container fills viewport */
+        .stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            place-items: center;
+            isolation: isolate;
+            background: linear-gradient(180deg, rgba(6, 6, 6, 0.92) 0%, rgba(12, 12, 12, 0.96) 100%);
+        }
+
+        /* Particles canvas (particles.js injects a canvas) */
+        #particles-js {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.0) 100%);
+        }
+
+        /* Subtle animated nebula / gradient layer */
+        .nebula {
+            position: absolute;
+            inset: -20%;
+            z-index: 0;
+            filter: blur(60px) saturate(1.2);
+            background:
+                radial-gradient(30% 40% at 10% 20%, rgba(36, 211, 255, 0.06), transparent 6%),
+                radial-gradient(20% 30% at 85% 80%, rgba(46, 240, 138, 0.04), transparent 6%),
+                conic-gradient(from 120deg at 50% 50%, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.02));
+            mix-blend-mode: screen;
+            opacity: 0.9;
+            transform: translateZ(0);
+            animation: nebula-move 18s linear infinite;
+        }
+
+        @keyframes nebula-move {
+            0% {
+                transform: translate3d(-2%, 0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate3d(2%, 0, 0) scale(1.02);
+            }
+
+            100% {
+                transform: translate3d(-2%, 0, 0) scale(1);
+            }
+        }
+
+        /* Scanlines + noise (very subtle) */
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            opacity: 0.03;
+            background-image: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 3px);
+            filter: contrast(0.9);
+        }
+
+        /* Center card holding the name (keeps minimal Apple vibe) */
+        .center {
+            position: relative;
+            z-index: 5;
+            display: grid;
+            place-items: center;
+            padding: 48px 64px;
+            border-radius: 14px;
+            backdrop-filter: blur(6px) saturate(1.05);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Main name - huge, clean */
+        .glitch-wrap {
+            position: relative;
+            display: inline-block;
+            line-height: 1;
+        }
+
+        .name {
+            font-weight: 900;
+            font-size: clamp(48px, 10vw, 120px);
+            letter-spacing: 0.02em;
+            color: #e9f6fb;
+            text-transform: none;
+            transform: translateZ(0);
+        }
+
+        /* Glitch layers (CSS + JS will animate) */
+        .name::before,
+        .name::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            clip-path: var(--clip, inset(0 0 0 0));
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .name::before {
+            color: var(--accent);
+            mix-blend-mode: screen;
+            transform: translate3d(0, 0, 0);
+            filter: drop-shadow(0 6px 14px rgba(36, 211, 255, 0.06));
+        }
+
+        .name::after {
+            color: var(--accent-2);
+            mix-blend-mode: screen;
+            filter: blur(0.6px) brightness(1.05);
+        }
+
+        /* small neon subtitle for vibe */
+        .sub {
+            margin-top: 8px;
+            color: var(--muted);
+            font-weight: 500;
+            font-size: 14px;
+            opacity: 0.9;
+            text-align: center;
+        }
+
+        /* Glich animation helpers (will be toggled/varied by JS) */
+        .glitch-anim-1 {
+            animation: g1 2.6s infinite linear;
+        }
+
+        .glitch-anim-2 {
+            animation: g2 3.4s infinite linear;
+        }
+
+        @keyframes g1 {
+            0% {
+                transform: translate(0, 0) skewX(0);
+            }
+
+            20% {
+                transform: translate(-6px, -2px) skewX(-2deg);
+            }
+
+            40% {
+                transform: translate(6px, 3px) skewX(2deg);
+            }
+
+            60% {
+                transform: translate(-3px, 1px) skewX(-1deg);
+            }
+
+            80% {
+                transform: translate(3px, -1px) skewX(1deg);
+            }
+
+            100% {
+                transform: translate(0, 0) skewX(0);
+            }
+        }
+
+        @keyframes g2 {
+            0% {
+                transform: translate(0, 0)
+            }
+
+            25% {
+                transform: translate(0, -4px)
+            }
+
+            50% {
+                transform: translate(0, 4px)
+            }
+
+            75% {
+                transform: translate(-2px, 0)
+            }
+
+            100% {
+                transform: translate(0, 0)
+            }
+        }
+
+        /* occasional slice clip effect */
+        .slice {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
+            mix-blend-mode: overlay;
+            opacity: 0.25;
+            transform: skewX(-10deg) translateX(-110%);
+            animation: slice-move 6s linear infinite;
+        }
+
+        @keyframes slice-move {
+            0% {
+                transform: skewX(-10deg) translateX(-120%)
+            }
+
+            50% {
+                transform: skewX(-10deg) translateX(20%)
+            }
+
+            100% {
+                transform: skewX(-10deg) translateX(-120%)
+            }
+        }
+
+        /* cursor halo */
+        .cursor {
+            position: fixed;
+            z-index: 60;
+            pointer-events: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            transition: transform .12s linear;
+            border: 1px solid rgba(36, 211, 255, 0.9);
+            box-shadow: 0 0 10px rgba(36, 211, 255, 0.05);
+            mix-blend-mode: screen;
+            background: rgba(36, 211, 255, 0.06);
+            display: none;
+            /* shown by JS on non-touch */
+        }
+
+        .cursor.big {
+            transform: translate(-50%, -50%) scale(2.6);
+            opacity: 0.9;
+        }
+
+        /* responsiveness tweaks */
+        @media (max-width:640px) {
+            .center {
+                padding: 28px 36px;
+                border-radius: 10px;
+            }
+
+            .sub {
+                font-size: 13px
+            }
+        }
+
+        /* Respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+
+            .nebula,
+            .scanlines,
+            .slice,
+            .glitch-anim-1,
+            .glitch-anim-2 {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
+    <div class="stage" role="main" aria-label="صفحة عرض لإسم ادريس">
+        <!-- Background layers -->
+        <div id="particles-js" aria-hidden="true"></div>
+        <div class="nebula" aria-hidden="true"></div>
+        <div class="scanlines" aria-hidden="true"></div>
 
-    <header>
-        <h1>ادريس</h1>
-        <nav>
-            <a href="index.html" class="active">الرئيسية</a>
-            <a href="about.html">عنّي</a>
-            <a href="projects.html">مشاريعي</a>
-            <a href="contact.html">تواصل</a>
-        </nav>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero" id="hero">
-        <div id="particles-js"></div>
-        <h2>مرحبا 👋 أنا إدريس</h2>
-        <p>طالب علم ومطور مواقع، مهتم بالأمن السيبراني، الطب البشري، الفيزياء، والعلوم. أحب التصميم الداكن مع لمسة Apple
-            Minimalism.</p>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features">
-        <div class="feature-card">
-            <h3>الأمن السيبراني</h3>
-            <p>اختبار الاختراق، ريد تيم، واستكشاف التهديدات الأمنية بطريقة عملية وآمنة.</p>
-        </div>
-        <div class="feature-card">
-            <h3>الطب البشري</h3>
-            <p>شغف بالأناتومي والفيزيولوجيا والعلوم الطبية، ومشاركة المعرفة الطبية بطريقة مبسطة.</p>
-        </div>
-        <div class="feature-card">
-            <h3>الفيزياء والعلوم</h3>
-            <p>تحليل الظواهر الفيزيائية والكيميائية والفضائية، مع دمجها في مشاريع علمية وتقنية.</p>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="testimonials">
-        <h2>ماذا يقول الآخرون</h2>
-        <div class="testimonial-card">
-            <p>"إدريس يجمع بين الشغف بالعلوم والمهارات التقنية بطريقة مذهلة!"</p>
-            <span>- زميل في الأمن السيبراني</span>
-        </div>
-        <div class="testimonial-card">
-            <p>"تصاميمه Dark Minimalistic تخطف الأنظار وتجعل تجربة المستخدم سلسة للغاية."</p>
-            <span>- مصمم ويب</span>
-        </div>
-    </section>
-
-    <!-- Latest Blog Posts Section -->
-    <section class="blog">
-        <h2>آخر المقالات</h2>
-        <div class="blog-grid">
-            <div class="blog-card">
-                <h3>استكشاف الدارك ويب</h3>
-                <p>تحليل حقيقي للدارك ويب، تصحيح الأساطير الشائعة، وفهم المخاطر الواقعية.</p>
-            </div>
-            <div class="blog-card">
-                <h3>اختراق أخلاقي للمبتدئين</h3>
-                <p>دليل شامل لتعلم اختبار الاختراق بطريقة قانونية وآمنة.</p>
-            </div>
-            <div class="blog-card">
-                <h3>رحلة في الفضاء والفيزياء</h3>
-                <p>مقالات مبسطة عن مفاهيم الفضاء، الفيزياء الحديثة، والتجارب العلمية.</p>
+        <!-- Center piece -->
+        <div class="center" aria-hidden="false">
+            <div class="glitch-wrap" id="glitchWrap" title="ادريس">
+                <!-- main name; data-text used for pseudo-elements -->
+                <div class="name" id="mainName" data-text="ادريس">ادريس</div>
+                <div class="slice" aria-hidden="true"></div>
+                <div class="sub">عرض شخصي — Dark · Minimal · Black-hat aesthetic</div>
             </div>
         </div>
-    </section>
 
-    <button id="backToTop">↑</button>
+        <!-- custom cursor -->
+        <div id="cursor" class="cursor" aria-hidden="true"></div>
+    </div>
 
-    <footer>
-        <p>&copy; 2025 إدريس - كل الحقوق محفوظة</p>
-        <p>تواصل معي: <a href="mailto:edrises@example.com">edrises@example.com</a> | <a
-                href="https://github.com/idrixus" target="_blank">GitHub</a></p>
-    </footer>
+    <script>
+        /* ========== Particles Setup ========== */
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.particlesJS) {
+                particlesJS("particles-js", {
+                    "particles": {
+                        "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
+                        "color": { "value": ["#24d3ff", "#2ef08a", "#4ad1ff"] },
+                        "shape": { "type": "circle" },
+                        "opacity": { "value": 0.18, "random": true },
+                        "size": { "value": 3, "random": true },
+                        "line_linked": { "enable": true, "distance": 160, "color": "#0f9fbf", "opacity": 0.06, "width": 1 },
+                        "move": { "enable": true, "speed": 1.2, "direction": "none", "random": true, "straight": false, "out_mode": "out" }
+                    },
+                    "interactivity": {
+                        "detect_on": "canvas",
+                        "events": {
+                            "onhover": { "enable": true, "mode": "grab" },
+                            "onclick": { "enable": true, "mode": "repulse" }
+                        },
+                        "modes": {
+                            "grab": { "distance": 140, "line_linked": { "opacity": 0.15 } },
+                            "repulse": { "distance": 120 }
+                        }
+                    },
+                    "retina_detect": true
+                });
+            }
+        });
 
-    <script src="js/main.js"></script>
+        /* ========== Glitch dynamics ========== */
+        (function () {
+            const name = document.getElementById('mainName');
+            const wrap = document.getElementById('glitchWrap');
+            let glitchTimeout;
+
+            // small helper: random int
+            const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+            // periodically create quick 'slice' glitches by changing clip-path on pseudo elements via CSS variable
+            function triggerGlitch() {
+                // generate slices
+                const slices = [];
+                const n = r(1, 4);
+                for (let i = 0; i < n; i++) {
+                    const top = r(0, 80);
+                    const height = r(4, 16);
+                    slices.push(`inset(${top}% 0 ${100 - (top + height)}% 0)`);
+                }
+                // apply combined clip (first slice for ::before)
+                document.documentElement.style.setProperty('--clip', slices[0] || 'inset(0 0 0 0)');
+                // add transient classes to animate
+                wrap.classList.add('glitch-anim-1');
+                name.classList.add('glitch-anim-2');
+                clearTimeout(glitchTimeout);
+                glitchTimeout = setTimeout(() => {
+                    wrap.classList.remove('glitch-anim-1');
+                    name.classList.remove('glitch-anim-2');
+                    document.documentElement.style.setProperty('--clip', 'inset(0 0 0 0)');
+                    // schedule next
+                    scheduleGlitch();
+                }, r(160, 700));
+            }
+
+            function scheduleGlitch() {
+                const when = r(900, 4500);
+                setTimeout(triggerGlitch, when);
+            }
+            scheduleGlitch();
+
+            // micro glitch on click/tap for show-off
+            wrap.addEventListener('click', () => { triggerGlitch(); });
+
+        })();
+
+        /* ========== Cursor & parallax ========== */
+        (function () {
+            const cursor = document.getElementById('cursor');
+            const stage = document.querySelector('.stage');
+            // don't show custom cursor on touch devices
+            const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+            if (isTouch) { cursor.style.display = 'none'; return; }
+            cursor.style.display = 'block';
+
+            // move cursor
+            window.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            // scale cursor when hovering center
+            const center = document.querySelector('.center');
+            center.addEventListener('mouseenter', () => cursor.classList.add('big'));
+            center.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+
+            // subtle parallax: move nebula relative to cursor
+            const nebula = document.querySelector('.nebula');
+            window.addEventListener('mousemove', (e) => {
+                const nx = (e.clientX / window.innerWidth - 0.5) * 10; // -5 to 5
+                const ny = (e.clientY / window.innerHeight - 0.5) * 10;
+                nebula.style.transform = `translate3d(${nx}px,${ny}px,0) scale(1.01)`;
+            });
+        })();
+
+        /* ========== Accessibility: reduce motion tweak ========== */
+        (function () {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                // stop particles if many animations are disabled
+                try { if (window.pJSDom && window.pJSDom.length) { window.pJSDom.forEach(p => p.pJS.fn.vendors.destroypJS()); } } catch (e) { }
+            }
+        })();
+    </script>
 </body>
 
 </html>
