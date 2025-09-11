@@ -1,11 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youssef Al-Thaqafi</title>
+    <title>المعماري | The Architect</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --bg-color: #02040a;
+            --primary-color: #0D1117;
+            --accent-color: #00AFFF;
+            /* Electric Blue */
+            --text-color: #c9d1d9;
+            --glow-color: rgba(0, 175, 255, 0.6);
+            --border-color: rgba(0, 175, 255, 0.15);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,125 +25,111 @@
             cursor: none;
         }
 
-        :root {
-            --primary: #0a0a0a;
-            --secondary: #1a1a1a;
-            --accent: #ff0040;
-            --text: #c0c0c0;
-            --glow: rgba(255, 0, 64, 0.5);
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: -apple-system, 'Helvetica Neue', sans-serif;
-            background: var(--primary);
-            color: var(--text);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Share Tech Mono', monospace;
             overflow-x: hidden;
-            position: relative;
-            min-height: 100vh;
         }
 
-        /* Custom Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 1px solid var(--accent);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            transition: all 0.1s ease;
-            z-index: 10000;
-            mix-blend-mode: difference;
-        }
-
-        .cursor-follower {
-            width: 40px;
-            height: 40px;
-            background: var(--glow);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            transition: all 0.3s ease;
-            z-index: 9999;
-            filter: blur(10px);
-        }
-
-        /* Noise Overlay */
-        .noise {
+        /* --- Interactive Background --- */
+        #interactive-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            opacity: 0.03;
-            z-index: 1;
-            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgbnVtT2N0YXZlcz0iMTAiLz48ZmVDb2xvck1hdHJpeCB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEgMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iMSIvPjwvc3ZnPg==');
+            z-index: -1;
         }
 
-        /* Navigation */
-        nav {
+        /* --- Loading Screen --- */
+        #loading-screen {
             position: fixed;
             width: 100%;
-            padding: 30px 50px;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+            height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            transition: opacity 0.8s ease-out;
         }
 
-        nav.scrolled {
-            background: rgba(10, 10, 10, 0.8);
-            padding: 20px 50px;
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #loader-text {
+            font-size: 20px;
+            letter-spacing: 8px;
+            color: var(--accent-color);
+            text-shadow: 0 0 20px var(--glow-color);
+        }
+
+        /* --- Custom Cursor --- */
+        .cursor {
+            width: 25px;
+            height: 25px;
+            border: 1px solid var(--accent-color);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, border-color 0.3s, background-color 0.3s;
+            z-index: 10000;
+        }
+
+        .cursor.hovered {
+            width: 50px;
+            height: 50px;
+            background-color: var(--glow-color);
+            border-color: transparent;
+        }
+
+        /* --- Header --- */
+        .header {
+            position: fixed;
+            width: 100%;
+            padding: 25px 50px;
+            z-index: 1000;
+            transition: background-color 0.4s ease, padding 0.4s ease;
+        }
+
+        .header.scrolled {
+            background-color: rgba(2, 4, 10, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 15px 50px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .nav-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
         .logo {
             font-size: 24px;
-            font-weight: 100;
-            letter-spacing: 8px;
-            color: var(--accent);
-            text-shadow: 0 0 20px var(--glow);
-            animation: glitch 3s infinite;
-        }
-
-        @keyframes glitch {
-
-            0%,
-            100% {
-                text-shadow: 0 0 20px var(--glow);
-            }
-
-            25% {
-                text-shadow: -2px 0 var(--accent), 2px 0 cyan;
-            }
-
-            50% {
-                text-shadow: 2px 0 var(--accent), -2px 0 lime;
-            }
-
-            75% {
-                text-shadow: 0 0 20px var(--glow);
-            }
+            letter-spacing: 5px;
+            text-transform: uppercase;
         }
 
         .nav-links {
             display: flex;
             gap: 40px;
-            list-style: none;
         }
 
         .nav-links a {
-            color: var(--text);
+            color: var(--text-color);
             text-decoration: none;
-            font-size: 14px;
             letter-spacing: 2px;
-            transition: all 0.3s ease;
             position: relative;
         }
 
@@ -139,147 +137,97 @@
             content: '';
             position: absolute;
             bottom: -5px;
-            left: 0;
+            right: 0;
             width: 0;
             height: 1px;
-            background: var(--accent);
-            transition: width 0.3s ease;
+            background: var(--accent-color);
+            transition: width 0.3s ease-in-out;
         }
 
         .nav-links a:hover::after {
             width: 100%;
         }
 
-        /* Hero Section */
+        /* --- Hero Section --- */
         .hero {
             height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
-            background: radial-gradient(circle at center, var(--secondary) 0%, var(--primary) 100%);
-        }
-
-        .hero-content {
             text-align: center;
-            z-index: 2;
-            animation: fadeInUp 1s ease;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            padding: 20px;
         }
 
         .hero h1 {
-            font-size: clamp(40px, 8vw, 120px);
-            font-weight: 100;
-            letter-spacing: 15px;
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: normal;
+            letter-spacing: 1.5vw;
+            color: #fff;
+            text-shadow: 0 0 25px var(--glow-color);
             margin-bottom: 20px;
-            opacity: 0;
-            animation: fadeIn 2s ease forwards;
-            animation-delay: 0.5s;
         }
 
-        .hero .subtitle {
-            font-size: 18px;
-            letter-spacing: 5px;
-            color: var(--text);
-            opacity: 0;
-            animation: fadeIn 2s ease forwards;
-            animation-delay: 1s;
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            letter-spacing: 4px;
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
+        .terminal-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.5rem;
+            background-color: var(--accent-color);
+            margin-left: 8px;
+            animation: blink 1s steps(1) infinite;
         }
 
-        /* Floating Particles */
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--glow);
-            animation: float 20s infinite linear;
-        }
-
-        @keyframes float {
-            from {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-
-            10% {
-                opacity: 1;
-            }
-
-            90% {
-                opacity: 1;
-            }
-
-            to {
-                transform: translateY(-100vh) rotate(360deg);
+        @keyframes blink {
+            50% {
                 opacity: 0;
             }
         }
 
-        /* Sections */
+        /* --- General Section --- */
         .section {
-            padding: 150px 50px;
+            padding: 120px 50px;
             max-width: 1400px;
             margin: 0 auto;
-            position: relative;
         }
 
         .section-title {
-            font-size: 48px;
-            font-weight: 100;
-            letter-spacing: 10px;
-            margin-bottom: 50px;
+            font-size: 3rem;
+            letter-spacing: 8px;
+            text-align: center;
+            margin-bottom: 80px;
             opacity: 0;
-            transform: translateX(-50px);
-            transition: all 0.8s ease;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
         }
 
         .section-title.visible {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateY(0);
         }
 
-        /* Grid */
+        /* --- 3D Interactive Grid --- */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 40px;
-            margin-top: 80px;
+            perspective: 1500px;
         }
 
         .card {
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.5), rgba(10, 10, 10, 0.5));
-            border: 1px solid rgba(255, 0, 64, 0.1);
+            background: linear-gradient(145deg, var(--primary-color), #04080e);
+            border: 1px solid var(--border-color);
             padding: 40px;
-            transition: all 0.5s ease;
+            transform-style: preserve-3d;
+            transition: transform 0.2s, box-shadow 0.4s, border-color 0.4s;
             position: relative;
-            overflow: hidden;
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(50px);
+            transition: opacity 0.8s, transform 0.8s;
         }
 
         .card.visible {
@@ -287,34 +235,39 @@
             transform: translateY(0);
         }
 
+        .card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
         .card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, var(--glow), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle 300px at var(--mouse-x) var(--mouse-y), rgba(0, 175, 255, 0.1), transparent 80%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: 1;
         }
 
         .card:hover::before {
-            transform: translateX(100%);
+            opacity: 1;
         }
 
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(255, 0, 64, 0.2);
-            border-color: var(--accent);
+        .card-content {
+            transform: translateZ(20px);
+            position: relative;
+            z-index: 2;
         }
 
         .card h3 {
-            font-size: 24px;
-            font-weight: 100;
-            letter-spacing: 3px;
-            margin-bottom: 20px;
-            color: var(--accent);
+            color: var(--accent-color);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
         }
 
         .card p {
@@ -322,408 +275,293 @@
             opacity: 0.8;
         }
 
-        /* CTA Button */
-        .cta-button {
-            display: inline-block;
-            margin-top: 50px;
-            padding: 15px 40px;
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--text);
-            text-decoration: none;
-            letter-spacing: 3px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--accent);
-            transition: left 0.3s ease;
-            z-index: -1;
-        }
-
-        .cta-button:hover::before {
-            left: 0;
-        }
-
-        .cta-button:hover {
-            color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px var(--glow);
-        }
-
-        /* Footer */
+        /* --- Footer --- */
         footer {
-            padding: 50px;
             text-align: center;
-            border-top: 1px solid rgba(255, 0, 64, 0.1);
-            background: linear-gradient(to bottom, var(--primary), #000);
-        }
-
-        .footer-text {
-            font-size: 12px;
+            padding: 50px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.9rem;
             letter-spacing: 3px;
             opacity: 0.5;
         }
 
-        /* Glitch Text Effect */
-        .glitch-text {
-            position: relative;
-            display: inline-block;
-        }
-
-        .glitch-text::before,
-        .glitch-text::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .glitch-text::before {
-            animation: glitch-1 0.3s infinite;
-            color: var(--accent);
-            z-index: -1;
-        }
-
-        .glitch-text::after {
-            animation: glitch-2 0.3s infinite;
-            color: cyan;
-            z-index: -2;
-        }
-
-        @keyframes glitch-1 {
-
-            0%,
-            100% {
-                clip-path: inset(0 0 0 0);
-                transform: translate(0);
+        @media(max-width: 768px) {
+            .nav-links {
+                display: none;
             }
 
-            20% {
-                clip-path: inset(20% 0 30% 0);
-                transform: translate(-2px, 2px);
+            .hero h1 {
+                font-size: 2.5rem;
+                letter-spacing: 10px;
             }
 
-            40% {
-                clip-path: inset(50% 0 20% 0);
-                transform: translate(2px, -2px);
-            }
-
-            60% {
-                clip-path: inset(10% 0 60% 0);
-                transform: translate(-2px, 1px);
-            }
-
-            80% {
-                clip-path: inset(70% 0 10% 0);
-                transform: translate(2px, 1px);
-            }
-        }
-
-        @keyframes glitch-2 {
-
-            0%,
-            100% {
-                clip-path: inset(0 0 0 0);
-                transform: translate(0);
-            }
-
-            20% {
-                clip-path: inset(60% 0 10% 0);
-                transform: translate(2px, -1px);
-            }
-
-            40% {
-                clip-path: inset(10% 0 70% 0);
-                transform: translate(-2px, 2px);
-            }
-
-            60% {
-                clip-path: inset(30% 0 40% 0);
-                transform: translate(1px, -2px);
-            }
-
-            80% {
-                clip-path: inset(80% 0 5% 0);
-                transform: translate(-1px, 2px);
-            }
-        }
-
-        /* Loading Screen */
-        .loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            transition: opacity 0.5s ease;
-        }
-
-        .loader.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loader-text {
-            font-size: 24px;
-            letter-spacing: 10px;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 0.3;
-            }
-
-            50% {
-                opacity: 1;
+            .grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Loading Screen -->
-    <div class="loader" id="loader">
-        <div class="loader-text">INITIALIZING</div>
+
+    <div id="loading-screen">
+        <div id="loader-text"></div>
     </div>
 
-    <!-- Custom Cursor -->
+    <canvas id="interactive-bg"></canvas>
     <div class="cursor"></div>
-    <div class="cursor-follower"></div>
 
-    <!-- Noise Overlay -->
-    <div class="noise"></div>
-
-    <!-- Navigation -->
-    <nav id="navbar">
+    <header class="header">
         <div class="nav-container">
-            <div class="logo">Youssef</div>
-            <ul class="nav-links">
-                <li><a href="#home">HOME</a></li>
-                <li><a href="#about">ABOUT</a></li>
-                <li><a href="#services">SERVICES</a></li>
-                <li><a href="#contact">CONTACT</a></li>
-            </ul>
+            <div class="logo">المعماري</div>
+            <nav class="nav-links">
+                <a href="#about">الرؤية</a>
+                <a href="#services">الخدمات</a>
+                <a href="#contact">التواصل</a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="particles" id="particles"></div>
-        <div class="hero-content">
-            <h1 class="glitch-text" data-text="Youssef">Youssef</h1>
-            <p class="subtitle">ENTER THE UNKNOWN</p>
-            <a href="#about" class="cta-button">EXPLORE</a>
-        </div>
-    </section>
+    <main>
+        <section class="hero" id="home">
+            <h1 id="hero-title" data-text="المعماري"></h1>
+            <p><span id="hero-subtitle"></span><span class="terminal-cursor"></span></p>
+        </section>
 
-    <!-- About Section -->
-    <section class="section" id="about">
-        <h2 class="section-title">WHO WE ARE</h2>
-        <p style="font-size: 18px; line-height: 2; opacity: 0.8;">
-            We exist in the shadows of the digital realm. A collective of minds pushing the boundaries of what's
-            possible.
-            Our work transcends conventional limits, operating in the space between reality and the void.
-        </p>
-        <div class="grid">
-            <div class="card">
-                <h3>CRYPTIC</h3>
-                <p>Operating beyond conventional understanding, we craft experiences that challenge perception and
-                    reality.</p>
-            </div>
-            <div class="card">
-                <h3>MINIMAL</h3>
-                <p>Stripping away the unnecessary to reveal the pure essence of digital artistry and innovation.</p>
-            </div>
-            <div class="card">
-                <h3>POWERFUL</h3>
-                <p>Harnessing the raw energy of technology to create solutions that reshape the digital landscape.</p>
-            </div>
-        </div>
-    </section>
+        <section class="section" id="about">
+            <h2 class="section-title">صياغة الواقع الرقمي</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto; line-height: 2; font-size: 1.1rem;">
+                نحن لا نكتب الكود، بل نصمم الأكوان. في الفراغ اللامتناهي للبيانات، نحن البُناة. كل سطر هو حجر أساس في
+                صروح تتحدى الممكن، وكل خوارزمية هي قانون فيزيائي لعالم جديد. نحن معماريو المستحيل.
+            </p>
+        </section>
 
-    <!-- Services Section -->
-    <section class="section" id="services">
-        <h2 class="section-title">WHAT WE DO</h2>
-        <div class="grid">
-            <div class="card">
-                <h3>DIGITAL ARCHITECTURE</h3>
-                <p>Building impossible structures in the digital void. Creating experiences that shouldn't exist, yet
-                    do.</p>
+        <section class="section" id="services">
+            <h2 class="section-title">مخططاتنا</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-content">
+                        <h3>الأنظمة السيادية</h3>
+                        <p>بناء هياكل رقمية مكتفية ذاتيًا. أنظمة لا تخضع لأي سلطة خارجية، تعمل بقوانينها الخاصة في عزلة
+                            تامة.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>الهندسة الإدراكية</h3>
+                        <p>تصميم تجارب تتلاعب بالإدراك الرقمي. واجهات تتجاوز مجرد الاستخدام، لتصبح جزءًا من وعي
+                            المستخدم.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>التشفير الكمومي</h3>
+                        <p>نحت أقفال لا يمكن كسرها. حماية البيانات باستخدام مبادئ فيزياء الكم، مما يجعلها آمنة عبر
+                            الزمن.</p>
+                    </div>
+                </div>
             </div>
-            <div class="card">
-                <h3>SHADOW NETWORKS</h3>
-                <p>Establishing connections through encrypted channels. Communication beyond traditional boundaries.</p>
-            </div>
-            <div class="card">
-                <h3>YOUSSEF ENGINEERING</h3>
-                <p>Developing solutions that operate in the spaces between. Technology that defies categorization.</p>
-            </div>
-            <div class="card">
-                <h3>DARK CONSULTING</h3>
-                <p>Strategic guidance for those who dare to venture into uncharted digital territories.</p>
-            </div>
-            <div class="card">
-                <h3>CIPHER SYSTEMS</h3>
-                <p>Creating encrypted ecosystems that protect and obscure. Security through obscurity and strength.</p>
-            </div>
-            <div class="card">
-                <h3>NULL PROTOCOLS</h3>
-                <p>Implementing systems that exist and don't exist simultaneously. Quantum digital solutions.</p>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Contact Section -->
-    <section class="section" id="contact">
-        <h2 class="section-title">YOUSSEF REACH</h2>
-        <p style="font-size: 18px; line-height: 2; opacity: 0.8; margin-bottom: 30px;">
-            Contact exists only for those who know where to look. The void responds to those who call with purpose.
-        </p>
-        <a href="#" class="cta-button">INITIATE CONTACT</a>
-    </section>
+        <section class="section" id="contact" style="text-align:center;">
+            <h2 class="section-title">فتح قناة اتصال</h2>
+            <p style="margin-bottom: 40px;">الإشارات تصل فقط لمن يعرف التردد الصحيح.</p>
+            <a href="#" class="cta-button">ابدأ الإرسال</a>
+        </section>
+    </main>
 
-    <!-- Footer -->
     <footer>
-        <p class="footer-text">© 2025 YOUSSEF COLLECTIVE | EXISTING NOWHERE | EVERYWHERE</p>
+        <p>&copy; 2024 المعماري. كل الحقوق محفوظة في الشيفرة المصدرية.</p>
     </footer>
 
+
     <script>
-        // Loader
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-            }, 1500);
-        });
+        document.addEventListener('DOMContentLoaded', () => {
 
-        // Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        const follower = document.querySelector('.cursor-follower');
-
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-
-            setTimeout(() => {
-                follower.style.left = e.clientX - 10 + 'px';
-                follower.style.top = e.clientY - 10 + 'px';
+            // --- 1. LOADING SCREEN ---
+            const loader = document.getElementById('loading-screen');
+            const loaderText = document.getElementById('loader-text');
+            const symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$&*";
+            let loaderInterval = setInterval(() => {
+                let text = "";
+                for (let i = 0; i < 8; i++) {
+                    text += symbols.charAt(Math.floor(Math.random() * symbols.length));
+                }
+                loaderText.textContent = text;
             }, 100);
-        });
 
-        // Navbar Scroll Effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+            window.addEventListener('load', () => {
+                clearInterval(loaderInterval);
+                loaderText.textContent = "CONNECTED";
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                }, 800);
+            });
+
+            // --- 2. CUSTOM CURSOR ---
+            const cursor = document.querySelector('.cursor');
+            window.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            document.querySelectorAll('a, .card').forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+            });
+
+            // --- 3. HEADER SCROLL ---
+            const header = document.querySelector('.header');
+            window.addEventListener('scroll', () => {
+                header.classList.toggle('scrolled', window.scrollY > 50);
+            });
+
+            // --- 4. INTERACTIVE CANVAS BACKGROUND ---
+            const canvas = document.getElementById('interactive-bg');
+            const ctx = canvas.getContext('2d');
+            let dots = [];
+            const mouse = { x: null, y: null, radius: 150 };
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                createDots();
             }
-        });
 
-        // Generate Particles
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 20 + 's';
-            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-            particlesContainer.appendChild(particle);
-        }
-
-        // Intersection Observer for Animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
+            class Dot {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.baseSize = 1;
+                    this.size = this.baseSize;
+                    this.baseColor = 'rgba(0, 175, 255, 0.2)';
+                    this.color = this.baseColor;
                 }
-            });
-        }, observerOptions);
 
-        document.querySelectorAll('.section-title, .card').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Smooth Scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
                 }
-            });
-        });
 
-        // Hover Effect Enhancement
-        document.querySelectorAll('.card, .cta-button').forEach(element => {
-            element.addEventListener('mouseenter', () => {
-                cursor.style.transform = 'scale(2)';
-                follower.style.transform = 'scale(1.5)';
-            });
+                update() {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
 
-            element.addEventListener('mouseleave', () => {
-                cursor.style.transform = 'scale(1)';
-                follower.style.transform = 'scale(1)';
-            });
-        });
-
-        // Random Glitch Effect
-        setInterval(() => {
-            const glitchElements = document.querySelectorAll('.glitch-text');
-            glitchElements.forEach(el => {
-                if (Math.random() > 0.95) {
-                    el.style.animation = 'glitch 0.2s';
-                    setTimeout(() => {
-                        el.style.animation = '';
-                    }, 200);
+                    if (distance < mouse.radius) {
+                        const force = (mouse.radius - distance) / mouse.radius;
+                        this.size = this.baseSize + force * 2;
+                        this.color = `rgba(0, 175, 255, ${0.2 + force * 0.6})`;
+                    } else {
+                        this.size = this.baseSize;
+                        this.color = this.baseColor;
+                    }
+                    this.draw();
                 }
+            }
+
+            function createDots() {
+                dots = [];
+                const spacing = 40;
+                for (let x = 0; x < canvas.width; x += spacing) {
+                    for (let y = 0; y < canvas.height; y += spacing) {
+                        dots.push(new Dot(x, y));
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                dots.forEach(dot => dot.update());
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('mousemove', e => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
             });
-        }, 3000);
 
-        // Parallax Effect
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const parallax = document.querySelector('.hero');
-            parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
-        });
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            animate();
 
-        // Dynamic Text Shadow
-        document.addEventListener('mousemove', (e) => {
-            const x = e.clientX / window.innerWidth;
-            const y = e.clientY / window.innerHeight;
 
-            document.querySelectorAll('.logo, h1').forEach(el => {
-                const shadowX = (x - 0.5) * 20;
-                const shadowY = (y - 0.5) * 20;
-                el.style.textShadow = `${shadowX}px ${shadowY}px 30px rgba(255, 0, 64, 0.5)`;
+            // --- 5. 3D CARD TILT EFFECT ---
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const width = card.offsetWidth;
+                    const height = card.offsetHeight;
+                    const rotateX = (y - height / 2) / height * -15; // Max 15 deg
+                    const rotateY = (x - width / 2) / width * 15;  // Max 15 deg
+
+                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+                });
             });
+
+            // --- 6. TEXT ANIMATIONS ---
+            // Decrypt effect for hero title
+            const title = document.getElementById('hero-title');
+            const originalText = title.dataset.text;
+            let decryptedText = "";
+            let i = 0;
+            const decryptInterval = setInterval(() => {
+                if (i < originalText.length) {
+                    let randomChars = "";
+                    for (let j = i; j < originalText.length; j++) {
+                        randomChars += symbols.charAt(Math.floor(Math.random() * symbols.length));
+                    }
+                    title.textContent = decryptedText + randomChars;
+                } else {
+                    clearInterval(decryptInterval);
+                    title.textContent = originalText;
+                }
+            }, 100);
+
+            const letterInterval = setInterval(() => {
+                if (i < originalText.length) {
+                    decryptedText += originalText[i];
+                    i++;
+                } else {
+                    clearInterval(letterInterval);
+                }
+            }, 300);
+
+            // Typing effect for hero subtitle
+            const subtitle = document.getElementById('hero-subtitle');
+            const textToType = "نحن نبني الفراغ الرقمي.";
+            let j = 0;
+            function type() {
+                if (j < textToType.length) {
+                    subtitle.textContent += textToType.charAt(j);
+                    j++;
+                    setTimeout(type, 100);
+                }
+            }
+            setTimeout(type, 1000); // Start after a delay
+
+            // --- 7. SCROLL-BASED FADE-IN ANIMATIONS ---
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            document.querySelectorAll('.section-title, .card, .cta-button').forEach(el => observer.observe(el));
         });
     </script>
 </body>
