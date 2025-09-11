@@ -4,38 +4,47 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>ادريس — Black Hat Showcase</title>
+    <title>يوسف — Black Net Showcase</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;600;900&display=swap"
         rel="stylesheet">
-    <meta name="theme-color" content="#001000">
+    <meta name="theme-color" content="#000800">
     <style>
-        /* ==========================
-     Matrix / Dark Web — Ultra
-     ========================== */
+        /* ===========================
+     Yusuf — Ultra Dark Web Look
+     Auto-run, no buttons, max vibe
+     =========================== */
         :root {
-            --bg: #030303;
-            --panel: rgba(0, 0, 0, 0.45);
-            --neon-green: #00ff73;
+            --bg: #000302;
+            --deep: #020404;
+            --neon-green: #00ff66;
             --neon-cyan: #4af0ff;
-            --muted: #8ea19f;
-            --scary-red: #ff2e2e;
+            --muted: #7f9a8d;
+            --accent-red: #ff2e2e;
+            --glass: rgba(255, 255, 255, 0.02);
+            --blur: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
         }
 
         html,
         body {
             height: 100%;
-            margin: 0;
-            background: var(--bg);
-            font-family: Inter, "Share Tech Mono", monospace, system-ui;
-            color: #0f0;
+            background: linear-gradient(180deg, #000102, #020306);
+            font-family: Inter, "Share Tech Mono", monospace;
+            color: #bfffe6;
             overflow: hidden
         }
 
         body {
-            background-image: radial-gradient(ellipse at 20% 10%, rgba(0, 255, 115, 0.02), transparent 5%), radial-gradient(ellipse at 80% 90%, rgba(74, 240, 255, 0.01), transparent 12%);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* stage */
+        /* Stage */
         .stage {
             position: relative;
             width: 100vw;
@@ -43,606 +52,524 @@
             display: grid;
             place-items: center;
             isolation: isolate;
-            overflow: hidden
+            background:
+                radial-gradient(40% 30% at 10% 10%, rgba(0, 255, 120, 0.02), transparent 6%),
+                radial-gradient(30% 24% at 85% 90%, rgba(74, 240, 255, 0.01), transparent 10%);
         }
 
-        /* Matrix canvas layers */
-        canvas.matrix {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            display: block
-        }
-
-        canvas.chars {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            mix-blend-mode: screen;
-            opacity: 0.9
-        }
-
+        /* Nebula / smoke */
         .nebula {
             position: absolute;
-            inset: -20%;
+            inset: -30%;
             z-index: 0;
-            filter: blur(60px) saturate(1.2);
-            opacity: 0.65;
+            filter: blur(90px) saturate(1.2) contrast(1.02);
+            opacity: 0.86;
             background:
-                radial-gradient(20% 30% at 10% 15%, rgba(0, 255, 115, 0.03), transparent 5%),
-                radial-gradient(18% 28% at 80% 78%, rgba(74, 240, 255, 0.02), transparent 6%);
-            transform: translateZ(0);
-            animation: neb 20s linear infinite;
+                radial-gradient(30% 40% at 5% 8%, rgba(0, 255, 120, 0.035), transparent 6%),
+                radial-gradient(20% 30% at 90% 85%, rgba(74, 240, 255, 0.02), transparent 8%),
+                conic-gradient(from 60deg, rgba(0, 0, 0, 0.02), rgba(255, 255, 255, 0.01));
+            animation: neb 24s linear infinite;
+            mix-blend-mode: screen;
         }
 
         @keyframes neb {
             0% {
-                transform: translate3d(-2%, 0, 0)
+                transform: translate3d(-3%, 0, 0)
             }
 
             50% {
-                transform: translate3d(2%, 0, 0)
+                transform: translate3d(3%, 0, 0)
             }
 
             100% {
-                transform: translate3d(-2%, 0, 0)
+                transform: translate3d(-3%, 0, 0)
             }
         }
 
-        /* scanning overlay */
+        /* Matrix canvases */
+        canvas#matrix,
+        canvas#corrupt {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            display: block;
+        }
+
+        canvas#overlays {
+            position: absolute;
+            inset: 0;
+            z-index: 7;
+            pointer-events: none;
+        }
+
+        /* scanlines & grain */
         .scan {
             position: absolute;
             inset: 0;
-            z-index: 4;
-            pointer-events: none;
-            background-image: repeating-linear-gradient(180deg, rgba(0, 255, 115, 0.02) 0px, rgba(0, 255, 115, 0.02) 1px, transparent 1px, transparent 8px);
-            opacity: 0.04;
-            mix-blend-mode: overlay
+            z-index: 9;
+            mix-blend-mode: overlay;
+            opacity: 0.06;
+            background-image: repeating-linear-gradient(180deg, rgba(0, 255, 110, 0.02) 0px, rgba(0, 255, 110, 0.02) 1px, transparent 1px, transparent 6px)
         }
 
-        /* static noise (flicker) */
-        .noise {
+        .grain {
             position: absolute;
             inset: 0;
-            z-index: 6;
-            pointer-events: none;
-            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(0, 0, 0, 0));
+            z-index: 11;
             opacity: 0.03;
-            mix-blend-mode: overlay
+            mix-blend-mode: overlay;
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(0, 0, 0, 0));
         }
 
-        /* main center panel */
-        .panel {
+        /* Center glass plate */
+        .plate {
             position: relative;
-            z-index: 8;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 36px 48px;
-            border-radius: 12px;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.30));
-            box-shadow: 0 12px 60px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(8px) saturate(0.95);
-            user-select: none;
+            z-index: 12;
+            display: grid;
+            place-items: center;
+            gap: 10px;
+            padding: 36px 56px;
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.01));
+            box-shadow: 0 20px 90px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(var(--blur)) saturate(1.05);
             transform: translateZ(0);
+            user-select: none;
+            max-width: min(94vw, 1100px);
+            text-align: center;
         }
 
-        /* NAME */
+        /* Name styling */
         .name-wrap {
             position: relative;
             display: inline-block;
             line-height: 1;
-            text-align: center;
-            overflow: visible;
+            padding: 6px 8px
         }
 
         .name {
             font-weight: 900;
-            font-size: clamp(44px, 10vw, 118px);
+            font-size: clamp(48px, 10.6vw, 140px);
             letter-spacing: 0.01em;
-            color: #dfffe8;
+            color: #dfffee;
             position: relative;
-            padding: 6px 10px;
+            display: inline-block;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* layered glitch copies */
+        /* three layered copies for extreme RGB split */
         .name .copy {
             position: absolute;
             inset: 0;
             left: 0;
             top: 0;
             pointer-events: none;
-            mix-blend-mode: screen;
-            opacity: 0.95;
+            mix-blend-mode: screen
+        }
+
+        .name .base {
+            color: #eafef7;
+            z-index: 6
         }
 
         .name .r {
             color: var(--neon-cyan);
-            transform: translate(0, 0);
-            filter: drop-shadow(0 8px 18px rgba(74, 240, 255, 0.06))
+            filter: drop-shadow(0 12px 24px rgba(74, 240, 255, 0.06))
         }
 
         .name .g {
             color: var(--neon-green);
-            filter: blur(.3px)
+            filter: blur(.4px)
         }
 
-        .name .base {
-            color: #d7fff0;
-            z-index: 6
-        }
-
-        /* subtitle */
+        /* subtitle for vibe */
         .sub {
-            margin-top: 10px;
+            font-size: 14px;
             color: var(--muted);
-            font-size: 14px
+            opacity: 0.95
         }
 
-        /* scary accent bars */
-        .bars {
+        /* subtle orbit rings and pulse */
+        .orbit {
             position: absolute;
-            inset: auto 0 0 0;
-            height: 6px;
-            z-index: 9;
-            pointer-events: none;
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: -60px
+            z-index: 3;
+            inset: unset;
+            width: calc(100% + 420px);
+            height: calc(100% + 420px);
+            border-radius: 50%;
+            border: 1px solid rgba(0, 255, 130, 0.02);
+            transform: translateY(-6%);
+            filter: blur(10px);
+            animation: orbt 26s linear infinite;
+            mix-blend-mode: screen;
+            opacity: 0.9
         }
 
-        .bar {
-            width: 48px;
-            height: 6px;
-            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
-            box-shadow: 0 6px 20px rgba(0, 255, 130, 0.06);
-            opacity: 0.85;
-            transform-origin: center;
-            animation: barPulse 3s ease-in-out infinite
-        }
-
-        .bar:nth-child(2) {
-            width: 36px;
-            animation-duration: 2.6s
-        }
-
-        .bar:nth-child(3) {
-            width: 24px;
-            animation-duration: 3.6s
-        }
-
-        @keyframes barPulse {
+        @keyframes orbt {
             0% {
-                transform: scaleX(0.36)
-            }
-
-            50% {
-                transform: scaleX(1)
+                transform: translateY(-6%) rotate(0)
             }
 
             100% {
-                transform: scaleX(0.36)
+                transform: translateY(-6%) rotate(360deg)
             }
         }
 
-        /* controls top-left */
-        .controls {
-            position: fixed;
-            left: 16px;
-            top: 16px;
-            z-index: 20;
-            display: flex;
-            gap: 8px;
-            align-items: center
-        }
-
-        .ctrl {
-            background: rgba(0, 0, 0, 0.45);
-            color: var(--muted);
-            padding: 8px 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            cursor: pointer;
-            font-size: 13px
-        }
-
-        .ctrl.active {
-            color: var(--neon-green);
-            box-shadow: 0 8px 30px rgba(0, 255, 130, 0.04)
-        }
-
-        /* Panic flash overlay */
-        .panic {
-            position: fixed;
+        /* thin scanning slice */
+        .slice {
+            position: absolute;
             inset: 0;
-            z-index: 60;
+            z-index: 13;
             pointer-events: none;
-            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.06), rgba(0, 0, 0, 0) 30%);
-            opacity: 0;
-            transition: opacity .2s linear
+            mix-blend-mode: overlay;
+            opacity: 0.28;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
+            transform: skewX(-12deg) translateX(-120%);
+            animation: slicem 5.4s linear infinite
         }
 
-        /* hint */
-        .hint {
-            position: fixed;
-            right: 16px;
-            bottom: 16px;
-            z-index: 30;
-            color: var(--muted);
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.45);
-            padding: 8px 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.02)
+        @keyframes slicem {
+            0% {
+                transform: skewX(-12deg) translateX(-120%)
+            }
+
+            50% {
+                transform: skewX(-12deg) translateX(20%)
+            }
+
+            100% {
+                transform: skewX(-12deg) translateX(-120%)
+            }
         }
 
-        /* tiny footer label */
-        .footer-note {
+        /* overlays for corruption flicker */
+        .glow-flicker {
+            position: absolute;
+            inset: 0;
+            z-index: 14;
+            pointer-events: none;
+            background: radial-gradient(circle at 50% 40%, rgba(0, 255, 120, 0.02), transparent 12%);
+            mix-blend-mode: screen;
+            opacity: 0.9
+        }
+
+        /* footer micro note */
+        .note {
             position: fixed;
             left: 50%;
             transform: translateX(-50%);
             bottom: 8px;
-            z-index: 30;
-            color: rgba(150, 255, 200, 0.06);
+            z-index: 20;
+            color: rgba(160, 255, 185, 0.04);
             font-size: 12px;
             letter-spacing: 0.12em
         }
 
-        /* accessibility */
-        @media (prefers-reduced-motion: reduce) {
-
-            .nebula,
-            .slice,
-            .bars,
-            .panel,
-            .ring {
-                animation: none !important;
-                transition: none !important
+        /* mobile degrade (still scary but performant) */
+        @media (max-width:720px) {
+            body {
+                overflow: auto
             }
 
-            canvas.matrix,
-            canvas.chars {
-                opacity: 0.6
+            canvas#matrix,
+            canvas#corrupt {
+                opacity: 0.92
             }
 
-            .ctrl {
+            .orbit {
                 display: none
             }
-        }
 
-        @media (max-width:720px) {
-            .panel {
-                padding: 22px 26px;
+            .slice {
+                display: none
+            }
+
+            .plate {
+                padding: 18px 22px;
                 border-radius: 10px
             }
 
             .name {
-                font-size: clamp(28px, 18vw, 56px)
+                font-size: clamp(32px, 16vw, 68px)
+            }
+        }
+
+        /* respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+
+            .nebula,
+            .orbit,
+            .slice,
+            .glow-flicker {
+                animation: none !important;
+                transition: none !important;
             }
 
-            body {
-                overflow: auto
+            canvas#matrix,
+            canvas#corrupt {
+                opacity: 0.7;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="stage" role="main" aria-label="عرض اسم ادريس">
+    <div class="stage" aria-label="عرض اسم يوسف مظلم" role="main">
         <div class="nebula" aria-hidden="true"></div>
 
-        <!-- Matrix drawing canvases -->
-        <canvas id="matrixCanvas" class="matrix" aria-hidden="true"></canvas>
-        <canvas id="charCanvas" class="chars" aria-hidden="true"></canvas>
+        <!-- canvases -->
+        <canvas id="matrix"></canvas>
+        <canvas id="corrupt"></canvas>
+        <canvas id="overlays"></canvas>
 
         <div class="scan" aria-hidden="true"></div>
-        <div class="noise" aria-hidden="true"></div>
+        <div class="grain" aria-hidden="true"></div>
 
-        <!-- center panel -->
-        <div class="panel" role="region" aria-label="اللوحة الرئيسية">
-            <div class="name-wrap" id="nameWrap">
-                <div class="name" id="name">
-                    <span class="copy base">ادريس</span>
-                    <span class="copy r">ادريس</span>
-                    <span class="copy g">ادريس</span>
+        <div class="plate" aria-hidden="false" role="region" aria-label="لوحة يوسف">
+            <div class="orbit" aria-hidden="true"></div>
+            <div class="name-wrap" id="nameWrap" role="heading" aria-level="1">
+                <div class="name" id="mainName" data-text="يوسف" aria-label="يوسف">
+                    <span class="copy base">يوسف</span>
+                    <span class="copy r">يوسف</span>
+                    <span class="copy g">يوسف</span>
                 </div>
-                <div class="sub">Black-Hat · Dark Web Vibe · Matrix Overload</div>
-            </div>
-            <div class="bars" aria-hidden="true">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
+                <div class="sub">Black · Dark Web · Matrix Aesthetic</div>
             </div>
         </div>
 
-        <div class="controls" role="toolbar" aria-label="عناصر تحكم">
-            <button class="ctrl" id="levelLow" title="Low">Low</button>
-            <button class="ctrl active" id="levelMed" title="Medium">Medium</button>
-            <button class="ctrl" id="levelHigh" title="Ultra">Ultra</button>
-            <button class="ctrl" id="panicBtn" title="Panic (GORE)">⚠️</button>
-            <button class="ctrl" id="muteBtn" title="Toggle sound">🔈</button>
-        </div>
+        <div class="slice" aria-hidden="true"></div>
+        <div class="glow-flicker" aria-hidden="true"></div>
 
-        <div class="panic" id="panicOverlay" aria-hidden="true"></div>
-
-        <div class="hint" role="note">Space: تشغيل/إيقاف • G: جليتش • P: Panic</div>
-        <div class="footer-note">— dark showcase —</div>
+        <div class="note">— deep net showcase —</div>
     </div>
 
     <script>
-        /* ====================================================
-           Matrix + Glitch Ultra — No external libs (all JS)
-           ==================================================== */
+        /* ===========================================================
+           Yusuf Ultra Dark — Auto mode
+           - dense matrix rain
+           - corruption bursts + name RGB glitch auto
+           - adaptive to prefers-reduced-motion
+           - mobile/perf degradations
+           =========================================================== */
 
-        /* Helpers */
-        const $ = sel => document.querySelector(sel);
+        /* utils */
+        const $ = s => document.querySelector(s);
+        const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-        /* State */
-        let intensity = 'medium'; // low / medium / high
-        let running = true;
-        let soundOn = false; // optional ambient sound
-        let panicTimeout = null;
-
-        /* Canvas setup */
-        const mat = $('#matrixCanvas');
-        const chars = $('#charCanvas');
+        /* canvases + DPR */
+        const matrix = document.getElementById('matrix');
+        const corrupt = document.getElementById('corrupt');
+        const overlay = document.getElementById('overlays');
         const DPR = Math.max(1, window.devicePixelRatio || 1);
-        function fitCanvas() {
-            mat.width = Math.floor(window.innerWidth * DPR);
-            mat.height = Math.floor(window.innerHeight * DPR);
-            mat.style.width = window.innerWidth + 'px';
-            mat.style.height = window.innerHeight + 'px';
-            chars.width = mat.width;
-            chars.height = mat.height;
-            chars.style.width = mat.style.width;
-            chars.style.height = mat.style.height;
-            // re-init streams
-            initMatrix();
+
+        function fitAll() {
+            const w = window.innerWidth, h = window.innerHeight;
+            [matrix, corrupt, overlay].forEach(c => {
+                c.width = Math.floor(w * DPR);
+                c.height = Math.floor(h * DPR);
+                c.style.width = w + 'px';
+                c.style.height = h + 'px';
+                const ctx = c.getContext('2d');
+                ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            });
         }
-        window.addEventListener('resize', fitCanvas);
+        window.addEventListener('resize', fitAll);
+        fitAll();
 
-        /* Matrix streams */
-        let columns = [];
-        let matrixCtx = mat.getContext('2d');
-        matrixCtx.scale(DPR, DPR);
-        let charCtx = chars.getContext('2d');
-        charCtx.scale(DPR, DPR);
+        /* Character set: mix binary, latin, arabic, symbols */
+        const chars = ('01<>/\\|[]{}()@#$%&*+-=~:;.,؟!᚛᚜٠١٢٣٤٥٦٧٨٩').split('');
 
-        /* characters */
-        const charset = '01يهلابمكتبتشفنطقز١٢٣٤٥٦٧٨٩<>/#[]{}()@#$%&*-+=~|:;.,؟'; // mix arabic & symbols & binary
-        const glyphs = charset.split('');
-
-        function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min }
+        /* MATRIX RAIN */
+        const mCtx = matrix.getContext('2d');
+        let cols = [];
         function initMatrix() {
-            const cw = window.innerWidth;
-            const ch = window.innerHeight;
-            const fontSize = getFontSizeForIntensity();
-            const cols = Math.floor(cw / fontSize) + 1;
-            columns = new Array(cols).fill(0).map(() => ({
-                x: null,
-                y: rand(-200, 0) * Math.random(),
-                speed: fontSize * (0.35 + Math.random() * 0.9),
-                size: fontSize,
-                trail: rand(4, 20),
-                active: Math.random() > 0.2
+            const w = window.innerWidth;
+            const size = currentFontSize();
+            const colCount = Math.floor(w / size) + 2;
+            cols = new Array(colCount).fill(0).map((_, i) => ({
+                x: i * size + (size * 0.2),
+                y: rand(-120, 0) * Math.random(),
+                speed: size * (0.42 + Math.random() * 1.2),
+                size: size,
+                trail: rand(6, 28),
+                active: Math.random() > 0.06
             }));
-            // position x
-            columns.forEach((c, i) => c.x = i * fontSize + (fontSize * 0.2));
+        }
+        function currentFontSize() {
+            // adapt font size to intensity level (we'll auto ramp)
+            const min = Math.max(10, Math.round(Math.min(innerWidth, innerHeight) / 70));
+            return min;
         }
 
-        /* intensity adjustments */
-        function getFontSizeForIntensity() {
-            if (intensity === 'low') return Math.max(12, Math.round(Math.min(window.innerWidth, window.innerHeight) / 80));
-            if (intensity === 'high') return Math.max(14, Math.round(Math.min(window.innerWidth, window.innerHeight) / 40));
-            return Math.max(13, Math.round(Math.min(window.innerWidth, window.innerHeight) / 55)); // medium
-        }
+        /* CORRUPTION / OVERLAYS */
+        const cCtx = corrupt.getContext('2d');
+        const oCtx = overlay.getContext('2d');
+
+        let running = true;
+        const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReduced) running = false;
+
+        /* intensity timeline: start medium then escalate to ULTRA for drama */
+        let intensity = 'medium'; // low / medium / high
+        setTimeout(() => intensity = 'high', 2200); // after 2.2s go intense
+        setTimeout(() => intensity = 'ultra', 6500); // after 6.5s go ultra (max chaos)
 
         /* draw loop */
-        let lastTime = 0;
-        function loop(t) {
-            if (!running) { requestAnimationFrame(loop); return; }
-            const dt = t - lastTime; lastTime = t;
+        let last = performance.now();
+        function frame(now) {
+            const dt = now - last; last = now;
+            if (!running) { requestAnimationFrame(frame); return; }
 
-            // clear with slight fade for trailing effect
-            matrixCtx.clearRect(0, 0, mat.width / DPR, mat.height / DPR);
-            matrixCtx.fillStyle = 'rgba(0,0,0,0.28)';
-            matrixCtx.fillRect(0, 0, mat.width / DPR, mat.height / DPR);
+            // clear matrix slow fade to create trails
+            mCtx.fillStyle = 'rgba(0,0,0,0.28)';
+            mCtx.fillRect(0, 0, matrix.width / DPR, matrix.height / DPR);
 
-            // draw each column
-            const cols = columns.length;
-            for (let i = 0; i < cols; i++) {
-                const col = columns[i];
-                if (!col.active) continue;
-                const x = col.x;
-                const y = col.y;
-                const fs = col.size;
-                // occasionally change speed and trail (produce chaos)
-                if (Math.random() < 0.005) col.speed *= (0.86 + Math.random() * 0.3);
-                matrixCtx.font = `${fs}px "Share Tech Mono", monospace`;
-                // produce a vertical trail of glyphs
-                for (let s = 0; s < col.trail; s++) {
-                    const gy = y - (s * fs);
-                    if (gy < -fs) continue;
-                    const ch = glyphs[Math.floor(Math.random() * glyphs.length)];
-                    const alpha = 1 - (s / col.trail);
-                    // head is brighter
-                    if (s === 0) {
-                        matrixCtx.fillStyle = `rgba(180,255,200,${clamp(alpha, 0.7, 1)})`;
-                        matrixCtx.fillText(ch, x, gy);
+            // draw columns
+            for (let i = 0; i < cols.length; i++) {
+                const c = cols[i];
+                if (!c.active) continue;
+                const fs = c.size;
+                mCtx.font = `${fs}px "Share Tech Mono", monospace`;
+                for (let t = 0; t < c.trail; t++) {
+                    const y = c.y - (t * fs);
+                    if (y < -fs) continue;
+                    const ch = chars[rand(0, chars.length - 1)];
+                    // head brightness
+                    if (t === 0) {
+                        mCtx.fillStyle = `rgba(180,255,200,${clamp(0.5 + Math.random() * 0.5, 0.6, 1)})`;
+                        mCtx.fillText(ch, c.x, y);
                     } else {
-                        // tinted trail
-                        matrixCtx.fillStyle = `rgba(0,200,120,${alpha * 0.18})`;
-                        matrixCtx.fillText(ch, x, gy);
+                        mCtx.fillStyle = `rgba(0,220,110,${(1 - t / c.trail) * 0.18})`;
+                        mCtx.fillText(ch, c.x, y);
                     }
                 }
                 // step
-                col.y += col.speed * (0.016 * (1 + (intensity === 'high' ? 0.6 : intensity === 'low' ? -0.25 : 0)));
-                // reset if out of bounds with some randomness
-                if (col.y > window.innerHeight + (col.trail * fs)) {
-                    if (Math.random() < 0.92) {
-                        col.y = rand(-100, 0) * Math.random();
-                        col.speed = fs * (0.35 + Math.random() * 0.9);
-                        col.trail = rand(4, 28);
+                c.y += c.speed * (0.016 * (intensity === 'low' ? 0.7 : intensity === 'high' ? 1.6 : 1.0) * (intensity === 'ultra' ? 2.2 : 1));
+                if (c.y > window.innerHeight + (c.trail * fs)) {
+                    // reset
+                    if (Math.random() < 0.9) {
+                        c.y = rand(-100, 0) * Math.random();
+                        c.speed = fs * (0.38 + Math.random() * 1.0);
+                        c.trail = rand(6, 40);
                     } else {
-                        // occasionally keep it going slower (makes sporadic long tails)
-                        col.y = -rand(10, 200);
+                        c.y = -rand(10, 200);
                     }
                 }
             }
 
-            // second canvas: burst characters, corruption overlays
-            charCtx.clearRect(0, 0, chars.width / DPR, chars.height / DPR);
-            charCtx.font = `${Math.max(12, Math.round(getFontSizeForIntensity() * 1.1))}px "Share Tech Mono", monospace`;
-            // draw occasional big corruption glyphs
-            if (Math.random() < (intensity === 'high' ? 0.28 : intensity === 'low' ? 0.05 : 0.12)) {
-                const gx = rand(0, window.innerWidth);
-                const gy = rand(0, window.innerHeight);
-                const gc = glyphs[Math.floor(Math.random() * glyphs.length)];
-                charCtx.fillStyle = `rgba(0,255,140,${0.08 + Math.random() * 0.18})`;
-                charCtx.fillText(gc.repeat(rand(1, 5)), gx, gy);
+            // corruption canvas: occasional big glyphs & horizontal glitch bars
+            cCtx.clearRect(0, 0, corrupt.width / DPR, corrupt.height / DPR);
+            if (Math.random() < (intensity === 'ultra' ? 0.32 : intensity === 'high' ? 0.18 : 0.07)) {
+                // big glyph cluster
+                const gx = rand(0, innerWidth);
+                const gy = rand(0, innerHeight);
+                cCtx.font = `${Math.max(12, Math.round(currentFontSize() * 1.6))}px "Share Tech Mono", monospace`;
+                cCtx.fillStyle = `rgba(0,255,140,${0.06 + Math.random() * 0.2})`;
+                cCtx.fillText(chars[rand(0, chars.length - 1)].repeat(rand(1, 6)), gx, gy);
             }
-            requestAnimationFrame(loop);
+            // horizontal glitch bars
+            if (Math.random() < (intensity === 'ultra' ? 0.55 : intensity === 'high' ? 0.28 : 0.12)) {
+                const h = rand(6, 40);
+                const y = rand(0, innerHeight);
+                cCtx.fillStyle = `rgba(0,255,130,${0.02 + Math.random() * 0.05})`;
+                cCtx.fillRect(0, y, innerWidth, h);
+            }
+
+            // overlay: faint vignette + green glow
+            oCtx.clearRect(0, 0, overlay.width / DPR, overlay.height / DPR);
+            const g = oCtx.createRadialGradient(innerWidth / 2, innerHeight / 2, 10, innerWidth / 2, innerHeight / 2, Math.max(innerWidth, innerHeight) / 1.1);
+            g.addColorStop(0, 'rgba(0,255,130,0.012)');
+            g.addColorStop(0.5, 'rgba(0,0,0,0)');
+            oCtx.fillStyle = g;
+            oCtx.fillRect(0, 0, overlay.width / DPR, overlay.height / DPR);
+
+            requestAnimationFrame(frame);
         }
 
-        /* start */
-        function startMatrix() {
-            fitCanvas();
-            lastTime = performance.now();
-            requestAnimationFrame(loop);
-        }
-        startMatrix();
+        /* Start everything */
+        initMatrix();
+        requestAnimationFrame(frame);
 
-        /* ========== Glitch slices & RGB jitter on name ========== */
-        const nameWrap = document.getElementById('nameWrap');
+        /* NAME GLITCH (RGB slices auto, no buttons) */
         const base = document.querySelector('.name .base');
         const r = document.querySelector('.name .r');
-        const g = document.querySelector('.name .g');
-        const panicOverlay = document.getElementById('panicOverlay');
+        const gLayer = document.querySelector('.name .g');
+        const plate = document.querySelector('.plate');
 
-        function applyGlitch(burst = false) {
-            // quick slices + shifts + flicker
-            const slices = [];
-            const n = burst ? rand(4, 9) : rand(1, 4);
+        function doNameGlitch(burst = false) {
+            const n = burst ? rand(4, 9) : rand(1, 3);
             for (let i = 0; i < n; i++) {
-                slices.push({
-                    rTrans: `translate(${rand(-18, 18)}px,${rand(-10, 10)}px)`,
-                    gTrans: `translate(${rand(-12, 12)}px,${rand(-18, 18)}px)`,
-                    rClip: `inset(${rand(0, 70)}% 0 ${rand(0, 70)}% 0)`,
-                    gClip: `inset(${rand(0, 70)}% 0 ${rand(0, 70)}% 0)`
-                });
+                // apply random transforms/states
+                const delay = rand(10, 80) + i * rand(8, 60);
+                setTimeout(() => {
+                    r.style.transform = `translate(${rand(-18, 18)}px,${rand(-10, 10)}px)`;
+                    r.style.clipPath = `inset(${rand(0, 70)}% 0 ${rand(0, 70)}% 0)`;
+                    r.style.opacity = 0.7 + Math.random() * 0.3;
+                    gLayer.style.transform = `translate(${rand(-12, 12)}px,${rand(-18, 18)}px)`;
+                    gLayer.style.clipPath = `inset(${rand(0, 80)}% 0 ${rand(0, 80)}% 0)`;
+                    gLayer.style.opacity = 0.6 + Math.random() * 0.4;
+                    base.style.transform = `translate(${rand(-4, 4)}px,${rand(-3, 3)}px)`;
+                    plate.style.transform = `translate(${rand(-8, 8)}px,${rand(-8, 8)}px)`;
+                    // quick overlay flash
+                    overlay.getContext('2d').globalAlpha = 0.035 + Math.random() * 0.06;
+                    setTimeout(() => {
+                        // reset
+                        r.style.transform = 'translate(0,0)'; r.style.clipPath = 'inset(0 0 0 0)'; r.style.opacity = 1;
+                        gLayer.style.transform = 'translate(0,0)'; gLayer.style.clipPath = 'inset(0 0 0 0)'; gLayer.style.opacity = 1;
+                        base.style.transform = 'translate(0,0)'; plate.style.transform = 'translateZ(0)';
+                        overlay.getContext('2d').globalAlpha = 1;
+                    }, burst ? rand(260, 920) : rand(60, 360));
+                }, delay);
             }
-            // apply one immediately
-            const s = slices[0];
-            r.style.transform = s.rTrans;
-            r.style.clipPath = s.rClip;
-            r.style.opacity = 0.8;
-            g.style.transform = s.gTrans;
-            g.style.clipPath = s.gClip;
-            g.style.opacity = 0.7;
-            base.style.transform = `translate(${rand(-4, 4)}px,${rand(-3, 3)}px)`;
-            // tiny screen shake by moving panel
-            const panel = document.querySelector('.panel');
-            panel.style.transform = `translate(${rand(-6, 6)}px,${rand(-6, 6)}px)`;
-            // flicker overlay opacity change
-            panicOverlay.style.opacity = 0.02 + Math.random() * 0.08;
-
-            // clear soon
-            setTimeout(() => {
-                r.style.transform = 'translate(0,0)';
-                g.style.transform = 'translate(0,0)';
-                r.style.clipPath = 'inset(0 0 0 0)';
-                g.style.clipPath = 'inset(0 0 0 0)';
-                r.style.opacity = 1; g.style.opacity = 1;
-                base.style.transform = 'translate(0,0)';
-                const panel = document.querySelector('.panel');
-                panel.style.transform = 'translateZ(0)';
-                panicOverlay.style.opacity = 0;
-            }, burst ? rand(350, 900) : rand(80, 380));
         }
 
-        /* schedule ambient glitches depending on intensity */
-        let glitchTimer = null;
-        function scheduleGlitch() {
-            clearTimeout(glitchTimer);
-            const delay = intensity === 'low' ? rand(2500, 7000) : intensity === 'high' ? rand(300, 1600) : rand(900, 3500);
-            glitchTimer = setTimeout(() => {
-                if (running) applyGlitch(Math.random() < 0.25);
-                scheduleGlitch();
+        /* schedule glitches frequently (auto, intense) */
+        let glitchSchedule = null;
+        function scheduleNameGlitch() {
+            clearTimeout(glitchSchedule);
+            const delay = intensity === 'ultra' ? rand(200, 900) : intensity === 'high' ? rand(420, 1600) : rand(900, 3800);
+            glitchSchedule = setTimeout(() => {
+                doNameGlitch(Math.random() < 0.3);
+                scheduleNameGlitch();
             }, delay);
         }
-        scheduleGlitch();
+        scheduleNameGlitch();
 
-        /* controls */
-        $('#levelLow').addEventListener('click', () => setIntensity('low'));
-        $('#levelMed').addEventListener('click', () => setIntensity('medium'));
-        $('#levelHigh').addEventListener('click', () => setIntensity('high'));
-
-        function setIntensity(level) {
-            intensity = level;
-            $('#levelLow').classList.toggle('active', level === 'low');
-            $('#levelMed').classList.toggle('active', level === 'medium');
-            $('#levelHigh').classList.toggle('active', level === 'high');
-            // adjust columns font size
-            initMatrix();
-        }
-
-        /* Panic button */
-        $('#panicBtn').addEventListener('click', () => doPanic());
-        function doPanic() {
-            if (panicTimeout) return;
-            // crazy burst
-            applyGlitch(true);
-            // flood matrix with high activity for short time
+        /* Auto ramp: add occasional panic-style surges to escalate scare */
+        function autoPanicBurst() {
+            doNameGlitch(true);
+            // smash matrix tempo up briefly
             const old = intensity;
-            setIntensity('high');
-            panicOverlay.style.opacity = 0.08;
-            // flash border around name
-            document.querySelector('.panel').style.boxShadow = '0 0 48px rgba(255,46,46,0.18)';
-            panicTimeout = setTimeout(() => {
-                setIntensity(old);
-                panicOverlay.style.opacity = 0;
-                document.querySelector('.panel').style.boxShadow = '';
-                panicTimeout = null;
-            }, 2200);
+            intensity = 'ultra';
+            initMatrix();
+            setTimeout(() => { intensity = old; initMatrix(); }, 1800 + rand(0, 1200));
         }
+        setInterval(() => { if (Math.random() < 0.15) autoPanicBurst(); }, 3000);
 
-        /* space to toggle running */
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') { e.preventDefault(); running = !running; if (running) { requestAnimationFrame(loop); } else { /* paused */ } }
-            if (e.key.toLowerCase() === 'g') { applyGlitch(true); }
-            if (e.key.toLowerCase() === 'p') { doPanic(); }
-        });
-
-        /* click glitch */
-        $('#nameWrap').addEventListener('pointerdown', () => applyGlitch(false));
-
-        /* mute button placeholder (no sound implemented by default) */
-        $('#muteBtn').addEventListener('click', () => {
-            soundOn = !soundOn;
-            $('#muteBtn').textContent = soundOn ? '🔊' : '🔈';
-        });
-
-        /* Utility clamp */
-        function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-
-        /* Respect reduced motion: pause everything */
+        /* mobile/perf safeguard: if small screen, reduce density */
         (function () {
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                running = false;
-                document.querySelectorAll('.ctrl').forEach(b => b.style.display = 'none');
+            if (window.innerWidth < 700) {
+                // reduce columns & slow down animations
+                intensity = 'high';
+                initMatrix();
             }
         })();
 
-        /* initial focus: accessibility hint */
-        setTimeout(() => {
-            const h = document.querySelector('.hint');
-            if (h) h.style.opacity = 0.7;
-            setTimeout(() => { if (h) h.style.opacity = 0.0; }, 4200);
-        }, 1200);
+        /* respect reduced motion */
+        if (prefersReduced) {
+            // freeze heavy things but still show subtle visuals
+            try { mCtx.clearRect(0, 0, matrix.width, matrix.height); } catch (e) { }
+            running = false;
+        }
 
+        /* cleanup on unload (good practice) */
+        window.addEventListener('beforeunload', () => {
+            running = false;
+        });
     </script>
 </body>
 
