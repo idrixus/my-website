@@ -62,3 +62,41 @@
         filter: none;
     }
 }
+
+/* New styles for centering and styling the name */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: linear-gradient(135deg, #000000, #1a1a1a, #333333);
+    font-family: 'Great Vibes', cursive;
+}
+
+.stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    z-index: 10;
+    text-align: center;
+}
+
+.name {
+    font-family: 'Great Vibes', cursive;
+    font-size: 6rem;
+    font-weight: 900;
+    background: linear-gradient(45deg, #d4af37, #ffd700, #b8860b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.7), 0 0 20px rgba(255, 215, 0, 0.5);
+    user-select: none;
+    margin: 0;
+    padding: 0;
+}
