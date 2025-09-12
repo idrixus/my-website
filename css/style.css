@@ -70,7 +70,23 @@ html {
     padding: 0;
     height: 100%;
     background: linear-gradient(135deg, #000000, #1a1a1a, #333333);
+    background-size: 400% 400%;
+    animation: darkShift 10s ease infinite;
     font-family: 'Great Vibes', cursive;
+}
+
+@keyframes darkShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .stage {
@@ -95,8 +111,37 @@ html {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.7), 0 0 20px rgba(255, 215, 0, 0.5);
+    text-shadow:
+        0 0 5px rgba(212, 175, 55, 0.8),
+        0 0 10px rgba(255, 215, 0, 0.7),
+        0 0 20px rgba(255, 215, 0, 0.6),
+        0 0 30px rgba(255, 215, 0, 0.5),
+        0 0 40px rgba(255, 215, 0, 0.4),
+        0 0 50px rgba(212, 175, 55, 0.3);
     user-select: none;
     margin: 0;
     padding: 0;
+    animation: glow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    0% {
+        text-shadow:
+            0 0 5px rgba(212, 175, 55, 0.8),
+            0 0 10px rgba(255, 215, 0, 0.7),
+            0 0 20px rgba(255, 215, 0, 0.6),
+            0 0 30px rgba(255, 215, 0, 0.5),
+            0 0 40px rgba(255, 215, 0, 0.4),
+            0 0 50px rgba(212, 175, 55, 0.3);
+    }
+
+    100% {
+        text-shadow:
+            0 0 10px rgba(212, 175, 55, 1),
+            0 0 20px rgba(255, 215, 0, 0.9),
+            0 0 30px rgba(255, 215, 0, 0.8),
+            0 0 40px rgba(255, 215, 0, 0.7),
+            0 0 50px rgba(255, 215, 0, 0.6),
+            0 0 60px rgba(212, 175, 55, 0.5);
+    }
 }
