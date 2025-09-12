@@ -1,32 +1,25 @@
-/* js/main.js
-   Flow-field background: big visible cyber flow + soft glow layer
-   - auto quality scaling
-   - pause on hidden
-   - mouse/touch parallax & interaction
-   - respects prefers-reduced-motion
+/* js/main.js — Advanced Flow Background
+   - multi-layer flow + particles + ribbons + glow
+   - auto quality, pause on hidden, respects reduced-motion
+   - pointer attraction / burst on tap
 */
 
-/* ---------- Configurable parameters (feel free to tweak) ---------- */
-const CONFIG = {
-    PARTICLE_COUNT_DESKTOP: 70,   // base particles on desktop
-    PARTICLE_COUNT_MOBILE: 30,    // on mobile / low power
-    FLOW_SCALE: 0.0009,           // spatial frequency of the flow field (lower = bigger swirls)
-    TIME_SPEED: 0.0009,           // how fast the field evolves (time factor)
-    VELOCITY: 0.6,                // particle follow strength
-    SMOOTH: 0.12,                 // smoothing for movement (0..1)
-    GLOW_INTENSITY: 0.22,         // second canvas glow alpha
-    PALETTE: ['rgba(36,211,255,0.9)', 'rgba(90,255,180,0.75)', 'rgba(120,220,255,0.4)']
-};
-
-/* ---------- Boilerplate ---------- */
-(function () {
+(() => {
+    // elements (must match your HTML)
     const flowC = document.getElementById('flowCanvas');
     const glowC = document.getElementById('glowCanvas');
-    if (!flowC || !glowC) return;
+    if (!flowC || !glowC) {
+        console.warn('flowCanvas or glowCanvas not found.');
+        return;
+    }
 
     // contexts
     const flowCtx = flowC.getContext('2d', { alpha: true });
     const glowCtx = glowC.getContext('2d', { alpha: true });
+
+    // buffer for trails (offscreen)
+    const buffer = document.createElement('canvas');
+    const bufCtx = buffer.getContext('2d', { alpha: true });
 
     // DPR adaptive
     let DPR = Math.max(1, window.devicePixelRatio || 1);
@@ -38,286 +31,400 @@ const CONFIG = {
     const isMobile = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // adaptive counts
-    let PARTICLES = CONFIG.PARTICLE_COUNT_DESKTOP;
-    if (saveData || lowMem) PARTICLES = Math.max(18, Math.floor(PARTICLES * 0.4));
-    if (isMobile) PARTICLES = CONFIG.PARTICLE_COUNT_MOBILE;
-    if (prefersReduced) PARTICLES = Math.max(8, Math.floor(PARTICLES * 0.25));
+    // config — tweak these to change "intensity"
+    const CONFIG = {
+        BASE_PARTICLES: isMobile ? 30 : 80,
+        RIBBONS: isMobile ? 18 : 34,
+        FLOW_SCALE: 0.0008,        // lower => bigger swirls
+        TIME_SPEED: 0.00085,       // evolution speed
+        VELOCITY: 0.62,
+        SMOOTH: 0.14,
+        TRAIL_ALPHA: 0.12,         // buffer fade (0.02 - 0.3)
+        GLOW_MULT: 0.9,
+        PALETTE: ['rgba(36,211,255,1)', 'rgba(90,255,180,0.95)', 'rgba(120,220,255,0.55)'],
+    };
 
-    // runtime state
+    // adaptive counts
+    let PARTICLES = Math.max(8, Math.floor(CONFIG.BASE_PARTICLES * (saveData || lowMem ? 0.45 : 1)));
+    let RIBBON_COUNT = Math.max(6, Math.floor(CONFIG.RIBBONS * (saveData || lowMem ? 0.6 : 1)));
+
+    // state
     let particles = [];
+    let ribbons = []; // each ribbon is array of points
     let w = 0, h = 0;
-    let running = true;
-    if (prefersReduced) running = false;
+    let running = !prefersReduced;
     let lastTime = performance.now();
 
-    // mouse / touch interaction for parallax & attraction
-    let pointer = { x: null, y: null, vx: 0, vy: 0, active: false };
-    function onPointer(e) {
-        const ev = e.touches ? e.touches[0] : e;
-        pointer.x = ev.clientX;
-        pointer.y = ev.clientY;
-        pointer.active = true;
-    }
-    function onPointerEnd() { pointer.active = false; pointer.x = null; pointer.y = null; }
+    // pointer state
+    let pointer = { x: null, y: null, down: false, vx: 0, vy: 0, lastX: null, lastY: null };
 
-    window.addEventListener('pointermove', onPointer, { passive: true });
-    window.addEventListener('touchmove', onPointer, { passive: true });
-    window.addEventListener('pointerleave', onPointerEnd);
-    window.addEventListener('touchend', onPointerEnd);
-    window.addEventListener('touchcancel', onPointerEnd);
+    // util
+    const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+    const randF = (a, b) => a + Math.random() * (b - a);
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-    // quality control: DPR adaptation
-    function fitCanvas() {
+    // fit canvases (and buffer)
+    function fitAll() {
         DPR = Math.max(1, (window.devicePixelRatio || 1) * (window._adaptiveDPR || 1));
         w = Math.floor(window.innerWidth * DPR);
         h = Math.floor(window.innerHeight * DPR);
-        [flowC, glowC].forEach(c => {
-            c.width = w;
-            c.height = h;
+
+        [flowC, glowC, buffer].forEach(c => {
+            c.width = w; c.height = h;
             c.style.width = window.innerWidth + 'px';
             c.style.height = window.innerHeight + 'px';
-            const ctx = c.getContext('2d');
-            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            const ctx = c.getContext ? c.getContext('2d') : null;
+            if (ctx) ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
         });
+        // re-init columns/ribbons when size changes
+        initParticles();
+        initRibbons();
     }
 
-    // simple pseudo-noise using sin/cos combos for smooth field (cheap & smooth)
-    function fieldAngle(x, y, t) {
-        // normalized coords
+    // Light-weight smooth noise-based flow angle (combination of sines for organic feel)
+    function flowAngle(x, y, t) {
         const nx = x * CONFIG.FLOW_SCALE;
         const ny = y * CONFIG.FLOW_SCALE;
-        // mix multiple sinusoids for organic flow
-        const a = Math.sin((nx + t) * 1.0) * 1.0;
-        const b = Math.cos((ny - t * 0.8) * 1.0) * 0.6;
-        const c = Math.sin((nx * 0.6 + ny * 0.4 + Math.sin(t * 0.3)) * 0.9) * 0.7;
-        return (a + b + c) * Math.PI; // angle in radians
+        const a = Math.sin((nx + t) * 1.02) * 1.0;
+        const b = Math.cos((ny - t * 0.74) * 0.9) * 0.6;
+        const c = Math.sin((nx * 0.62 + ny * 0.43 + Math.sin(t * 0.28)) * 0.95) * 0.8;
+        return (a + b + c) * Math.PI; // radians
     }
 
-    // particle factory
+    // create particles
     function makeParticle(i) {
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * window.innerHeight;
-        const size = 1.6 + Math.random() * 3.8; // visible blobs
-        const color = CONFIG.PALETTE[i % CONFIG.PALETTE.length];
         return {
-            x, y, px: x, py: y, vx: 0, vy: 0, size, color, life: 0, seed: Math.random() * 1000
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
+            size: 1.2 + Math.random() * 3.6,
+            color: CONFIG.PALETTE[i % CONFIG.PALETTE.length],
+            seed: Math.random() * 1000
         };
     }
 
     function initParticles() {
-        particles = new Array(PARTICLES).fill(0).map((_, i) => makeParticle(i));
+        particles = [];
+        for (let i = 0; i < PARTICLES; i++) particles.push(makeParticle(i));
+        // clear buffer for nice fresh trails
+        bufCtx.clearRect(0, 0, buffer.width, buffer.height);
     }
 
-    // drawing helpers: soft circle (fast-ish)
-    function drawSoft(ctx, x, y, r, color, alpha) {
-        // radial gradient approx — fillRect with gradient is ok
-        const g = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
-        g.addColorStop(0, color.replace(')', `,${alpha})`).replace('rgb', 'rgba'));
-        g.addColorStop(0.2, color.replace(')', `,${alpha * 0.45})`).replace('rgb', 'rgba'));
-        g.addColorStop(1, color.replace(')', ',0)').replace('rgb', 'rgba'));
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(x, y, r * 4, 0, Math.PI * 2);
-        ctx.fill();
+    // ribbons: seed some streamlines that follow field — each ribbon keeps small point history
+    function initRibbons() {
+        ribbons = [];
+        const cols = Math.max(3, Math.floor(RIBBON_COUNT / 2));
+        for (let i = 0; i < RIBBON_COUNT; i++) {
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+            ribbons.push({
+                pts: [{ x: startX, y: startY }],
+                width: 8 + Math.random() * 14,
+                color: CONFIG.PALETTE[i % CONFIG.PALETTE.length],
+                life: rand(4000, 9000),
+                t0: performance.now() + Math.random() * 1000
+            });
+        }
     }
 
-    // safer color helper (in case PALETTE uses rgba already)
-    function alphaColor(col, a) {
-        // if already rgba, replace alpha
-        if (col.includes('rgba')) return col.replace(/rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/, `rgba($1,$2,$3,${a})`);
-        if (col.includes('rgb')) return col.replace(/rgb\(([^,]+),([^,]+),([^)]+)\)/, `rgba($1,$2,$3,${a})`);
-        return col;
+    // update ribbons: step forward along flow and keep tail length limited
+    function updateRibbons(t, dt) {
+        for (const rb of ribbons) {
+            // advance head according to flow, influenced by time
+            const last = rb.pts[rb.pts.length - 1];
+            const angle = flowAngle(last.x, last.y, t * CONFIG.TIME_SPEED + rb.t0 * 0.0005);
+            const speed = (rb.width * 0.02) * (1 + Math.sin(rb.t0 * 0.0003 + t * 0.0005));
+            const nx = last.x + Math.cos(angle) * speed * (window._perfMultiplier || 1);
+            const ny = last.y + Math.sin(angle) * speed * (window._perfMultiplier || 1);
+
+            // occasional jitter and pointer influence
+            let tx = nx, ty = ny;
+            if (pointer.x !== null) {
+                const dx = pointer.x - last.x;
+                const dy = pointer.y - last.y;
+                const d = Math.hypot(dx, dy) + 0.0001;
+                const pull = clamp(1200 / d, 0, 0.9);
+                tx += dx * 0.002 * pull;
+                ty += dy * 0.002 * pull;
+            }
+
+            rb.pts.push({ x: tx, y: ty });
+            // trim to length proportional to width
+            const maxLen = Math.max(8, Math.floor(160 / (rb.width * 0.08)));
+            while (rb.pts.length > maxLen) rb.pts.shift();
+            // slowly nudge starting point occasionally to avoid stuck ribbons
+            if (Math.random() < 0.003) rb.pts[0].x += randF(-10, 10);
+        }
     }
 
-    // optimized draw path
+    // draw ribbons into buffer for natural trails (they will be blurred by glow canvas)
+    function drawRibbonsToBuffer() {
+        // draw semi-transparent strokes into buffer
+        bufCtx.globalCompositeOperation = 'source-over';
+        bufCtx.lineCap = 'round';
+        bufCtx.lineJoin = 'round';
+        for (const rb of ribbons) {
+            if (rb.pts.length < 2) continue;
+            // create gradient along ribbon
+            const head = rb.pts[rb.pts.length - 1];
+            const tail = rb.pts[0];
+            const g = bufCtx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+            g.addColorStop(0, rb.color.replace('1)', '0)'));
+            g.addColorStop(0.6, rb.color.replace('1)', '0.18)'));
+            g.addColorStop(1, rb.color);
+            bufCtx.strokeStyle = g;
+            bufCtx.lineWidth = Math.max(2, rb.width * (window._perfMultiplier || 1));
+            bufCtx.beginPath();
+            const pts = rb.pts;
+            bufCtx.moveTo(pts[0].x, pts[0].y);
+            for (let i = 1; i < pts.length; i++) bufCtx.lineTo(pts[i].x, pts[i].y);
+            bufCtx.stroke();
+            // small bright head
+            bufCtx.beginPath();
+            bufCtx.fillStyle = rb.color.replace('1)', '0.14)');
+            bufCtx.arc(head.x, head.y, Math.max(2, rb.width * 0.3), 0, Math.PI * 2);
+            bufCtx.fill();
+        }
+    }
+
+    // main render loop
+    let last = performance.now();
     function render(now) {
         if (!running || window._pageHidden) { requestAnimationFrame(render); return; }
-        const t = now * CONFIG.TIME_SPEED;
-        const dt = Math.min(50, now - lastTime);
-        lastTime = now;
+        const t = now;
+        const dt = Math.min(50, now - last);
+        last = now;
 
-        // clear with slight fade (keeps trails smooth)
-        flowCtx.globalCompositeOperation = 'source-over';
-        flowCtx.fillStyle = `rgba(2,2,2,${0.12 * (window._perfMultiplier || 1)})`;
-        flowCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        // fade buffer slowly to keep trailing ribbons
+        bufCtx.globalCompositeOperation = 'destination-out';
+        bufCtx.fillStyle = `rgba(0,0,0,${CONFIG.TRAIL_ALPHA * (window._perfMultiplier || 1)})`;
+        bufCtx.fillRect(0, 0, buffer.width, buffer.height);
+        bufCtx.globalCompositeOperation = 'source-over';
 
-        // update + draw particles on flowCtx
-        flowCtx.globalCompositeOperation = 'lighter';
-        for (let p of particles) {
-            // sample field angle at particle pos
-            const ang = fieldAngle(p.x, p.y, t + p.seed);
-            // velocity target
-            const tx = Math.cos(ang) * (1 + CONFIG.VELOCITY * 2);
-            const ty = Math.sin(ang) * (1 + CONFIG.VELOCITY * 2);
+        // update particles
+        for (const p of particles) {
+            const ang = flowAngle(p.x, p.y, t * CONFIG.TIME_SPEED + p.seed * 0.001);
+            // target velocity from field
+            const tx = Math.cos(ang) * (1 + CONFIG.VELOCITY * 1.2);
+            const ty = Math.sin(ang) * (1 + CONFIG.VELOCITY * 1.2);
 
-            // attraction to pointer (subtle) if active
-            if (pointer.active && pointer.x !== null) {
-                const dx = (pointer.x - p.x);
-                const dy = (pointer.y - p.y);
-                const dist = Math.hypot(dx, dy) + 0.0001;
-                const pull = clamp(180 / dist, 0, 0.9) * (pointer.active ? 0.9 : 0);
-                p.vx += (tx + dx / dist * pull - p.vx) * CONFIG.SMOOTH;
-                p.vy += (ty + dy / dist * pull - p.vy) * CONFIG.SMOOTH;
+            // pointer attraction/repel
+            if (pointer.x !== null) {
+                const dx = pointer.x - p.x;
+                const dy = pointer.y - p.y;
+                const d = Math.hypot(dx, dy) + 0.0001;
+                const pull = clamp(600 / d, 0, 0.9);
+                p.vx += (tx + dx / d * pull - p.vx) * CONFIG.SMOOTH;
+                p.vy += (ty + dy / d * pull - p.vy) * CONFIG.SMOOTH;
             } else {
                 p.vx += (tx - p.vx) * CONFIG.SMOOTH;
                 p.vy += (ty - p.vy) * CONFIG.SMOOTH;
             }
+            p.x += p.vx * (0.72 * (window._perfMultiplier || 1)) * (dt / 16);
+            p.y += p.vy * (0.72 * (window._perfMultiplier || 1)) * (dt / 16);
+            // wrap
+            if (p.x < -60) p.x = window.innerWidth + 60;
+            if (p.x > window.innerWidth + 60) p.x = -60;
+            if (p.y < -60) p.y = window.innerHeight + 60;
+            if (p.y > window.innerHeight + 60) p.y = -60;
+        }
 
-            // integrate
-            p.x += p.vx * (0.6 * (window._perfMultiplier || 1)) * (dt / 16);
-            p.y += p.vy * (0.6 * (window._perfMultiplier || 1)) * (dt / 16);
+        // update ribbons
+        updateRibbons(now, dt);
 
-            // wrap edges (soft)
-            if (p.x < -40) p.x = window.innerWidth + 40;
-            if (p.x > window.innerWidth + 40) p.x = -40;
-            if (p.y < -40) p.y = window.innerHeight + 40;
-            if (p.y > window.innerHeight + 40) p.y = -40;
-
-            // draw faint line from previous pos (soft trail)
-            flowCtx.strokeStyle = alphaColor(p.color, 0.06);
-            flowCtx.lineWidth = Math.max(1, p.size * 0.2);
+        // draw flow canvas (lines + soft dots)
+        flowCtx.clearRect(0, 0, flowC.width / DPR, flowC.height / DPR);
+        flowCtx.globalCompositeOperation = 'lighter';
+        for (const p of particles) {
+            // faint streak
+            flowCtx.strokeStyle = alpha(p.color, 0.06 * (window._perfMultiplier || 1));
+            flowCtx.lineWidth = Math.max(1, p.size * 0.16);
             flowCtx.beginPath();
-            flowCtx.moveTo(p.x - p.vx * 1.2, p.y - p.vy * 1.2);
+            flowCtx.moveTo(p.x - p.vx * 1.4, p.y - p.vy * 1.4);
             flowCtx.lineTo(p.x, p.y);
             flowCtx.stroke();
-
-            // draw soft glowing head
-            const gcol = alphaColor(p.color, 0.18);
-            const grd = flowCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, Math.max(6, p.size * 6));
-            grd.addColorStop(0, alphaColor(p.color, 0.85));
-            grd.addColorStop(0.2, alphaColor(p.color, 0.24));
-            grd.addColorStop(1, alphaColor(p.color, 0));
-            flowCtx.fillStyle = grd;
+            // head
+            const g = flowCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, Math.max(6, p.size * 6));
+            g.addColorStop(0, alpha(p.color, 0.75));
+            g.addColorStop(0.18, alpha(p.color, 0.22));
+            g.addColorStop(1, alpha(p.color, 0));
+            flowCtx.fillStyle = g;
             flowCtx.beginPath();
-            flowCtx.arc(p.x, p.y, Math.max(6, p.size * 4), 0, Math.PI * 2);
+            flowCtx.arc(p.x, p.y, Math.max(6, p.size * 3), 0, Math.PI * 2);
             flowCtx.fill();
         }
 
-        // glow layer: subtle long blur to give depth
-        glowCtx.clearRect(0, 0, glowC.width, glowC.height);
-        glowCtx.globalCompositeOperation = 'lighter';
-        for (let p of particles) {
-            const r = Math.max(10, p.size * 6) * (1.2 + Math.sin((p.seed + now * 0.001) % Math.PI));
-            const color = alphaColor(p.color, CONFIG.GLOW_INTENSITY * (window._perfMultiplier || 1));
-            const g = glowCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
-            g.addColorStop(0, color);
-            g.addColorStop(1, alphaColor(p.color, 0));
-            glowCtx.fillStyle = g;
-            glowCtx.beginPath();
-            glowCtx.arc(p.x, p.y, r, 0, Math.PI * 2);
-            glowCtx.fill();
+        // draw ribbons to buffer and composite blurred glow
+        drawRibbonsToBuffer();
+        // composite buffer to glow canvas with blur (glowCtx has CSS blur in stylesheet as well)
+        glowCtx.clearRect(0, 0, glowC.width / DPR, glowC.height / DPR);
+        // draw buffer with slight globalAlpha
+        glowCtx.globalAlpha = 0.88 * (window._perfMultiplier || 1) * CONFIG.GLOW_MULT;
+        glowCtx.drawImage(buffer, 0, 0);
+        glowCtx.globalAlpha = 1;
+
+        // optionally add faint scanning noise on top (cheap)
+        if (Math.random() < 0.02 * (window._perfMultiplier || 1)) {
+            flowCtx.globalAlpha = 0.06;
+            flowCtx.fillStyle = '#0a0d0a';
+            flowCtx.fillRect(rand(0, window.innerWidth), rand(0, window.innerHeight), rand(40, window.innerWidth * 0.25), rand(2, 18));
+            flowCtx.globalAlpha = 1;
         }
 
-        // subtle parallax on card via pointer (smoothed)
-        const card = document.querySelector('.card');
-        if (card) {
-            if (pointer.x !== null) {
-                const nx = (pointer.x / window.innerWidth - 0.5) * 8;
-                const ny = (pointer.y / window.innerHeight - 0.5) * 6;
-                card.style.transform = `translate(${nx}px, ${ny}px)`;
-            } else {
-                card.style.transform = 'translateZ(0)';
+        // request next
+        requestAnimationFrame(render);
+    }
+
+    // helper: set alpha for rgba strings
+    function alpha(rgba, a) {
+        if (rgba.startsWith('rgba')) return rgba.replace(/rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/, `rgba($1,$2,$3,${a})`);
+        if (rgba.startsWith('rgb')) return rgba.replace(/rgb\(([^,]+),([^,]+),([^)]+)\)/, `rgba($1,$2,$3,${a})`);
+        // fallback, try to insert
+        return rgba;
+    }
+
+    // pointer listeners
+    (function pointerSetup() {
+        // pointer move
+        let last = 0;
+        window.addEventListener('pointermove', (e) => {
+            const now = performance.now();
+            if (now - last < 12) return; last = now;
+            pointer.x = e.clientX; pointer.y = e.clientY;
+            if (pointer.lastX !== null) {
+                pointer.vx = pointer.x - pointer.lastX;
+                pointer.vy = pointer.y - pointer.lastY;
             }
-        }
+            pointer.lastX = pointer.x; pointer.lastY = pointer.y;
+        }, { passive: true });
 
-        // next frame
-        requestAnimationFrame(render);
-    }
+        // pointer down -> burst
+        window.addEventListener('pointerdown', (e) => {
+            pointer.down = true;
+            burst(e.clientX, e.clientY, 28 + Math.floor(Math.random() * 24));
+            setTimeout(() => pointer.down = false, 180);
+        });
 
-    // initialization helpers
-    function init() {
-        fitCanvas();
-        initParticles();
-        lastTime = performance.now();
-        requestAnimationFrame(render);
-    }
+        window.addEventListener('pointerup', () => { pointer.down = false; });
 
-    function fitCanvas() {
-        // DPR adapt: allow external window._adaptiveDPR set by PerfControl
-        DPR = Math.max(1, (window.devicePixelRatio || 1) * (window._adaptiveDPR || 1));
-        flowC.width = Math.floor(window.innerWidth * DPR);
-        flowC.height = Math.floor(window.innerHeight * DPR);
-        glowC.width = flowC.width;
-        glowC.height = flowC.height;
-        flowC.style.width = window.innerWidth + 'px';
-        flowC.style.height = window.innerHeight + 'px';
-        flowC.getContext('2d').setTransform(DPR, 0, 0, DPR, 0, 0);
-        glowC.style.width = window.innerWidth + 'px';
-        glowC.style.height = window.innerHeight + 'px';
-        glowC.getContext('2d').setTransform(DPR, 0, 0, DPR, 0, 0);
-    }
+        // touch fallback handled by pointer events above
+    })();
 
-    function initParticles() {
-        particles = [];
-        const pal = CONFIG.PALETTE;
-        for (let i = 0; i < PARTICLES; i++) {
-            const p = {
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                vx: (Math.random() - 0.5) * 0.6,
-                vy: (Math.random() - 0.5) * 0.6,
-                size: 1.6 + Math.random() * 3.8,
-                color: pal[i % pal.length],
+    // burst: spawn quick particles and temporary ribbon jitter
+    function burst(x, y, count = 20) {
+        for (let i = 0; i < count; i++) {
+            particles.push({
+                x: x + randF(-40, 40),
+                y: y + randF(-40, 40),
+                vx: (Math.random() - 0.5) * 6,
+                vy: (Math.random() - 0.5) * 6,
+                size: 2 + Math.random() * 4,
+                color: CONFIG.PALETTE[Math.floor(Math.random() * CONFIG.PALETTE.length)],
                 seed: Math.random() * 1000
-            };
-            particles.push(p);
+            });
         }
+        // cap particles array to reasonable limit
+        if (particles.length > PARTICLES * 4) particles.splice(0, particles.length - PARTICLES * 2);
+        // jitter ribbons
+        for (const r of ribbons) {
+            if (Math.random() < 0.5) r.pts[r.pts.length - 1].x += randF(-40, 40);
+            if (Math.random() < 0.5) r.pts[r.pts.length - 1].y += randF(-40, 40);
+        }
+    }
+
+    // schedule gentle auto-bursts for life
+    setInterval(() => {
+        if (!running) return;
+        if (Math.random() < 0.08) {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            burst(x, y, 8 + Math.floor(Math.random() * 16));
+        }
+    }, 2400);
+
+    // init
+    function init() {
+        fitAll();
+        initParticles();
+        initRibbons();
+        last = performance.now();
+        if (running) requestAnimationFrame(render);
     }
 
     // visibility handling
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) { window._pageHidden = true; running = false; }
-        else { window._pageHidden = false; running = true; lastTime = performance.now(); requestAnimationFrame(render); }
+        else { window._pageHidden = false; running = true; last = performance.now(); requestAnimationFrame(render); }
     });
 
-    // adaptive performance controller (auto)
+    // adaptive perf detection
     (function perfDetect() {
         const conn = navigator.connection || null;
         const slowNet = conn && (conn.saveData || (conn.effectiveType && (conn.effectiveType.includes('2g') || conn.effectiveType.includes('3g'))));
-        const lowMem = navigator.deviceMemory && navigator.deviceMemory < 2;
+        const lowmem = navigator.deviceMemory && navigator.deviceMemory < 2;
         const cpu = navigator.hardwareConcurrency || 4;
-        if (slowNet || lowMem || cpu <= 2) {
-            window._perfMultiplier = 0.72;
+        if (slowNet || lowmem || cpu <= 2) {
+            window._perfMultiplier = 0.68;
             window._adaptiveDPR = Math.max(1, Math.floor((window.devicePixelRatio || 1) / 1.6));
+            document.documentElement.classList.add('performance-low');
         } else if (cpu <= 4) {
             window._perfMultiplier = 1.0;
             window._adaptiveDPR = 1;
+            document.documentElement.classList.remove('performance-low');
         } else {
-            window._perfMultiplier = 1.2;
+            window._perfMultiplier = 1.18;
             window._adaptiveDPR = 1;
+            document.documentElement.classList.remove('performance-low');
         }
-        // adjust particle count dynamically
+        // reduce counts if multiplier low
         if (window._perfMultiplier < 0.9) {
-            PARTICLES = Math.max(12, Math.floor(PARTICLES * 0.45));
+            PARTICLES = Math.max(12, Math.floor(PARTICLES * 0.5));
+            RIBBON_COUNT = Math.max(6, Math.floor(RIBBON_COUNT * 0.6));
         }
     })();
 
-    // resize handler (throttled)
+    // handle resize (throttled)
     let rTO = null;
     window.addEventListener('resize', () => {
         clearTimeout(rTO);
-        rTO = setTimeout(() => {
-            fitCanvas();
-            initParticles();
-        }, 120);
+        rTO = setTimeout(() => { fitAll(); }, 120);
     });
 
     // start
     init();
 
-    // expose debug API
-    window.__YusufFlow = {
+    // expose debug helpers
+    window.__YusufBg = {
         pause() { running = false; },
         resume() { if (!prefersReduced) { running = true; requestAnimationFrame(render); } },
-        setIntensity(v) { /* v: 0.5..1.8 */ window._perfMultiplier = v || 1 }
+        setPerf(v) { window._perfMultiplier = v || 1; },
+        burstAt(x, y, cnt = 30) { burst(x, y, cnt); }
     };
 
-    // respect reduced-motion: if user prefers reduced, stop heavy loops
+    // honor reduced-motion immediately: draw static frame then stop loops
     if (prefersReduced) {
         running = false;
-        // draw a single frame static subtle background for visual
-        render(performance.now());
+        // render one quiet frame
+        (function oneFrame() {
+            // very subtle static visual: draw one set of soft blobs
+            bufCtx.clearRect(0, 0, buffer.width, buffer.height);
+            for (let i = 0; i < Math.min(8, PARTICLES); i++) {
+                const px = Math.random() * window.innerWidth;
+                const py = Math.random() * window.innerHeight;
+                bufCtx.fillStyle = alpha(CONFIG.PALETTE[i % CONFIG.PALETTE.length], 0.08);
+                bufCtx.beginPath();
+                bufCtx.arc(px, py, 40 + Math.random() * 80, 0, Math.PI * 2);
+                bufCtx.fill();
+            }
+            // composite to glow once
+            glowCtx.clearRect(0, 0, glowC.width / DPR, glowC.height / DPR);
+            glowCtx.globalAlpha = 0.9;
+            glowCtx.drawImage(buffer, 0, 0);
+            glowCtx.globalAlpha = 1;
+            // flow lowest opacity frame
+            flowCtx.clearRect(0, 0, flowC.width / DPR, flowC.height / DPR);
+        })();
     }
 
 })();
