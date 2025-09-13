@@ -4,15 +4,20 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>YOUSSEF</title>
+    <title>IDRIS — Darkweb Cyber Placeholder</title>
     <meta name="robots" content="noindex,nofollow">
+    <meta name="description"
+        content="Dark, mysterious, cyber placeholder for Idris — minimalist: only the name, high-end visual treatment." />
+
     <style>
         :root {
-            --bg: #030308;
-            --accent1: #00ffd6;
-            --accent2: #ff00d0;
-            --accent3: #7cff00;
-            --glass-alpha: 0.04;
+            --bg0: #030205;
+            /* near-black */
+            --panel: rgba(6, 8, 10, 0.28);
+            --accent-cyan: #00ffb3;
+            --accent-green: #06ff3e;
+            --accent-magenta: #ff00d6;
+            --muted: #bcd;
         }
 
         /* reset */
@@ -28,7 +33,10 @@
         }
 
         body {
-            background: var(--bg);
+            background: radial-gradient(1200px 600px at 10% 20%, rgba(8, 0, 18, 0.6), transparent 10%),
+                radial-gradient(900px 500px at 90% 80%, rgba(0, 8, 10, 0.55), transparent 12%),
+                var(--bg0);
+            color: var(--muted);
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Courier New', monospace;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -38,7 +46,7 @@
             justify-content: center;
         }
 
-        /* canvas layers stacked */
+        /* full-canvas layers stacking */
         canvas {
             position: fixed;
             inset: 0;
@@ -48,52 +56,52 @@
             z-index: 0
         }
 
-        /* single centered container for the name (no extra text) */
+        /* single container (only name) */
         .center {
             position: relative;
-            z-index: 10;
+            z-index: 12;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: min(92vw, 1200px);
-            height: min(70vh, 520px);
-            pointer-events: none;
-            /* no accidental focus */
-        }
-
-        /* big neon/glass text using SVG for crispness */
-        svg {
-            width: 100%;
-            height: 100%
-        }
-
-        /* visually center the text */
-        .brand {
             width: 100%;
             height: 100%;
+            pointer-events: none
+        }
+
+        /* svg hero text wrapper */
+        .hero {
+            width: min(95vw, 1200px);
+            height: min(40vh, 380px);
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: center
         }
 
-        /* text styles inside svg are defined inline for clarity */
-        /* subtle reflective glow under text */
-        .reflection {
+        /* glow reflection under the text */
+        .reflect {
             position: absolute;
-            z-index: 9;
-            top: 50%;
+            z-index: 11;
+            bottom: 45%;
             left: 0;
             right: 0;
-            transform: translateY(34%);
             height: 28%;
+            opacity: 0.06;
+            filter: blur(14px);
             pointer-events: none;
-            opacity: 0.08;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0));
-            filter: blur(12px);
-            mix-blend-mode: screen;
+            background: linear-gradient(180deg, rgba(0, 255, 179, 0.12), rgba(255, 0, 214, 0.06));
+            mix-blend-mode: screen
         }
 
-        /* support reduced motion */
+        /* subtle vignette */
+        .vign {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 20;
+            background: radial-gradient(60% 60% at 50% 50%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.6) 100%)
+        }
+
+        /* Accessibility: reduced motion */
         @media (prefers-reduced-motion: reduce) {
             * {
                 animation: none !important;
@@ -101,352 +109,171 @@
             }
         }
 
-        /* responsiveness */
+        /* responsive */
         @media (max-width:640px) {
-            .center {
-                height: 46vh
+            .hero {
+                height: min(32vh, 240px)
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- canvases: nebula (blurred blobs), particles, stars -->
+    <!-- CANVASES: nebula (blurred blobs), matrix rain, particle net, stars, noise -->
     <canvas id="nebula"></canvas>
+    <canvas id="matrix"></canvas>
     <canvas id="particles"></canvas>
     <canvas id="stars"></canvas>
+    <div class="vign" aria-hidden="true"></div>
 
-    <div class="center" aria-hidden="false">
-        <div class="brand" role="img" aria-label="YOUSSEF">
-            <!-- SVG text (only visible text). No other text elements anywhere. -->
-            <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid meet" aria-hidden="false">
-                <!-- defs: filters for glow / blur / subtle noise -->
+    <div class="center" role="main" aria-label="IDRIS landing">
+        <div class="hero" aria-hidden="false">
+            <!-- SVG text only: crisp, layered neon + chroma split + subtle glitch -->
+            <svg viewBox="0 0 1200 280" preserveAspectRatio="xMidYMid meet" aria-hidden="false">
                 <defs>
-                    <filter id="big-glow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="10" result="b" />
+                    <filter id="blurLarge" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="12" result="b" />
+                    </filter>
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="8" result="g" />
                         <feMerge>
-                            <feMergeNode in="b" />
+                            <feMergeNode in="g" />
                             <feMergeNode in="SourceGraphic" />
                         </feMerge>
                     </filter>
-
-                    <filter id="soft-bloom" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="24" result="blur1" />
-                        <feColorMatrix in="blur1" type="matrix" values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 .8 0" result="b1" />
-                        <feMerge>
-                            <feMergeNode in="b1" />
-                            <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                    </filter>
-
-                    <!-- subtle grain -->
-                    <filter id="grain">
-                        <feTurbulence baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="t" />
-                        <feColorMatrix type="saturate" values="0" />
-                        <feBlend in="t" in2="SourceGraphic" mode="overlay" />
-                    </filter>
-
-                    <!-- clip path to keep text inside bounds when animating -->
-                    <clipPath id="clip">
-                        <rect x="0" y="0" width="1200" height="300" />
+                    <linearGradient id="grainGrad" x1="0" x2="1">
+                        <stop offset="0%" stop-color="#000" stop-opacity="0" />
+                        <stop offset="100%" stop-color="#000" stop-opacity="0" />
+                    </linearGradient>
+                    <clipPath id="clipRect">
+                        <rect x="0" y="0" width="1200" height="280" />
                     </clipPath>
                 </defs>
 
-                <!-- layered text for depth & colour offsets (glow + subtle chroma split) -->
-                <!-- main white core -->
-                <g clip-path="url(#clip)">
-                    <text id="core" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-                        font-family="ui-monospace, 'Courier New', monospace" font-weight="700" font-size="140"
-                        fill="#e9f8ff" style="letter-spacing:12px; filter: url(#soft-bloom);">
-                        YOUSSEF
+                <g clip-path="url(#clipRect)">
+                    <!-- deep core (white-ish) -->
+                    <text id="coreText" x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"
+                        font-family="ui-monospace, 'Courier New', monospace" font-weight="800" font-size="138"
+                        fill="#eafcff" style="letter-spacing:14px; filter:url(#glow);">
+                        IDRIS
                     </text>
 
-                    <!-- colored beveled halos (offsets to simulate chroma/glitch) -->
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-                        font-family="ui-monospace, 'Courier New', monospace" font-weight="700" font-size="140"
-                        fill="none" stroke="rgba(0,255,214,0.28)" stroke-width="12"
-                        style="letter-spacing:12px; transform: translate(-6px,0);">
-                        YOUSSEF
-                    </text>
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-                        font-family="ui-monospace, 'Courier New', monospace" font-weight="700" font-size="140"
-                        fill="none" stroke="rgba(255,0,208,0.22)" stroke-width="12"
-                        style="letter-spacing:12px; transform: translate(6px,0);">
-                        YOUSSEF
+                    <!-- cyan halo (left offset) -->
+                    <text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"
+                        font-family="ui-monospace, 'Courier New', monospace" font-weight="800" font-size="138"
+                        fill="none" stroke="rgba(0,255,179,0.22)" stroke-width="12"
+                        style="letter-spacing:14px; transform:translateX(-8px);">
+                        IDRIS
                     </text>
 
-                    <!-- thin neon inner stroke -->
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-                        font-family="ui-monospace, 'Courier New', monospace" font-weight="800" font-size="140"
-                        fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" style="letter-spacing:12px;">
-                        YOUSSEF
+                    <!-- magenta halo (right offset) -->
+                    <text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"
+                        font-family="ui-monospace, 'Courier New', monospace" font-weight="800" font-size="138"
+                        fill="none" stroke="rgba(255,0,214,0.18)" stroke-width="12"
+                        style="letter-spacing:14px; transform:translateX(8px);">
+                        IDRIS
                     </text>
 
-                    <!-- animated subtle scanline clipping to create flicker/glitch -->
-                    <g id="scanGlitch" style="mix-blend-mode:screen; opacity:0.95">
-                        <rect x="-200" y="0" width="1400" height="300" fill="url(#sweep)"></rect>
-                    </g>
+                    <!-- thin crisp outline -->
+                    <text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"
+                        font-family="ui-monospace, 'Courier New', monospace" font-weight="900" font-size="138"
+                        fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.2" style="letter-spacing:14px;">
+                        IDRIS
+                    </text>
 
+                    <!-- micro-glitch mask rectangles (animated via JS by toggling opacity on group) -->
+                    <g id="glitchMask" style="mix-blend-mode:screen;opacity:0.98"></g>
                 </g>
             </svg>
         </div>
-        <div class="reflection" aria-hidden="true"></div>
+        <div class="reflect" aria-hidden="true"></div>
     </div>
 
     <script>
-        /* ============================
-           High-quality background system
-           - nebula: blurred moving color blobs (uses canvas with ctx.filter blur)
-           - particles: small moving points with faint links
-           - stars: tiny twinkling stars
-           Performance minded: dpr scaling, lower density on mobile, reduce motion respect
-           ============================ */
-
+        /* ======= CONFIG & UTIL ======= */
         const DPR = Math.max(1, window.devicePixelRatio || 1);
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const isMobile = /Mobi|Android|iPhone|iPad/.test(navigator.userAgent);
 
-        // helper to size canvas for DPR
-        function sizeCanvas(canvas) {
+        function sizeCanv(canvas) {
             const w = Math.max(1, Math.floor(innerWidth * DPR));
             const h = Math.max(1, Math.floor(innerHeight * DPR));
-            canvas.width = w; canvas.height = h;
-            canvas.style.width = innerWidth + 'px';
-            canvas.style.height = innerHeight + 'px';
+            canvas.width = w; canvas.height = h; canvas.style.width = innerWidth + 'px'; canvas.style.height = innerHeight + 'px';
             return { w, h };
         }
 
-        /* ---------- nebula layer ---------- */
-        const nebulaC = document.getElementById('nebula');
-        const nctx = nebulaC.getContext('2d', { alpha: true });
+        /* ======= NEBULA (darker, desaturated, green/purple) ======= */
+        const neb = document.getElementById('nebula'); const nctx = neb.getContext('2d');
         let blobs = [];
-        function initNebula() {
-            const { w, h } = sizeCanvas(nebulaC);
-            blobs = [];
-            const baseCount = isMobile ? 3 : 5;
-            for (let i = 0; i < baseCount; i++) {
-                blobs.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() * 0.6 - 0.3) * (isMobile ? 0.4 : 1),
-                    vy: (Math.random() * 0.4 - 0.2) * (isMobile ? 0.4 : 1),
-                    r: (Math.min(w, h) * (0.18 + Math.random() * 0.18)),
-                    hue: Math.random()
-                });
-            }
-        }
-        function drawNebula(t) {
-            nctx.clearRect(0, 0, nebulaC.width, nebulaC.height);
-            // subtle radial gradient base
-            const g = nctx.createLinearGradient(0, 0, nebulaC.width, nebulaC.height);
-            g.addColorStop(0, 'rgba(2,6,20,1)');
-            g.addColorStop(1, 'rgba(5,2,10,1)');
-            nctx.fillStyle = g;
-            nctx.fillRect(0, 0, nebulaC.width, nebulaC.height);
-
-            // draw blobs with big blur
-            nctx.save();
-            // make blobs bright and blurred
-            nctx.globalCompositeOperation = 'lighter';
-            nctx.filter = 'blur(48px)';
-            for (const b of blobs) {
-                // color cycling
-                const hue = (b.hue * 360 + (t * 0.00002 * 40)) % 360;
-                const color = `hsla(${hue}, 95%, 55%, 0.28)`;
-                const gx = nctx.createRadialGradient(b.x, b.y, Math.max(1, b.r * 0.1), b.x, b.y, b.r);
-                gx.addColorStop(0, color);
-                gx.addColorStop(0.35, color.replace('0.28', '0.15'));
-                gx.addColorStop(1, 'rgba(0,0,0,0)');
-                nctx.fillStyle = gx;
-                nctx.beginPath();
-                nctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-                nctx.fill();
-            }
-            nctx.restore();
-
-            // light soft overlay for depth (simulates atmosphere)
-            nctx.save();
-            nctx.globalAlpha = 0.06;
-            nctx.fillStyle = 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0))';
-            nctx.fillRect(0, 0, nebulaC.width, nebulaC.height);
+        function initNeb() { const { w, h } = sizeCanv(neb); blobs = []; const count = isMobile ? 3 : 5; for (let i = 0; i < count; i++) { blobs.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() * 0.5 - 0.25) * (isMobile ? 0.4 : 1), vy: (Math.random() * 0.4 - 0.2) * (isMobile ? 0.4 : 1), r: Math.min(w, h) * (0.12 + Math.random() * 0.18), hue: Math.random() }); } }
+        function drawNeb(t) {
+            nctx.clearRect(0, 0, neb.width, neb.height); // dark base
+            const g = nctx.createLinearGradient(0, 0, neb.width, neb.height);
+            g.addColorStop(0, 'rgba(2,3,5,1)'); g.addColorStop(1, 'rgba(6,2,8,1)'); nctx.fillStyle = g; nctx.fillRect(0, 0, neb.width, neb.height);
+            nctx.save(); nctx.globalCompositeOperation = 'lighter'; nctx.filter = 'blur(48px)';
+            for (const b of blobs) { const hue = (b.hue * 360 + (t * 0.00002 * 40)) % 360; const color = `hsla(${hue},80%,40%,0.26)`; const rg = nctx.createRadialGradient(b.x, b.y, Math.max(1, b.r * 0.15), b.x, b.y, b.r); rg.addColorStop(0, color); rg.addColorStop(0.4, color.replace('0.26', '0.12')); rg.addColorStop(1, 'rgba(0,0,0,0)'); nctx.fillStyle = rg; nctx.beginPath(); nctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); nctx.fill(); }
             nctx.restore();
         }
 
-        /* ---------- particles layer (mid) ---------- */
-        const partC = document.getElementById('particles');
-        const pctx = partC.getContext('2d', { alpha: true });
-        let particles = [];
-        function initParticles() {
-            const { w, h } = sizeCanvas(partC);
-            particles = [];
-            const area = w * h;
-            const density = isMobile ? 1 / 24000 : 1 / 14000;
-            const count = Math.max(18, Math.floor(area * density));
-            for (let i = 0; i < count; i++) {
-                particles.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() * 0.6 - 0.3) * (isMobile ? 0.45 : 1),
-                    vy: (Math.random() * 0.6 - 0.3) * (isMobile ? 0.45 : 1),
-                    r: (Math.random() * 1.6 + 0.6) * DPR,
-                    col: Math.random()
-                });
-            }
-        }
-        function drawParticles() {
-            pctx.clearRect(0, 0, partC.width, partC.height);
-            // draw connections
-            const maxD = Math.min(140 * DPR, partC.width / 6);
-            for (let i = 0; i < particles.length; i++) {
-                const a = particles[i];
-                for (let j = i + 1; j < particles.length; j++) {
-                    const b = particles[j];
-                    const dx = a.x - b.x; const dy = a.y - b.y;
-                    const d = Math.hypot(dx, dy);
-                    if (d < maxD) {
-                        const alpha = 0.06 * (1 - d / maxD);
-                        pctx.strokeStyle = `rgba(0,255,214,${alpha})`;
-                        pctx.lineWidth = 0.6 * DPR;
-                        pctx.beginPath(); pctx.moveTo(a.x, a.y); pctx.lineTo(b.x, b.y); pctx.stroke();
-                    }
-                }
-            }
-            // draw dots
-            for (const pt of particles) {
-                pctx.beginPath();
-                // color palette subtle variance
-                const c = pt.col;
-                const col = c < 0.33 ? '#00ffd6' : (c < 0.66 ? '#ff00d0' : '#7cff00');
-                pctx.fillStyle = col;
-                pctx.globalAlpha = 0.92;
-                pctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2); pctx.fill();
-                pctx.globalAlpha = 1;
+        /* ======= MATRIX RAIN (vert green streams) ======= */
+        const mat = document.getElementById('matrix'); const mctx = mat.getContext('2d');
+        let cols, colSize, drops;
+        function initMatrix() { const { w, h } = sizeCanv(mat); colSize = Math.max(12 * DPR, isMobile ? 10 * DPR : 14 * DPR); cols = Math.floor(w / colSize); drops = new Array(cols).fill(0).map(() => Math.floor(Math.random() * h)); }
+        function drawMatrix() {
+            mctx.clearRect(0, 0, mat.width, mat.height); mctx.fillStyle = 'rgba(0,0,0,0.02)'; mctx.fillRect(0, 0, mat.width, mat.height); mctx.font = `${colSize}px monospace`; mctx.textBaseline = 'top';
+            for (let i = 0; i < cols; i++) {
+                const x = i * colSize; const y = drops[i] * colSize; const char = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96)); mctx.fillStyle = `rgba(0,255,148,${0.18 + Math.random() * 0.32})`; mctx.fillText(char, x, y);
+                drops[i] += 1; if (drops[i] * colSize > mat.height + Math.random() * 10000) drops[i] = 0;
             }
         }
 
-        /* ---------- stars layer (far) ---------- */
-        const starC = document.getElementById('stars');
-        const sctx = starC.getContext('2d', { alpha: true });
-        let stars = [];
-        function initStars() {
-            const { w, h } = sizeCanvas(starC);
-            stars = [];
-            const count = Math.floor((w * h) / (isMobile ? 40000 : 20000));
-            for (let i = 0; i < count; i++) {
-                stars.push({
-                    x: Math.random() * w, y: Math.random() * h,
-                    r: Math.random() * 1.2 * DPR, a: 0.2 + Math.random() * 0.9,
-                    tw: Math.random() * 3000 + 1000
-                });
-            }
-        }
-        function drawStars(t) {
-            sctx.clearRect(0, 0, starC.width, starC.height);
-            for (const st of stars) {
-                const alpha = st.a * (0.6 + 0.4 * Math.sin((t % st.tw) / st.tw * Math.PI * 2));
-                sctx.globalAlpha = alpha * 0.9;
-                sctx.fillStyle = '#fff';
-                sctx.beginPath(); sctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); sctx.fill();
-            }
-            sctx.globalAlpha = 1;
+        /* ======= PARTICLES + LINKS (cyber net) ======= */
+        const pcan = document.getElementById('particles'); const pct = pcan.getContext('2d'); let parts = [];
+        function initParts() { const { w, h } = sizeCanv(pcan); parts = []; const area = w * h; const density = isMobile ? 1 / 26000 : 1 / 16000; const count = Math.max(16, Math.floor(area * density)); for (let i = 0; i < count; i++) { parts.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() * 0.6 - 0.3) * (isMobile ? 0.45 : 1), vy: (Math.random() * 0.6 - 0.3) * (isMobile ? 0.45 : 1), r: (Math.random() * 1.6 + 0.6) * DPR, col: Math.random() }); } }
+        function drawParts() {
+            pct.clearRect(0, 0, pcan.width, pcan.height); const maxD = Math.min(120 * DPR, pcan.width / 6);
+            for (let i = 0; i < parts.length; i++) { for (let j = i + 1; j < parts.length; j++) { const a = parts[i], b = parts[j]; const dx = a.x - b.x, dy = a.y - b.y, d = Math.hypot(dx, dy); if (d < maxD) { pct.beginPath(); pct.strokeStyle = `rgba(0,230,140,${0.06 * (1 - d / maxD)})`; pct.lineWidth = 0.6 * DPR; pct.moveTo(a.x, a.y); pct.lineTo(b.x, b.y); pct.stroke(); } } }
+            for (const p of parts) { pct.beginPath(); const c = p.col < 0.33 ? '#00ffb3' : (p.col < 0.66 ? '#ff00d6' : '#7eff3b'); pct.fillStyle = c; pct.globalAlpha = 0.88; pct.arc(p.x, p.y, p.r, 0, Math.PI * 2); pct.fill(); pct.globalAlpha = 1; }
         }
 
-        /* ---------- animation loop ---------- */
-        let last = performance.now();
-        let raf;
+        /* ======= STARS (tiny twinkle) ======= */
+        const star = document.getElementById('stars'); const sctx = star.getContext('2d'); let stars = [];
+        function initStars() { const { w, h } = sizeCanv(star); stars = []; const count = Math.floor((w * h) / (isMobile ? 45000 : 22000)); for (let i = 0; i < count; i++) { stars.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.4 * DPR, a: 0.2 + Math.random() * 0.9, tw: Math.random() * 3000 + 900 }); } }
+        function drawStars(t) { sctx.clearRect(0, 0, star.width, star.height); for (const st of stars) { const a = st.a * (0.5 + 0.5 * Math.sin((t % st.tw) / st.tw * Math.PI * 2)); sctx.globalAlpha = a * 0.9; sctx.fillStyle = '#fff'; sctx.beginPath(); sctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); sctx.fill(); } sctx.globalAlpha = 1; }
+
+        /* ======= CORE LOOP ======= */
+        let last = performance.now(); let raf;
         function step(now) {
             const dt = now - last; last = now;
-            // update blobs positions
-            for (const b of blobs) {
-                b.x += b.vx * Math.max(0.2, dt * 0.06);
-                b.y += b.vy * Math.max(0.2, dt * 0.06);
-                // wrap
-                if (b.x < -b.r) b.x = nebulaC.width + b.r;
-                if (b.x > nebulaC.width + b.r) b.x = -b.r;
-                if (b.y < -b.r) b.y = nebulaC.height + b.r;
-                if (b.y > nebulaC.height + b.r) b.y = -b.r;
-            }
-            // update particles
-            for (const p of particles) {
-                p.x += p.vx * Math.max(0.2, dt * 0.06);
-                p.y += p.vy * Math.max(0.2, dt * 0.06);
-                if (p.x < -10) p.x = partC.width + 10;
-                if (p.x > partC.width + 10) p.x = -10;
-                if (p.y < -10) p.y = partC.height + 10;
-                if (p.y > partC.height + 10) p.y = -10;
-            }
+            // move blobs
+            for (const b of blobs) { b.x += b.vx * Math.max(0.2, dt * 0.06); b.y += b.vy * Math.max(0.2, dt * 0.06); if (b.x < -b.r) b.x = neb.width + b.r; if (b.x > neb.width + b.r) b.x = -b.r; if (b.y < -b.r) b.y = neb.height + b.r; if (b.y > neb.height + b.r) b.y = -b.r; }
+            // move parts
+            for (const p of parts) { p.x += p.vx * Math.max(0.2, dt * 0.06); p.y += p.vy * Math.max(0.2, dt * 0.06); if (p.x < -10) p.x = pcan.width + 10; if (p.x > pcan.width + 10) p.x = -10; if (p.y < -10) p.y = pcan.height + 10; if (p.y > pcan.height + 10) p.y = -10; }
 
-            // draw layers
-            drawNebula(now);
-            drawStars(now);
-            drawParticles();
-
-            // subtle parallax: translate canvases based on mouse
-            if (mouse.x !== null) {
-                const tx = (mouse.x - innerWidth / 2) * 0.02 * DPR;
-                const ty = (mouse.y - innerHeight / 2) * 0.02 * DPR;
-                nebulaC.style.transform = `translate3d(${tx * 0.15}px, ${ty * 0.12}px, 0)`;
-                partC.style.transform = `translate3d(${tx * 0.4}px, ${ty * 0.28}px, 0)`;
-                starC.style.transform = `translate3d(${tx * 0.08}px, ${ty * 0.06}px, 0)`;
-            }
+            // draw
+            drawNeb(now); drawStars(now); drawParts(); if (!reduced) drawMatrix();
 
             raf = requestAnimationFrame(step);
         }
 
-        // mouse tracking for parallax (performance-throttled)
-        let mouse = { x: null, y: null };
-        let tTo = 0;
-        window.addEventListener('mousemove', (e) => {
-            if (reduced) return;
-            const now = Date.now();
-            if (now - tTo > 12) {
-                mouse.x = e.clientX; mouse.y = e.clientY; tTo = now;
-            }
-        });
+        /* ======= interaction: slight parallax via mouse ======= */
+        let mouse = { x: null, y: null }; let tThrottle = 0;
+        window.addEventListener('mousemove', (e) => { if (reduced) return; const now = Date.now(); if (now - tThrottle > 14) { mouse.x = e.clientX; mouse.y = e.clientY; tThrottle = now; const tx = (mouse.x - innerWidth / 2) * 0.02 * DPR; const ty = (mouse.y - innerHeight / 2) * 0.02 * DPR; neb.style.transform = `translate3d(${tx * 0.12}px,${ty * 0.08}px,0)`; pcan.style.transform = `translate3d(${tx * 0.4}px,${ty * 0.3}px,0)`; star.style.transform = `translate3d(${tx * 0.06}px,${ty * 0.04}px,0)`; mat.style.transform = `translate3d(${tx * 0.2}px,${ty * 0.18}px,0)`; } });
 
-        // init everything
-        function initAll() {
-            initNebula(); initParticles(); initStars();
-            // start loop
-            cancelAnimationFrame(raf);
-            last = performance.now();
-            if (!reduced) raf = requestAnimationFrame(step);
-            else {
-                // if reduced motion, render one frame static
-                drawNebula(performance.now()); drawStars(performance.now()); drawParticles();
-            }
-        }
-        initAll();
-
-        // handle resize (debounced)
-        let rto;
-        window.addEventListener('resize', () => { clearTimeout(rto); rto = setTimeout(() => { initAll(); }, 140); });
-
-        // pause on hidden tab
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) cancelAnimationFrame(raf);
-            else { last = performance.now(); raf = requestAnimationFrame(step); }
-        });
-
-        /* ---------- small polish: text subtle vertical shimmer + chroma micro-shift ---------- */
-        (function textPolish() {
-            const core = document.getElementById('core');
-            let t0 = performance.now();
-            function animText(now) {
-                const dt = (now - t0) * 0.0006;
-                // vertical micro-breath
-                const vy = Math.sin(dt * 1.2) * 2;
-                core.setAttribute('transform', `translate(0, ${vy})`);
-                requestAnimationFrame(animText);
-            }
-            if (!reduced) requestAnimationFrame(animText);
+        /* micro-glitch: flashes slices across the SVG text for realism */
+        (function microGlitch() {
+            const g = document.getElementById('glitchMask'); if (!g) return; function makeSlice(y, h, opacity, delay) { const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); rect.setAttribute('x', 0); rect.setAttribute('y', y); rect.setAttribute('width', 1200); rect.setAttribute('height', h); rect.setAttribute('fill', 'rgba(255,255,255,' + opacity + ')'); rect.style.mixBlendMode = 'screen'; rect.style.opacity = '0'; g.appendChild(rect); setTimeout(() => { rect.style.transition = 'opacity 140ms linear, transform 200ms linear'; rect.style.opacity = '1'; rect.style.transform = 'translateX(' + (Math.random() > 0.5 ? 20 : -20) + 'px)'; setTimeout(() => { rect.style.opacity = '0'; setTimeout(() => rect.remove(), 220) }, 120 + Math.random() * 220) }, delay); }
+            function loop() { if (reduced) { setTimeout(loop, 1200); return; } const slices = 1 + Math.floor(Math.random() * 3); for (let i = 0; i < slices; i++) { const y = Math.random() * 180; const h = 6 + Math.random() * 28; const op = 0.07 + Math.random() * 0.16; makeSlice(y, h, op, Math.random() * 300); } const next = 800 + Math.random() * 2200; setTimeout(loop, next); } loop();
         })();
 
-        /* Optional: keep CPU smart on older devices */
-        if (!window.requestIdleCallback) window.requestIdleCallback = (fn) => setTimeout(fn, 200);
+        /* ======= init & resize handling ======= */
+        function initAll() { initNeb(); initParts(); initStars(); initMatrix(); cancelAnimationFrame(raf); last = performance.now(); if (!reduced) raf = requestAnimationFrame(step); else { drawNeb(performance.now()); drawStars(performance.now()); drawParts(); } }
+        initAll();
+        let rto; window.addEventListener('resize', () => { clearTimeout(rto); rto = setTimeout(() => { initAll(); }, 140); });
+
+        /* pause when hidden */
+        document.addEventListener('visibilitychange', () => { if (document.hidden) cancelAnimationFrame(raf); else { last = performance.now(); raf = requestAnimationFrame(step); } });
+
     </script>
 </body>
 
