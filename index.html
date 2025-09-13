@@ -1,416 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>⛧ YOUSSEF ⛧</title>
+
+    <!-- Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="shortcut icon" href="favicon.ico">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            cursor: none;
+        :root{
+            --red: #ff0000;
+            --bg: #000;
         }
 
-        ::selection {
-            background: #ff0000;
-            color: #000;
-        }
-
-        body {
+        *{ margin:0; padding:0; box-sizing:border-box; cursor:none; }
+        body{
             font-family: 'Courier New', monospace;
-            background: #000;
-            color: #ff0000;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
+            background: var(--bg);
+            color: var(--red);
+            height:100vh;
+            overflow:hidden;
+            position:relative;
         }
 
-        /* Custom Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ff0000;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transition: 0.1s;
-            animation: cursorPulse 2s infinite;
+        ::selection{ background: var(--red); color:#000; }
+
+        /* ---------------- Custom cursor ---------------- */
+        .cursor{
+            width:20px; height:20px; border:2px solid var(--red);
+            position:fixed; pointer-events:none; z-index:9999; transition:0.08s;
+            border-radius:50%;
+            transform:translate(-50%,-50%);
+            animation:cursorPulse 2s infinite;
+        }
+        @keyframes cursorPulse{
+            0%,100%{ transform:translate(-50%,-50%) scale(1); opacity:1; }
+            50% { transform:translate(-50%,-50%) scale(1.4); opacity:0.5; }
         }
 
-        @keyframes cursorPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.5); opacity: 0.5; }
+        /* ---------------- Background / noise ---------------- */
+        .dark-bg{
+            position:fixed; inset:0; z-index:0;
+            background:
+                repeating-linear-gradient(0deg,#000 0,#0a0000 1px,transparent 1px,transparent 2px,#0a0000 3px),
+                repeating-linear-gradient(90deg,#000 0,#0a0000 1px,transparent 1px,transparent 2px,#0a0000 3px);
+            opacity:0.35; animation:glitchBg 8s infinite;
+        }
+        @keyframes glitchBg{
+            0%,100%{ filter:hue-rotate(0deg) brightness(1); }
+            25%{ filter:hue-rotate(90deg) brightness(0.85); }
+            50%{ filter:hue-rotate(180deg) brightness(1.2); }
+            75%{ filter:hue-rotate(270deg) brightness(0.9); }
         }
 
-        /* Dark Noise Background */
-        .dark-bg {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: 
-                repeating-linear-gradient(
-                    0deg,
-                    #000 0px,
-                    #0a0000 1px,
-                    transparent 1px,
-                    transparent 2px,
-                    #0a0000 3px
-                ),
-                repeating-linear-gradient(
-                    90deg,
-                    #000 0px,
-                    #0a0000 1px,
-                    transparent 1px,
-                    transparent 2px,
-                    #0a0000 3px
-                );
-            opacity: 0.4;
-            animation: glitchBg 8s infinite;
-        }
-
-        @keyframes glitchBg {
-            0%, 100% { filter: hue-rotate(0deg) brightness(1); }
-            20% { filter: hue-rotate(90deg) brightness(0.8); }
-            40% { filter: hue-rotate(180deg) brightness(1.2); }
-            60% { filter: hue-rotate(270deg) brightness(0.9); }
-            80% { filter: hue-rotate(360deg) brightness(1.1); }
-        }
-
-        /* Static Noise */
-        .static {
-            position: fixed;
-            width: 100%;
-            height: 100%;
+        .static{
+            position:fixed; inset:0; z-index:1; pointer-events:none;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23000"/><rect width="1" height="1" x="50" y="50" fill="%23fff" opacity="0.5"/></svg>');
-            opacity: 0.03;
-            z-index: 1;
-            pointer-events: none;
-            animation: staticNoise 0.1s infinite;
+            opacity:0.03; animation:staticNoise 0.12s steps(1) infinite;
+        }
+        @keyframes staticNoise{
+            0%{ transform:translate(0,0); } 50%{ transform:translate(1%, -1%);} 100%{ transform:translate(0,0);}
         }
 
-        @keyframes staticNoise {
-            0%, 100% { transform: translate(0, 0); }
-            10% { transform: translate(-1%, -1%); }
-            20% { transform: translate(1%, 1%); }
-            30% { transform: translate(-1%, 1%); }
-            40% { transform: translate(1%, -1%); }
-            50% { transform: translate(-1%, 0); }
+        /* ---------------- Container ---------------- */
+        .container{
+            position:relative; z-index:10;
+            height:100vh; display:flex; align-items:center; justify-content:center; gap:40px; flex-direction:column;
         }
 
-        /* Warning Terminal */
-        .warning-text {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 10px;
-            color: #ff0000;
-            opacity: 0.6;
-            font-family: monospace;
-            animation: flicker 3s infinite;
+        /* ---------------- Corrupted Title ---------------- */
+        .corrupted-text{
+            font-size:clamp(2rem, 8vw, 5.5rem);
+            letter-spacing:0.5em; position:relative; color:#fff;
+            text-shadow: 0 0 10px var(--red), 0 0 20px var(--red), 0 0 40px var(--red);
+            animation:corruptedGlitch 2s infinite;
+            z-index:12;
+        }
+        @keyframes corruptedGlitch{
+            0%,100%{ text-shadow: 0 0 10px var(--red),0 0 20px var(--red); }
+            50%{ text-shadow: 0 0 12px #fff, 0 0 30px #fff; color:#fff; }
         }
 
-        @keyframes flicker {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 0.2; }
-            75% { opacity: 0.8; }
-        }
-
-        /* Main Container */
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Corrupted Text */
-        .corrupted-text {
-            font-size: clamp(2rem, 8vw, 6rem);
-            font-weight: 100;
-            letter-spacing: 0.5em;
-            position: relative;
-            color: #fff;
-            text-shadow: 
-                0 0 10px #ff0000,
-                0 0 20px #ff0000,
-                0 0 40px #ff0000,
-                0 0 80px #ff0000;
-            animation: corruptedGlitch 2s infinite;
-        }
-
-        @keyframes corruptedGlitch {
-            0%, 100% { 
-                text-shadow: 
-                    0 0 10px #ff0000,
-                    0 0 20px #ff0000,
-                    0 0 40px #ff0000,
-                    0 0 80px #ff0000;
-            }
-            50% {
-                text-shadow: 
-                    0 0 10px #fff,
-                    0 0 20px #fff,
-                    0 0 40px #ff0000,
-                    0 0 80px #000;
-            }
-        }
-
+        /* pseudo RGB layers for text */
         .corrupted-text::before,
-        .corrupted-text::after {
+        .corrupted-text::after{
             content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position:absolute; inset:0; left:0; top:0;
+            z-index:-1; opacity:0.8;
+            pointer-events:none;
+        }
+        .corrupted-text::before{ color:var(--red); transform:translate(-3px,-2px); mix-blend-mode:screen; animation:clip1 0.8s infinite; }
+        .corrupted-text::after{ color:#00f; transform:translate(3px,2px); mix-blend-mode:screen; animation:clip2 1.2s infinite; }
+
+        @keyframes clip1{
+            0%{ clip-path: inset(0 0 60% 0); } 50%{ clip-path: inset(40% 0 10% 0);} 100%{ clip-path: inset(0 0 60% 0);}
+        }
+        @keyframes clip2{
+            0%{ clip-path: inset(20% 0 40% 0); } 50%{ clip-path: inset(5% 0 60% 0);} 100%{ clip-path: inset(20% 0 40% 0);}
         }
 
-        .corrupted-text::before {
-            animation: darkGlitch1 0.3s infinite;
-            color: #ff0000;
-            z-index: -1;
-            opacity: 0.8;
+        /* ---------------- Profile Glitch (copy-paste ready) ---------------- */
+        .glitch-img{
+            position:relative; width:260px; height:260px; border-radius:14px; overflow:hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 40px rgba(255,0,0,0.06);
+            z-index:11; transition:transform .25s ease;
         }
 
-        .corrupted-text::after {
-            animation: darkGlitch2 0.3s infinite;
-            color: #ffffff;
-            z-index: -2;
-            opacity: 0.8;
+        .glitch-img img{
+            width:100%; height:100%; object-fit:cover; display:block;
+            filter:grayscale(70%) contrast(120%); transform-origin:center;
+            transition: transform .25s ease, filter .25s ease;
         }
 
-        @keyframes darkGlitch1 {
-            0%, 100% {
-                clip: rect(0, 9999px, 9999px, 0);
-                transform: translate(0);
-            }
-            20% {
-                clip: rect(random(150) + px, 9999px, random(150) + px, 0);
-                transform: translate(-2px, -2px);
-            }
-            40% {
-                clip: rect(random(150) + px, 9999px, random(150) + px, 0);
-                transform: translate(2px, 2px);
-            }
-            60% {
-                clip: rect(random(150) + px, 9999px, random(150) + px, 0);
-                transform: translate(-4px, 0);
-            }
-            80% {
-                clip: rect(random(150) + px, 9999px, random(150) + px, 0);
-                transform: translate(0, -4px);
-            }
+        /* RGB split layers using pseudo elements */
+        .glitch-img::before,
+        .glitch-img::after{
+            content:""; position:absolute; inset:0; background-size:cover; background-position:center; pointer-events:none;
+            mix-blend-mode:screen; opacity:0.85; transition:opacity .15s;
+            will-change:transform, clip-path;
+        }
+        /* left (red) */
+        .glitch-img::before{
+            background-image: url('me.png');
+            transform: translate(-6px,0);
+            animation:glitchLayerA 2.6s infinite linear;
+            filter: hue-rotate(0deg) contrast(110%) saturate(120%);
+        }
+        /* right (blue/green) */
+        .glitch-img::after{
+            background-image: url('me.png');
+            transform: translate(6px,0);
+            animation:glitchLayerB 3.2s infinite linear;
+            filter: hue-rotate(200deg) contrast(110%) saturate(120%);
+            opacity:0.7;
         }
 
-        @keyframes darkGlitch2 {
-            0%, 100% {
-                clip: rect(0, 9999px, 9999px, 0);
-                transform: translate(0);
-            }
-            20% {
-                clip: rect(10px, 9999px, 150px, 0);
-                transform: translate(4px, 0);
-            }
-            40% {
-                clip: rect(50px, 9999px, 100px, 0);
-                transform: translate(0, 4px);
-            }
-            60% {
-                clip: rect(80px, 9999px, 120px, 0);
-                transform: translate(-4px, -4px);
-            }
-            80% {
-                clip: rect(20px, 9999px, 140px, 0);
-                transform: translate(4px, 4px);
-            }
+        /* scanlines overlay */
+        .glitch-img .scanlines{
+            position:absolute; inset:0; pointer-events:none;
+            background: repeating-linear-gradient( to bottom, rgba(255,255,255,0.00) 0px, rgba(255,255,255,0.02) 1px );
+            mix-blend-mode:overlay; opacity:0.06;
         }
 
-        /* Disturbing Messages */
-        .disturbing-message {
-            position: absolute;
-            color: #ff0000;
-            font-size: 12px;
-            opacity: 0;
-            animation: appearDisappear 10s infinite;
-            pointer-events: none;
-            font-family: monospace;
+        /* subtle noise mask */
+        .glitch-img .noise{
+            position:absolute; inset:0; pointer-events:none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="40" height="40" fill="%23000"/><circle cx="10" cy="10" r="1" fill="%23fff" opacity="0.03"/></svg>');
+            opacity:0.04;
+            mix-blend-mode:overlay;
         }
 
-        @keyframes appearDisappear {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 0.3; }
+        /* Hover intensify */
+        .glitch-img:hover img{ transform: scale(1.03); }
+        .glitch-img.glitched::before{ transform: translate(-20px,-6px) skewX(-3deg); opacity:1; }
+        .glitch-img.glitched::after{ transform: translate(20px,6px) skewX(3deg); opacity:1; }
+
+        @keyframes glitchLayerA{
+            0%{ clip-path: inset(0 0 0 0); transform:translate(-6px,0); }
+            10%{ clip-path: inset(10% 0 60% 0); transform:translate(-10px,-2px); }
+            30%{ clip-path: inset(30% 0 10% 0); transform:translate(-3px,1px); }
+            50%{ clip-path: inset(5% 0 40% 0); transform:translate(-14px,3px); }
+            70%{ clip-path: inset(20% 0 30% 0); transform:translate(-6px,-1px); }
+            100%{ clip-path: inset(0 0 0 0); transform:translate(-6px,0); }
+        }
+        @keyframes glitchLayerB{
+            0%{ clip-path: inset(0 0 0 0); transform:translate(6px,0); }
+            15%{ clip-path: inset(15% 0 10% 0); transform:translate(12px,2px); }
+            40%{ clip-path: inset(35% 0 5% 0); transform:translate(3px,-2px); }
+            60%{ clip-path: inset(10% 0 40% 0); transform:translate(18px,6px); }
+            85%{ clip-path: inset(20% 0 20% 0); transform:translate(6px,-2px); }
+            100%{ clip-path: inset(0 0 0 0); transform:translate(6px,0); }
         }
 
-        /* Blood Drip Effect */
-        .blood-drip {
-            position: absolute;
-            width: 4px;
-            background: linear-gradient(to bottom, #ff0000, #800000, transparent);
-            animation: drip 8s infinite;
-            opacity: 0.8;
+        /* small screens */
+        @media (max-width:480px){
+            .glitch-img{ width:180px; height:180px; }
+            .corrupted-text{ font-size:2.6rem; letter-spacing:0.3em; }
         }
 
-        @keyframes drip {
-            0% {
-                height: 0;
-                top: -10px;
-            }
-            20% {
-                height: 100px;
-                top: 0;
-            }
-            100% {
-                height: 0;
-                top: 100vh;
-            }
-        }
+        /* rest of your original visual bits (terminals, drips etc) kept lightweight */
+        .warning-text{ position:absolute; top:18px; left:18px; font-size:10px; color:var(--red); opacity:0.6; font-family:monospace; animation:flicker 3s infinite; z-index:12;}
+        @keyframes flicker{0%,100%{opacity:0.6}50%{opacity:0.2}75%{opacity:0.8}}
 
-        /* Terminal Window */
-        .terminal {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 300px;
-            height: 150px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px solid #ff0000;
-            padding: 10px;
-            font-size: 10px;
-            color: #ff0000;
-            overflow: hidden;
-            opacity: 0.7;
-        }
+        .terminal{ position: absolute; bottom:20px; right:20px; width:300px; height:150px; background: rgba(0,0,0,0.9); border:1px solid var(--red); padding:10px; font-size:10px; color:var(--red); overflow:hidden; opacity:0.7; z-index:10;}
+        .terminal-line{ margin:2px 0; animation:typeLine 10s infinite; }
+        @keyframes typeLine{ 0%,100%{ opacity:0 } 50%{ opacity:1 } }
 
-        .terminal-line {
-            margin: 2px 0;
-            animation: typeLine 10s infinite;
-        }
+        /* small accessibility help: disable strong subliminal flash by toggling .subliminal-disabled on body */
+        .subliminal{ position:fixed; inset:0; background:var(--red); opacity:0; pointer-events:none; z-index:9998; animation:subliminalFlash 20s infinite; }
+        @keyframes subliminalFlash{ 0%,99%,100%{ opacity:0 } 99.5%{ opacity:0.1 } }
 
-        @keyframes typeLine {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
-        }
+        /* Keep z-index order safe */
+        .distortion{ position:fixed; inset:0; pointer-events:none; z-index:100; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,0,0,0.03) 2px, rgba(255,0,0,0.03) 4px); animation:distort 0.5s infinite; }
+        @keyframes distort{ 0%,100%{ transform:skew(0deg) } 50%{ transform:skew(0.5deg) } }
 
-        /* Hidden Eyes */
-        .watching-eyes {
-            position: fixed;
-            width: 30px;
-            height: 10px;
-            opacity: 0;
-            animation: watchingAnimation 15s infinite;
-        }
-
-        .eye {
-            width: 10px;
-            height: 10px;
-            background: #ff0000;
-            border-radius: 50%;
-            display: inline-block;
-            margin: 0 5px;
-            box-shadow: 0 0 20px #ff0000;
-        }
-
-        @keyframes watchingAnimation {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Distortion Overlay */
-        .distortion {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(255, 0, 0, 0.03) 2px,
-                rgba(255, 0, 0, 0.03) 4px
-            );
-            pointer-events: none;
-            z-index: 100;
-            animation: distort 0.5s infinite;
-        }
-
-        @keyframes distort {
-            0%, 100% { transform: skew(0deg); }
-            50% { transform: skew(0.5deg); }
-        }
-
-        /* Access Denied Popup */
-        .access-denied {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #000;
-            border: 2px solid #ff0000;
-            padding: 20px;
-            color: #ff0000;
-            font-size: 14px;
-            display: none;
-            z-index: 1000;
-            animation: deniedFlash 0.5s infinite;
-        }
-
-        @keyframes deniedFlash {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Subliminal Flash */
-        .subliminal {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: #ff0000;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 9998;
-            animation: subliminalFlash 20s infinite;
-        }
-
-        @keyframes subliminalFlash {
-            0%, 99%, 100% { opacity: 0; }
-            99.5% { opacity: 0.1; }
-        }
-
-        /* Error Messages */
-        .error-msg {
-            position: fixed;
-            color: #ff0000;
-            font-size: 10px;
-            font-family: monospace;
-            opacity: 0;
-            animation: errorBlink 5s infinite;
-        }
-
-        @keyframes errorBlink {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 0.6; }
-        }
-
-        /* Breathing Shadow */
-        .shadow-presence {
-            position: fixed;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.9) 70%);
-            animation: breathing 4s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes breathing {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
     </style>
 </head>
 <body>
@@ -418,205 +204,99 @@
     <div class="static"></div>
     <div class="distortion"></div>
     <div class="subliminal"></div>
-    <div class="shadow-presence"></div>
-    
-    <!-- Custom Cursor -->
+
+    <!-- custom cursor -->
     <div class="cursor" id="cursor"></div>
-    
-    <!-- Warning Messages -->
-    <div class="warning-text">
-        > WARNING: انت دخلت موقع الي عامله مريض نفسي<br>
-        > WHATSAPP: +201066724157 <br>
-        > كلها شويه ونطلع علي فوق<br>
-        > ⛧ لسه مش لاقي فكرة موقع ⛧
-    </div>
-    
-    <!-- Hidden Eyes -->
-    <div class="watching-eyes" style="top: 10%; left: 20%;">
-        <span class="eye"></span>
-        <span class="eye"></span>
-    </div>
-    <div class="watching-eyes" style="top: 80%; right: 30%;">
-        <span class="eye"></span>
-        <span class="eye"></span>
-    </div>
-    
-    <!-- Blood Drips -->
-    <div class="blood-drip" style="left: 10%;"></div>
-    <div class="blood-drip" style="left: 30%; animation-delay: 2s;"></div>
-    <div class="blood-drip" style="left: 70%; animation-delay: 4s;"></div>
-    <div class="blood-drip" style="left: 90%; animation-delay: 6s;"></div>
-    
-    <!-- Main Content -->
+
     <div class="container">
+        <!-- Put the profile with glitch here -->
+        <div class="glitch-img" id="profileGlitch" aria-hidden="false">
+            <!-- Replace me.png with your photo (square recommended) -->
+            <img src="me.png" alt="Youssef Photo" class="profile-img">
+            <div class="scanlines" aria-hidden="true"></div>
+            <div class="noise" aria-hidden="true"></div>
+        </div>
+
+        <!-- Title -->
         <h1 class="corrupted-text" data-text="YOUSSEF">YOUSSEF</h1>
     </div>
-    
-    <!-- Disturbing Messages -->
-    <div class="disturbing-message" style="top: 20%; left: 10%; animation-delay: 0s;">
-        72
+
+    <!-- Warning area -->
+    <div class="warning-text">
+        &gt; WARNING: انت دخلت موقع الي عامله مريض نفسي<br>
+        &gt; WHATSAPP: +201066724157<br>
+        &gt; كلها شويه ونطلع علي فوق<br>
+        &gt; ⛧ لسه مش لاقي فكرة موقع ⛧
     </div>
-    <div class="disturbing-message" style="top: 40%; right: 20%; animation-delay: 3s;">
-        DON'T LOOK BEHIND YOU
-    </div>
-    <div class="disturbing-message" style="bottom: 30%; left: 15%; animation-delay: 6s;">
-        ERROR 666
-    </div>
-    <div class="disturbing-message" style="top: 60%; right: 10%; animation-delay: 9s;">
-        SYSTEM CORRUPTED
-    </div>
-    
+
     <!-- Terminal -->
     <div class="terminal">
-        <div class="terminal-line">> Establishing connection...</div>
-        <div class="terminal-line" style="animation-delay: 1s;">> تمام</div>
-        <div class="terminal-line" style="animation-delay: 2s;">> جبنه براميلي</div>
-        <div class="terminal-line" style="animation-delay: 3s;">> Downloading Yossef-Database.db</div>
-        <div class="terminal-line" style="animation-delay: 4s;">> ERROR: يوسف لسه مبضون</div>
-        <div class="terminal-line" style="animation-delay: 5s;">> ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧</div>
-    </div>
-    
-    <!-- Error Messages -->
-    <div class="error-msg" style="top: 5%; right: 5%;">
-        KERNEL PANIC
-    </div>
-    <div class="error-msg" style="bottom: 10%; left: 5%; animation-delay: 2.5s;">
-        مريض نفسي
-    </div>
-    
-    <!-- Access Denied Popup -->
-    <div class="access-denied" id="accessDenied">
-        <h3>⛧ ACCESS DENIED ⛧</h3>
-        <p>UNAUTHORIZED ENTRY DETECTED</p>
-        <p>YOUR LOCATION HAS BEEN LOGGED</p>
+        <div class="terminal-line">&gt; Establishing connection...</div>
+        <div class="terminal-line" style="animation-delay:1s">&gt; تمام</div>
+        <div class="terminal-line" style="animation-delay:2s">&gt; جبنه براميلي</div>
+        <div class="terminal-line" style="animation-delay:3s">&gt; Downloading Yossef-Database.db</div>
+        <div class="terminal-line" style="animation-delay:4s">&gt; ERROR: يوسف لسه مبضون</div>
+        <div class="terminal-line" style="animation-delay:5s">&gt; ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧</div>
     </div>
 
     <script>
-        // Custom Cursor
+        // custom cursor follow
         const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX - 10 + 'px';
-            cursor.style.top = e.clientY - 10 + 'px';
+        document.addEventListener('mousemove', (e)=> {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
         });
 
-        // Random Glitch Effects
-        setInterval(() => {
-            if (Math.random() > 0.9) {
+        // random subtle invert glitch like original
+        setInterval(()=> {
+            if (Math.random() > 0.92) {
                 document.body.style.filter = 'invert(1)';
-                setTimeout(() => {
-                    document.body.style.filter = 'invert(0)';
-                }, 50);
+                setTimeout(()=> document.body.style.filter = '', 60);
             }
         }, 3000);
 
-        // Random Screen Shake
-        setInterval(() => {
-            if (Math.random() > 0.95) {
-                document.body.style.animation = 'shake 0.2s';
-                setTimeout(() => {
-                    document.body.style.animation = '';
-                }, 200);
+        // random screen shake
+        setInterval(()=> {
+            if (Math.random() > 0.96) {
+                document.body.style.transition = 'transform 0.2s';
+                document.body.style.transform = 'translate(6px, -6px)';
+                setTimeout(()=> { document.body.style.transform = ''; }, 200);
             }
-        }, 5000);
+        }, 4500);
 
-        // Shake Animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translate(0, 0); }
-                25% { transform: translate(-5px, 5px); }
-                50% { transform: translate(5px, -5px); }
-                75% { transform: translate(-5px, -5px); }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Random Access Denied Popup
-        setInterval(() => {
-            if (Math.random() > 0.98) {
-                const denied = document.getElementById('accessDenied');
-                denied.style.display = 'block';
-                setTimeout(() => {
-                    denied.style.display = 'none';
-                }, 1000);
-            }
-        }, 10000);
-
-        // Whisper Sounds (Visual Representation)
-        function createWhisper() {
-            const whisper = document.createElement('div');
-            whisper.style.position = 'fixed';
-            whisper.style.color = '#ff0000';
-            whisper.style.fontSize = '8px';
-            whisper.style.opacity = '0';
-            whisper.style.pointerEvents = 'none';
-            whisper.textContent = '⛧⛧⛧';
-            whisper.style.left = Math.random() * window.innerWidth + 'px';
-            whisper.style.top = Math.random() * window.innerHeight + 'px';
-            whisper.style.animation = 'appearDisappear 3s';
-            document.body.appendChild(whisper);
-            
-            setTimeout(() => {
-                whisper.remove();
-            }, 3000);
+        // Profile intense glitch trigger (random)
+        const profile = document.getElementById('profileGlitch');
+        function flashGlitch(duration=200){
+            profile.classList.add('glitched');
+            setTimeout(()=> profile.classList.remove('glitched'), duration);
         }
 
-        setInterval(createWhisper, 7000);
+        // occasional big glitch
+        setInterval(()=> {
+            if (Math.random() > 0.94) flashGlitch(300 + Math.random()*500);
+        }, 3500);
 
-        // Console Warnings
-        console.log('%c⛧ WARNING ⛧', 'color: red; font-size: 30px; font-weight: bold;');
-        console.log('%cYOU SHOULD NOT BE HERE', 'color: red; font-size: 20px;');
-        console.log('%cTHEY ARE WATCHING', 'color: red; font-size: 15px;');
+        // also trigger on mouseover for dramatic hover
+        profile.addEventListener('mouseenter', ()=> flashGlitch(500));
+        profile.addEventListener('click', ()=> flashGlitch(800));
 
-        // Keyboard Events
-        let keys = [];
-        document.addEventListener('keydown', (e) => {
-            keys.push(e.key);
-            if (keys.length > 10) keys.shift();
-            
-            // Random distortion on keypress
-            document.querySelector('.distortion').style.opacity = '1';
-            setTimeout(() => {
-                document.querySelector('.distortion').style.opacity = '0';
-            }, 100);
-            
-            // If user types "666"
-            if (keys.join('').includes('666')) {
-                document.body.style.background = '#ff0000';
-                setTimeout(() => {
-                    document.body.style.background = '#000';
-                }, 100);
-                keys = [];
-            }
+        // Keyboard tiny distortion
+        document.addEventListener('keydown', ()=> {
+            const dist = document.querySelector('.distortion');
+            dist.style.opacity = '1';
+            setTimeout(()=> dist.style.opacity = '0', 120);
         });
 
-        // Window Leave Warning
-        document.addEventListener('mouseleave', () => {
-            document.title = '⛧ DON\'T LEAVE ⛧';
-        });
+        // if you want to disable subliminal flash for accessibility quickly:
+        // document.body.classList.add('subliminal-disabled');
+        // that would require adjusting CSS to respect the class (not done here) —
+        // quick option: comment out the .subliminal div in the HTML if needed.
 
-        document.addEventListener('mouseenter', () => {
-            document.title = '⛧ YOUSSEF ⛧';
-        });
+        // Console vibes
+        console.log('%c⛧ WARNING ⛧', 'color: red; font-size: 28px; font-weight:bold;');
+        console.log('%cYOU SHOULD NOT BE HERE', 'color: red; font-size:18px');
+        console.log('%cTHEY ARE WATCHING', 'color: red; font-size:14px');
 
-        // Create more blood drips randomly
-        setInterval(() => {
-            if (Math.random() > 0.95) {
-                const drip = document.createElement('div');
-                drip.className = 'blood-drip';
-                drip.style.left = Math.random() * window.innerWidth + 'px';
-                document.body.appendChild(drip);
-                
-                setTimeout(() => {
-                    drip.remove();
-                }, 8000);
-            }
-        }, 5000);
-
-        // Random number generator for glitch effect
-        function random(max) {
-            return Math.floor(Math.random() * max);
-        }
     </script>
 </body>
 </html>
