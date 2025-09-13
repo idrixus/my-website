@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>⛧ YOUSSEF ⛧</title>
 
     <!-- Favicons -->
@@ -11,292 +11,294 @@
     <link rel="shortcut icon" href="favicon.ico">
 
     <style>
-        :root{
-            --red: #ff0000;
-            --bg: #000;
-        }
+        :root{ --red:#ff0000; --bg:#000; --matrix-green:#00ff41; }
 
         *{ margin:0; padding:0; box-sizing:border-box; cursor:none; }
+        html,body{ height:100%; }
         body{
-            font-family: 'Courier New', monospace;
-            background: var(--bg);
-            color: var(--red);
-            height:100vh;
+            font-family:'Courier New', monospace;
+            background:var(--bg);
+            color:var(--red);
             overflow:hidden;
             position:relative;
         }
 
-        ::selection{ background: var(--red); color:#000; }
-
-        /* ---------------- Custom cursor ---------------- */
-        .cursor{
-            width:20px; height:20px; border:2px solid var(--red);
-            position:fixed; pointer-events:none; z-index:9999; transition:0.08s;
-            border-radius:50%;
-            transform:translate(-50%,-50%);
-            animation:cursorPulse 2s infinite;
-        }
-        @keyframes cursorPulse{
-            0%,100%{ transform:translate(-50%,-50%) scale(1); opacity:1; }
-            50% { transform:translate(-50%,-50%) scale(1.4); opacity:0.5; }
+        /* ---------------- Matrix canvas behind content ---------------- */
+        #matrixCanvas{
+            position:fixed;
+            inset:0;
+            z-index:0;
+            display:block;
+            opacity:0.35;
+            pointer-events:none;
+            mix-blend-mode:screen;
         }
 
-        /* ---------------- Background / noise ---------------- */
-        .dark-bg{
-            position:fixed; inset:0; z-index:0;
-            background:
-                repeating-linear-gradient(0deg,#000 0,#0a0000 1px,transparent 1px,transparent 2px,#0a0000 3px),
-                repeating-linear-gradient(90deg,#000 0,#0a0000 1px,transparent 1px,transparent 2px,#0a0000 3px);
-            opacity:0.35; animation:glitchBg 8s infinite;
-        }
-        @keyframes glitchBg{
-            0%,100%{ filter:hue-rotate(0deg) brightness(1); }
-            25%{ filter:hue-rotate(90deg) brightness(0.85); }
-            50%{ filter:hue-rotate(180deg) brightness(1.2); }
-            75%{ filter:hue-rotate(270deg) brightness(0.9); }
-        }
-
-        .static{
+        /* subtle dark noise on top of matrix for texture */
+        .dark-noise{
             position:fixed; inset:0; z-index:1; pointer-events:none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23000"/><rect width="1" height="1" x="50" y="50" fill="%23fff" opacity="0.5"/></svg>');
-            opacity:0.03; animation:staticNoise 0.12s steps(1) infinite;
-        }
-        @keyframes staticNoise{
-            0%{ transform:translate(0,0); } 50%{ transform:translate(1%, -1%);} 100%{ transform:translate(0,0);}
-        }
-
-        /* ---------------- Container ---------------- */
-        .container{
-            position:relative; z-index:10;
-            height:100vh; display:flex; align-items:center; justify-content:center; gap:40px; flex-direction:column;
+            background:
+                repeating-linear-gradient(0deg, rgba(0,0,0,0.95) 0px, rgba(10,0,0,0.96) 1px),
+                repeating-linear-gradient(90deg, rgba(0,0,0,0.95) 0px, rgba(10,0,0,0.96) 1px);
+            opacity:0.45;
         }
 
-        /* ---------------- Corrupted Title ---------------- */
+        /* main stacking container */
+        .stage{
+            position:relative;
+            z-index: 10;
+            height:100vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            gap:28px;
+            padding:20px;
+        }
+
+        /* title (glitchy text) */
         .corrupted-text{
-            font-size:clamp(2rem, 8vw, 5.5rem);
-            letter-spacing:0.5em; position:relative; color:#fff;
-            text-shadow: 0 0 10px var(--red), 0 0 20px var(--red), 0 0 40px var(--red);
-            animation:corruptedGlitch 2s infinite;
+            font-size:clamp(2rem,8vw,5rem);
+            letter-spacing:0.5em;
+            color:#fff;
+            position:relative;
             z-index:12;
+            text-shadow: 0 0 10px var(--red), 0 0 20px var(--red);
         }
-        @keyframes corruptedGlitch{
-            0%,100%{ text-shadow: 0 0 10px var(--red),0 0 20px var(--red); }
-            50%{ text-shadow: 0 0 12px #fff, 0 0 30px #fff; color:#fff; }
-        }
-
-        /* pseudo RGB layers for text */
         .corrupted-text::before,
         .corrupted-text::after{
-            content: attr(data-text);
-            position:absolute; inset:0; left:0; top:0;
-            z-index:-1; opacity:0.8;
-            pointer-events:none;
+            content:attr(data-text);
+            position:absolute; inset:0; left:0;
+            z-index:-1; pointer-events:none; opacity:0.85;
         }
-        .corrupted-text::before{ color:var(--red); transform:translate(-3px,-2px); mix-blend-mode:screen; animation:clip1 0.8s infinite; }
-        .corrupted-text::after{ color:#00f; transform:translate(3px,2px); mix-blend-mode:screen; animation:clip2 1.2s infinite; }
+        .corrupted-text::before{ color:var(--red); transform:translate(-3px,-2px); mix-blend-mode:screen; animation:clipA 1s infinite; }
+        .corrupted-text::after{ color:#00f; transform:translate(3px,2px); mix-blend-mode:screen; animation:clipB 1.6s infinite; }
 
-        @keyframes clip1{
-            0%{ clip-path: inset(0 0 60% 0); } 50%{ clip-path: inset(40% 0 10% 0);} 100%{ clip-path: inset(0 0 60% 0);}
+        @keyframes clipA{
+            0%{ clip-path: inset(0 0 0 0); }
+            20%{ clip-path: inset(30% 0 40% 0); transform:translate(-6px,-3px); }
+            40%{ clip-path: inset(10% 0 50% 0); transform:translate(-2px,1px); }
+            60%{ clip-path: inset(40% 0 10% 0); transform:translate(-8px,0); }
+            100%{ clip-path: inset(0 0 0 0); transform:translate(-3px,-2px); }
         }
-        @keyframes clip2{
-            0%{ clip-path: inset(20% 0 40% 0); } 50%{ clip-path: inset(5% 0 60% 0);} 100%{ clip-path: inset(20% 0 40% 0);}
+        @keyframes clipB{
+            0%{ clip-path: inset(0 0 0 0); }
+            25%{ clip-path: inset(10% 0 30% 0); transform:translate(6px,4px); }
+            55%{ clip-path: inset(35% 0 5% 0); transform:translate(2px,-2px); }
+            85%{ clip-path: inset(5% 0 40% 0); transform:translate(10px,6px); }
+            100%{ clip-path: inset(0 0 0 0); transform:translate(3px,2px); }
         }
 
-        /* ---------------- Profile Glitch (copy-paste ready) ---------------- */
-        .glitch-img{
-            position:relative; width:260px; height:260px; border-radius:14px; overflow:hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 40px rgba(255,0,0,0.06);
-            z-index:11; transition:transform .25s ease;
+        /* ---------------- Profile image: ثابت لكن عليها Glitch layers ---------------- */
+        .profile-wrap{
+            position:relative;
+            width:280px;
+            height:280px;
+            border-radius:16px;
+            overflow:hidden;
+            background:rgba(0,0,0,0.6);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.8), 0 0 40px rgba(255,0,0,0.06);
+            z-index:11;
         }
-
-        .glitch-img img{
+        /* base image - ثابت (no transform animations) */
+        .profile-wrap img{
             width:100%; height:100%; object-fit:cover; display:block;
-            filter:grayscale(70%) contrast(120%); transform-origin:center;
-            transition: transform .25s ease, filter .25s ease;
+            filter:grayscale(70%) contrast(115%); transform:none;
+            user-select:none; -webkit-user-drag:none;
         }
 
-        /* RGB split layers using pseudo elements */
-        .glitch-img::before,
-        .glitch-img::after{
-            content:""; position:absolute; inset:0; background-size:cover; background-position:center; pointer-events:none;
-            mix-blend-mode:screen; opacity:0.85; transition:opacity .15s;
-            will-change:transform, clip-path;
-        }
-        /* left (red) */
-        .glitch-img::before{
+        /* pseudo layers for RGB split + clip glitches (animated) */
+        .profile-wrap::before,
+        .profile-wrap::after{
+            content:"";
+            position:absolute; inset:0; left:0; top:0;
             background-image: url('me.png');
-            transform: translate(-6px,0);
-            animation:glitchLayerA 2.6s infinite linear;
-            filter: hue-rotate(0deg) contrast(110%) saturate(120%);
-        }
-        /* right (blue/green) */
-        .glitch-img::after{
-            background-image: url('me.png');
-            transform: translate(6px,0);
-            animation:glitchLayerB 3.2s infinite linear;
-            filter: hue-rotate(200deg) contrast(110%) saturate(120%);
-            opacity:0.7;
+            background-size:cover; background-position:center;
+            pointer-events:none;
+            mix-blend-mode:screen;
+            opacity:0.9;
+            will-change:transform, clip-path, opacity;
         }
 
-        /* scanlines overlay */
-        .glitch-img .scanlines{
+        /* red-ish left layer */
+        .profile-wrap::before{
+            transform:translate(-6px,0);
+            filter: hue-rotate(0deg) saturate(140%) contrast(110%);
+            animation:profileGlitchA 2.4s infinite linear;
+        }
+
+        /* blue/green right layer */
+        .profile-wrap::after{
+            transform:translate(6px,0);
+            filter: hue-rotate(200deg) saturate(130%) contrast(110%);
+            animation:profileGlitchB 3.0s infinite linear;
+            opacity:0.72;
+        }
+
+        /* small scanlines on top */
+        .profile-wrap .scanlines{
             position:absolute; inset:0; pointer-events:none;
             background: repeating-linear-gradient( to bottom, rgba(255,255,255,0.00) 0px, rgba(255,255,255,0.02) 1px );
             mix-blend-mode:overlay; opacity:0.06;
         }
 
-        /* subtle noise mask */
-        .glitch-img .noise{
-            position:absolute; inset:0; pointer-events:none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="40" height="40" fill="%23000"/><circle cx="10" cy="10" r="1" fill="%23fff" opacity="0.03"/></svg>');
-            opacity:0.04;
-            mix-blend-mode:overlay;
+        /* IMPORTANT: base image stays static; pseudo layers do the glitch */
+        @keyframes profileGlitchA{
+            0%{ clip-path: inset(0 0 0 0); transform:translate(-6px,0) scale(1); opacity:0.9; }
+            10%{ clip-path: inset(15% 0 60% 0); transform:translate(-12px,-3px) skewX(-2deg); opacity:1; }
+            30%{ clip-path: inset(40% 0 10% 0); transform:translate(-4px,2px); opacity:0.85; }
+            50%{ clip-path: inset(5% 0 40% 0); transform:translate(-18px,6px) skewX(-4deg); opacity:1; }
+            80%{ clip-path: inset(20% 0 30% 0); transform:translate(-6px,-1px); opacity:0.9; }
+            100%{ clip-path: inset(0 0 0 0); transform:translate(-6px,0); opacity:0.9; }
+        }
+        @keyframes profileGlitchB{
+            0%{ clip-path: inset(0 0 0 0); transform:translate(6px,0) scale(1); opacity:0.72; }
+            15%{ clip-path: inset(20% 0 5% 0); transform:translate(14px,2px) skewX(2deg); opacity:0.9; }
+            40%{ clip-path: inset(5% 0 40% 0); transform:translate(4px,-2px); opacity:0.7; }
+            65%{ clip-path: inset(35% 0 10% 0); transform:translate(22px,8px); opacity:1; }
+            100%{ clip-path: inset(0 0 0 0); transform:translate(6px,0); opacity:0.72; }
         }
 
-        /* Hover intensify */
-        .glitch-img:hover img{ transform: scale(1.03); }
-        .glitch-img.glitched::before{ transform: translate(-20px,-6px) skewX(-3deg); opacity:1; }
-        .glitch-img.glitched::after{ transform: translate(20px,6px) skewX(3deg); opacity:1; }
+        /* ---------------- small UI bits kept minimal ---------------- */
+        .warning-text{ position:absolute; top:18px; left:18px; font-size:10px; color:var(--red); opacity:0.6; font-family:monospace; z-index:12; }
+        .terminal{ position:absolute; bottom:20px; right:20px; width:300px; height:150px; background:rgba(0,0,0,0.9); border:1px solid var(--red); padding:10px; font-size:10px; color:var(--red); z-index:10; opacity:0.75; }
+        .terminal-line{ margin:2px 0; animation:typeLine 10s infinite; }
+        @keyframes typeLine{ 0%,100%{opacity:0} 50%{opacity:1} }
 
-        @keyframes glitchLayerA{
-            0%{ clip-path: inset(0 0 0 0); transform:translate(-6px,0); }
-            10%{ clip-path: inset(10% 0 60% 0); transform:translate(-10px,-2px); }
-            30%{ clip-path: inset(30% 0 10% 0); transform:translate(-3px,1px); }
-            50%{ clip-path: inset(5% 0 40% 0); transform:translate(-14px,3px); }
-            70%{ clip-path: inset(20% 0 30% 0); transform:translate(-6px,-1px); }
-            100%{ clip-path: inset(0 0 0 0); transform:translate(-6px,0); }
-        }
-        @keyframes glitchLayerB{
-            0%{ clip-path: inset(0 0 0 0); transform:translate(6px,0); }
-            15%{ clip-path: inset(15% 0 10% 0); transform:translate(12px,2px); }
-            40%{ clip-path: inset(35% 0 5% 0); transform:translate(3px,-2px); }
-            60%{ clip-path: inset(10% 0 40% 0); transform:translate(18px,6px); }
-            85%{ clip-path: inset(20% 0 20% 0); transform:translate(6px,-2px); }
-            100%{ clip-path: inset(0 0 0 0); transform:translate(6px,0); }
-        }
-
-        /* small screens */
-        @media (max-width:480px){
-            .glitch-img{ width:180px; height:180px; }
+        /* responsiveness */
+        @media (max-width:600px){
+            .profile-wrap{ width:180px; height:180px; border-radius:12px; }
             .corrupted-text{ font-size:2.6rem; letter-spacing:0.3em; }
         }
-
-        /* rest of your original visual bits (terminals, drips etc) kept lightweight */
-        .warning-text{ position:absolute; top:18px; left:18px; font-size:10px; color:var(--red); opacity:0.6; font-family:monospace; animation:flicker 3s infinite; z-index:12;}
-        @keyframes flicker{0%,100%{opacity:0.6}50%{opacity:0.2}75%{opacity:0.8}}
-
-        .terminal{ position: absolute; bottom:20px; right:20px; width:300px; height:150px; background: rgba(0,0,0,0.9); border:1px solid var(--red); padding:10px; font-size:10px; color:var(--red); overflow:hidden; opacity:0.7; z-index:10;}
-        .terminal-line{ margin:2px 0; animation:typeLine 10s infinite; }
-        @keyframes typeLine{ 0%,100%{ opacity:0 } 50%{ opacity:1 } }
-
-        /* small accessibility help: disable strong subliminal flash by toggling .subliminal-disabled on body */
-        .subliminal{ position:fixed; inset:0; background:var(--red); opacity:0; pointer-events:none; z-index:9998; animation:subliminalFlash 20s infinite; }
-        @keyframes subliminalFlash{ 0%,99%,100%{ opacity:0 } 99.5%{ opacity:0.1 } }
-
-        /* Keep z-index order safe */
-        .distortion{ position:fixed; inset:0; pointer-events:none; z-index:100; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,0,0,0.03) 2px, rgba(255,0,0,0.03) 4px); animation:distort 0.5s infinite; }
-        @keyframes distort{ 0%,100%{ transform:skew(0deg) } 50%{ transform:skew(0.5deg) } }
-
     </style>
 </head>
 <body>
-    <div class="dark-bg"></div>
-    <div class="static"></div>
-    <div class="distortion"></div>
-    <div class="subliminal"></div>
+    <!-- Matrix canvas (z-index 0) -->
+    <canvas id="matrixCanvas"></canvas>
 
-    <!-- custom cursor -->
-    <div class="cursor" id="cursor"></div>
+    <!-- dark noise on top of matrix -->
+    <div class="dark-noise" aria-hidden="true"></div>
 
-    <div class="container">
-        <!-- Put the profile with glitch here -->
-        <div class="glitch-img" id="profileGlitch" aria-hidden="false">
-            <!-- Replace me.png with your photo (square recommended) -->
-            <img src="me.png" alt="Youssef Photo" class="profile-img">
+    <!-- main content -->
+    <div class="stage" role="main">
+        <div class="profile-wrap" aria-label="Profile image with glitch">
+            <!-- put your image (square recommended) named me.png in same folder -->
+            <img src="me.png" alt="Youssef photo">
             <div class="scanlines" aria-hidden="true"></div>
-            <div class="noise" aria-hidden="true"></div>
         </div>
 
-        <!-- Title -->
         <h1 class="corrupted-text" data-text="YOUSSEF">YOUSSEF</h1>
     </div>
 
-    <!-- Warning area -->
-    <div class="warning-text">
-        &gt; WARNING: انت دخلت موقع الي عامله مريض نفسي<br>
-        &gt; WHATSAPP: +201066724157<br>
-        &gt; كلها شويه ونطلع علي فوق<br>
-        &gt; ⛧ لسه مش لاقي فكرة موقع ⛧
+    <!-- small terminal / warnings (kept from original) -->
+    <div class="warning-text" aria-hidden="true">
+        &gt; WARNING: انت داخل موقع من عمل مريض<br>
+        &gt; WHATSAPP: +201066724157
     </div>
 
-    <!-- Terminal -->
-    <div class="terminal">
+    <div class="terminal" aria-hidden="true">
         <div class="terminal-line">&gt; Establishing connection...</div>
         <div class="terminal-line" style="animation-delay:1s">&gt; تمام</div>
-        <div class="terminal-line" style="animation-delay:2s">&gt; جبنه براميلي</div>
-        <div class="terminal-line" style="animation-delay:3s">&gt; Downloading Yossef-Database.db</div>
-        <div class="terminal-line" style="animation-delay:4s">&gt; ERROR: يوسف لسه مبضون</div>
-        <div class="terminal-line" style="animation-delay:5s">&gt; ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧ ⛧</div>
+        <div class="terminal-line" style="animation-delay:2s">&gt; Downloading Yossef-Database.db</div>
+        <div class="terminal-line" style="animation-delay:3s">&gt; ERROR: يوسف لسه مبضون</div>
     </div>
 
     <script>
-        // custom cursor follow
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e)=> {
+        /* ===== Matrix effect on canvas =====
+           Adjustable: change fontSize and densityMultiplier to tune performance
+        */
+        (function matrixEffect(){
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+            let w = canvas.width = innerWidth;
+            let h = canvas.height = innerHeight;
+
+            // chars: alnum + Arabic-like blocks for vibe
+            const chars = ('アァカサタナハマヤラワン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' +
+                '٠١٢٣٤٥٦٧٨٩').split('');
+
+            // settings
+            const fontSize = Math.max(12, Math.floor(window.innerWidth / 70)); // adapt
+            const columns = Math.floor(w / fontSize);
+            const densityMultiplier = 1; // 1 = default, reduce to 0.6 for less density
+            const drops = Array(Math.floor(columns * densityMultiplier)).fill(0);
+
+            ctx.fillStyle = 'rgba(0,0,0,0)';
+
+            function draw(){
+                // translucent black background to create trail effect
+                ctx.fillStyle = 'rgba(0,0,0,0.05)';
+                ctx.fillRect(0,0,w,h);
+
+                ctx.font = fontSize + 'px monospace';
+                for(let i=0; i<drops.length; i++){
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    const x = i * fontSize;
+                    const y = drops[i] * fontSize;
+
+                    // green glow
+                    ctx.fillStyle = 'rgba(0,255,65,0.9)'; // core bright
+                    ctx.fillText(text, x, y);
+
+                    // faint secondary to create depth
+                    ctx.fillStyle = 'rgba(0,200,40,0.25)';
+                    ctx.fillText(text, x+1, y-1);
+                    ctx.fillStyle = 'rgba(0,150,30,0.12)';
+                    ctx.fillText(text, x-2, y+1);
+
+                    if(y > h + Math.random()*10000 || Math.random() > 0.995) drops[i] = 0;
+                    drops[i]++;
+                }
+            }
+
+            let raf;
+            function loop(){
+                draw();
+                raf = requestAnimationFrame(loop);
+            }
+
+            // handle resize
+            function onResize(){
+                cancelAnimationFrame(raf);
+                w = canvas.width = innerWidth;
+                h = canvas.height = innerHeight;
+                const newCols = Math.floor(w / fontSize);
+                drops.length = Math.floor(newCols * densityMultiplier);
+                for(let i=0;i<drops.length;i++) if(!drops[i]) drops[i] = Math.floor(Math.random()*h/fontSize);
+                loop();
+            }
+            window.addEventListener('resize', onResize);
+
+            // init drops random start
+            for(let i=0;i<drops.length;i++) drops[i] = Math.floor(Math.random()*h/fontSize);
+
+            loop();
+        })();
+
+        /* ===== keep base image static; no JS required for glitch layers
+           (pseudo elements handle animated glitch). But keep cursor and small interactions. */
+
+        // custom cursor
+        const cursor = document.createElement('div');
+        cursor.style.cssText = 'width:18px;height:18px;border:2px solid #ff0000;border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%, -50%);';
+        document.body.appendChild(cursor);
+        document.addEventListener('mousemove', e => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // random subtle invert glitch like original
+        // small occasional pulse on title for drama
+        const title = document.querySelector('.corrupted-text');
         setInterval(()=> {
-            if (Math.random() > 0.92) {
-                document.body.style.filter = 'invert(1)';
-                setTimeout(()=> document.body.style.filter = '', 60);
-            }
-        }, 3000);
-
-        // random screen shake
-        setInterval(()=> {
-            if (Math.random() > 0.96) {
-                document.body.style.transition = 'transform 0.2s';
-                document.body.style.transform = 'translate(6px, -6px)';
-                setTimeout(()=> { document.body.style.transform = ''; }, 200);
-            }
-        }, 4500);
-
-        // Profile intense glitch trigger (random)
-        const profile = document.getElementById('profileGlitch');
-        function flashGlitch(duration=200){
-            profile.classList.add('glitched');
-            setTimeout(()=> profile.classList.remove('glitched'), duration);
-        }
-
-        // occasional big glitch
-        setInterval(()=> {
-            if (Math.random() > 0.94) flashGlitch(300 + Math.random()*500);
+            title.style.transform = 'scale(1.02)';
+            setTimeout(()=> title.style.transform = '', 170);
         }, 3500);
 
-        // also trigger on mouseover for dramatic hover
-        profile.addEventListener('mouseenter', ()=> flashGlitch(500));
-        profile.addEventListener('click', ()=> flashGlitch(800));
-
-        // Keyboard tiny distortion
-        document.addEventListener('keydown', ()=> {
-            const dist = document.querySelector('.distortion');
-            dist.style.opacity = '1';
-            setTimeout(()=> dist.style.opacity = '0', 120);
-        });
-
-        // if you want to disable subliminal flash for accessibility quickly:
-        // document.body.classList.add('subliminal-disabled');
-        // that would require adjusting CSS to respect the class (not done here) —
-        // quick option: comment out the .subliminal div in the HTML if needed.
-
-        // Console vibes
-        console.log('%c⛧ WARNING ⛧', 'color: red; font-size: 28px; font-weight:bold;');
-        console.log('%cYOU SHOULD NOT BE HERE', 'color: red; font-size:18px');
-        console.log('%cTHEY ARE WATCHING', 'color: red; font-size:14px');
-
+        // disable matrix if user prefers by setting localStorage.disableMatrix = "1"
+        if(localStorage.getItem('disableMatrix') === '1'){
+            const c = document.getElementById('matrixCanvas');
+            c.style.display = 'none';
+        }
     </script>
 </body>
 </html>
