@@ -1,194 +1,530 @@
-<!DOCTYPE html>
-<html lang="ar">
+<!doctype html>
+<html lang="ar" dir="rtl">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Idris</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>IDRIS — Landing</title>
+    <meta name="description"
+        content="Placeholder landing page for Idris — dark, glass, glitch, neon, animated background." />
+
     <style>
+        /* =========================
+       Variables & Reset
+       ========================= */
+        :root {
+            --bg: #050507;
+            --panel: rgba(255, 255, 255, 0.04);
+            --accent1: #00ffd6;
+            /* cyan */
+            --accent2: #ff00d0;
+            /* magenta */
+            --accent3: #7cff00;
+            /* lime */
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text: #e9f6ff;
+            --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Courier New', monospace;
+        }
+
+        /* Reset */
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html,
+        body {
+            height: 100%
         }
 
         body {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #0a0a0a;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             overflow: hidden;
-            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
+        /* =========================
+       Canvas layers
+       ========================= */
         canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 0;
-        }
-
-        /* Glass Panel */
-        .glass {
-            position: relative;
-            z-index: 1;
-            padding: 40px 80px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
-        }
-
-        /* Glitch Text */
-        h1 {
-            font-size: 5rem;
-            color: #fff;
-            position: relative;
-            text-transform: uppercase;
-            animation: flicker 2s infinite;
-            letter-spacing: 5px;
-        }
-
-        h1::before,
-        h1::after {
-            content: attr(data-text);
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            color: #f00;
+            height: 100%;
+            display: block;
+            z-index: 0
+        }
+
+        /* noise & scanlines overlay (subtle) */
+        .overlay {
+            pointer-events: none;
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            mix-blend-mode: overlay;
+            opacity: 0.06;
+            background-image: repeating-linear-gradient(transparent 0 1px, rgba(255, 255, 255, 0.02) 1px 2px);
+        }
+
+        /* =========================
+       Center panel
+       ========================= */
+        .wrap {
+            z-index: 10;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            width: min(90vw, 1100px);
+        }
+
+        .glass {
+            --pad: clamp(28px, 4vw, 72px);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: calc(var(--pad));
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px) saturate(140%);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 60px rgba(0, 255, 255, 0.06) inset;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(.2, .9, .2, 1), box-shadow 0.6s;
+            position: relative;
             overflow: hidden;
-            clip: rect(0, 900px, 0, 0);
         }
 
-        h1::before {
-            left: 2px;
-            text-shadow: -2px 0 cyan;
-            animation: glitch 2s infinite linear alternate-reverse;
+        /* Neon rim gradient border */
+        .glass:before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 30px;
+            padding: 2px;
+            z-index: 0;
+            background: linear-gradient(90deg, rgba(0, 255, 214, 0.06), rgba(255, 0, 208, 0.05), rgba(124, 255, 0, 0.04));
+            -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+            mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+            pointer-events: none;
+            filter: blur(14px);
         }
 
-        h1::after {
-            left: -2px;
-            text-shadow: -2px 0 lime;
-            animation: glitch 3s infinite linear alternate-reverse;
+        /* content sits on top */
+        .glass>* {
+            position: relative;
+            z-index: 2
         }
 
-        @keyframes glitch {
+        /* Title */
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-direction: column;
+            text-align: center;
+            padding: 8px 12px;
+        }
+
+        h1 {
+            font-size: clamp(40px, 8vw, 120px);
+            letter-spacing: 8px;
+            margin-bottom: 6px;
+            color: var(--text);
+            text-transform: uppercase;
+            line-height: 0.85;
+            mix-blend-mode: screen;
+            filter: drop-shadow(0 6px 18px rgba(0, 255, 214, 0.06));
+        }
+
+        /* subtitle */
+        p.lead {
+            opacity: 0.78;
+            font-size: clamp(12px, 1.6vw, 18px);
+            margin-top: 6px
+        }
+
+        /* Glitch layers (for realism we duplicate text nodes) */
+        .glitch {
+            position: relative;
+            display: inline-block;
+            transform-origin: center;
+        }
+
+        .glitch span {
+            position: relative;
+            display: block
+        }
+
+        .glitch .cli {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+
+        .glitch .g1 {
+            color: var(--accent1);
+            transform: translateX(-6px) skewX(-8deg);
+            opacity: 0.85;
+            filter: blur(0.6px)
+        }
+
+        .glitch .g2 {
+            color: var(--accent2);
+            transform: translateX(6px) skewX(6deg);
+            opacity: 0.8;
+            filter: blur(0.8px)
+        }
+
+        /* tiny CRT scan flicker */
+        .scanline {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+            mix-blend-mode: overlay
+        }
+
+        /* action hint */
+        .meta {
+            margin-top: 18px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center
+        }
+
+        .chip {
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 13px
+        }
+
+        /* small footer */
+        .foot {
+            margin-top: 14px;
+            font-size: 12px;
+            opacity: 0.56
+        }
+
+        /* hover subtle tilt */
+        .glass:hover {
+            transform: translateY(-6px) rotateX(2deg);
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.7)
+        }
+
+        /* Glitch keyframes */
+        @keyframes g1 {
             0% {
-                clip: rect(0, 9999px, 0, 0);
+                transform: translate(-8px, 0) skewX(-6deg)
+            }
+
+            10% {
+                transform: translate(6px, -4px) skewX(8deg)
             }
 
             20% {
-                clip: rect(10px, 9999px, 40px, 0);
+                transform: translate(-4px, 2px) skewX(-2deg)
             }
 
-            40% {
-                clip: rect(50px, 9999px, 80px, 0);
-            }
-
-            60% {
-                clip: rect(20px, 9999px, 60px, 0);
-            }
-
-            80% {
-                clip: rect(70px, 9999px, 100px, 0);
+            30% {
+                transform: translate(6px, -6px) skewX(6deg)
             }
 
             100% {
-                clip: rect(0, 9999px, 0, 0);
+                transform: translate(0, 0) skewX(0)
             }
         }
 
-        @keyframes flicker {
-
-            0%,
-            19%,
-            21%,
-            23%,
-            25%,
-            54%,
-            56%,
-            100% {
-                opacity: 1;
+        @keyframes g2 {
+            0% {
+                transform: translate(8px, 0) skewX(6deg)
             }
 
-            20%,
-            24%,
-            55% {
-                opacity: 0.4;
+            10% {
+                transform: translate(-6px, 3px) skewX(-8deg)
+            }
+
+            20% {
+                transform: translate(4px, -2px) skewX(2deg)
+            }
+
+            30% {
+                transform: translate(-6px, 6px) skewX(-6deg)
+            }
+
+            100% {
+                transform: translate(0, 0) skewX(0)
+            }
+        }
+
+        .glitch .g1 {
+            animation: g1 2.8s infinite linear
+        }
+
+        .glitch .g2 {
+            animation: g2 3.2s infinite linear
+        }
+
+        /* subtle color pulse */
+        @keyframes pulseAccent {
+            0% {
+                filter: drop-shadow(0 0 10px rgba(0, 255, 214, 0.06))
+            }
+
+            50% {
+                filter: drop-shadow(0 0 28px rgba(255, 0, 208, 0.08))
+            }
+
+            100% {
+                filter: drop-shadow(0 0 10px rgba(124, 255, 0, 0.06))
+            }
+        }
+
+        h1 {
+            animation: pulseAccent 6s infinite
+        }
+
+        /* reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important
+            }
+        }
+
+        /* responsive tweaks */
+        @media (max-width:640px) {
+            .glass {
+                padding: 22px;
+                border-radius: 18px
+            }
+
+            .chip {
+                font-size: 12px
             }
         }
     </style>
 </head>
 
 <body>
-    <canvas id="bg"></canvas>
 
-    <div class="glass">
-        <h1 data-text="IDRIS">IDRIS</h1>
-    </div>
+    <!-- canvas layers: far (stars) + mid (particles + links) + near (noise) -->
+    <canvas id="stars"></canvas>
+    <canvas id="particles"></canvas>
+    <div class="overlay" aria-hidden="true"></div>
+
+    <main class="wrap" role="main">
+        <section class="glass" aria-labelledby="brand">
+
+            <div class="title" id="brand">
+                <!-- Real text + duplicated glitch layers -->
+                <div class="glitch" aria-hidden="false">
+                    <span class="real">
+                        <h1 id="name">IDRIS</h1>
+                    </span>
+                    <div class="cli">
+                        <span class="g1" aria-hidden="true">
+                            <h1>IDRIS</h1>
+                        </span>
+                        <span class="g2" aria-hidden="true">
+                            <h1>IDRIS</h1>
+                        </span>
+                    </div>
+                </div>
+
+                <p class="lead">بارتِشول دارك — placeholder احترافي لـ portfolio / landing</p>
+
+                <div class="meta" aria-hidden="true">
+                    <div class="chip">Dark · Minimal · Glass</div>
+                    <div class="chip">Animations · Glitch · Space</div>
+                </div>
+
+                <div class="foot">جاهز للانطلاق — حط الكود على GitHub Pages وخلص.</div>
+            </div>
+
+            <div class="scanline" aria-hidden="true"></div>
+        </section>
+    </main>
 
     <script>
-        // خلفية Particles
-        const canvas = document.getElementById('bg');
-        const ctx = canvas.getContext('2d');
-        let particlesArray;
-        const colors = ['#ffffff', '#00ffff', '#ff00ff', '#00ff00'];
+        /* =========================
+           Utilities & config
+           ========================= */
+        const DPR = Math.max(1, window.devicePixelRatio || 1);
+        const isMobile = /Mobi|Android|iPhone|iPad/.test(navigator.userAgent);
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // throttle for mouse
+        function throttle(fn, wait) { let t = 0; return function (...a) { let now = Date.now(); if (now - t > wait) { t = now; fn.apply(this, a) } } }
 
-        window.addEventListener('resize', function () {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            init();
-        });
+        /* =========================
+           Stars layer (subtle parallax)
+           ========================= */
+        const starsCanvas = document.getElementById('stars');
+        const sCtx = starsCanvas.getContext('2d');
 
-        class Particle {
-            constructor(x, y, dx, dy, size, color) {
-                this.x = x; this.y = y;
-                this.dx = dx; this.dy = dy;
-                this.size = size; this.color = color;
+        function resizeCanvasCanvas(canvas) { canvas.width = Math.floor(innerWidth * DPR); canvas.height = Math.floor(innerHeight * DPR); canvas.style.width = innerWidth + 'px'; canvas.style.height = innerHeight + 'px'; }
+        resizeCanvasCanvas(starsCanvas);
+
+        let stars = [];
+        function initStars() {
+            resizeCanvasCanvas(starsCanvas);
+            stars = [];
+            const count = Math.floor((innerWidth * innerHeight) / (isMobile ? 14000 : 9000));
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * starsCanvas.width,
+                    y: Math.random() * starsCanvas.height,
+                    r: Math.random() * 1.6 * DPR,
+                    a: Math.random() * 0.9 + 0.1
+                })
             }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
+            drawStars();
+        }
+
+        function drawStars() {
+            sCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+            for (const st of stars) {
+                sCtx.beginPath();
+                sCtx.globalAlpha = st.a * 0.9;
+                sCtx.fillStyle = '#ffffff';
+                sCtx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+                sCtx.fill();
             }
+            sCtx.globalAlpha = 1;
+        }
+
+        /* =========================
+           Particles + links (main dynamic layer)
+           ========================= */
+        const pCanvas = document.getElementById('particles');
+        const pCtx = pCanvas.getContext('2d');
+        resizeCanvasCanvas(pCanvas);
+
+        let particles = [];
+
+        class P {
+            constructor(x, y, dx, dy, r, c) { this.x = x; this.y = y; this.dx = dx; this.dy = dy; this.r = r; this.c = c }
             update() {
-                if (this.x + this.size > canvas.width || this.x - this.size < 0) this.dx = -this.dx;
-                if (this.y + this.size > canvas.height || this.y - this.size < 0) this.dy = -this.dy;
+                if (this.x + this.r > pCanvas.width || this.x - this.r < 0) this.dx = -this.dx;
+                if (this.y + this.r > pCanvas.height || this.y - this.r < 0) this.dy = -this.dy;
                 this.x += this.dx; this.y += this.dy;
-                this.draw();
+            }
+            draw() { pCtx.beginPath(); pCtx.fillStyle = this.c; pCtx.globalAlpha = 0.95; pCtx.arc(this.x, this.y, this.r, 0, Math.PI * 2); pCtx.fill(); pCtx.globalAlpha = 1 }
+        }
+
+        function initParticles() {
+            resizeCanvasCanvas(pCanvas);
+            particles = [];
+            const area = pCanvas.width * pCanvas.height;
+            const base = isMobile ? 1 / 24000 : 1 / 14000; // control density
+            const count = Math.max(18, Math.floor(area * base));
+            const colors = ['#00ffd6', '#ff00d0', '#7cff00', '#ffffff'];
+            for (let i = 0; i < count; i++) {
+                const r = Math.random() * 1.8 * DPR + 0.6;
+                const x = Math.random() * (pCanvas.width - r * 2) + r;
+                const y = Math.random() * (pCanvas.height - r * 2) + r;
+                const dx = (Math.random() * 0.6 - 0.3) * (isMobile ? 0.6 : 1);
+                const dy = (Math.random() * 0.6 - 0.3) * (isMobile ? 0.6 : 1);
+                const c = colors[Math.floor(Math.random() * colors.length)];
+                particles.push(new P(x, y, dx, dy, r, c));
             }
         }
 
-        function init() {
-            particlesArray = [];
-            let numberOfParticles = (canvas.height * canvas.width) / 15000;
-            for (let i = 0; i < numberOfParticles; i++) {
-                let size = (Math.random() * 3) + 1;
-                let x = Math.random() * (innerWidth - size * 2);
-                let y = Math.random() * (innerHeight - size * 2);
-                let dx = (Math.random() * 0.4) - 0.2;
-                let dy = (Math.random() * 0.4) - 0.2;
-                let color = colors[Math.floor(Math.random() * colors.length)];
-                particlesArray.push(new Particle(x, y, dx, dy, size, color));
+        function connectParticles() {
+            const maxD = Math.min(140, innerWidth / 6);
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const a = particles[i], b = particles[j];
+                    const dx = a.x - b.x; const dy = a.y - b.y; const d = Math.hypot(dx, dy);
+                    if (d < maxD) {
+                        const alpha = 1 - d / maxD;
+                        pCtx.beginPath();
+                        pCtx.strokeStyle = `rgba(0,255,214,${0.06 * alpha})`;
+                        pCtx.lineWidth = 0.6; pCtx.moveTo(a.x, a.y); pCtx.lineTo(b.x, b.y); pCtx.stroke();
+                    }
+                }
             }
         }
+
+        /* mouse parallax */
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', throttle((e) => { mouseX = (e.clientX - innerWidth / 2) * 0.02; mouseY = (e.clientY - innerHeight / 2) * 0.02 }, 16));
 
         function animate() {
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+            // subtle motion based on mouse
+            pCtx.save();
+            pCtx.translate(mouseX, mouseY);
+            for (const pt of particles) { pt.update(); pt.draw() }
+            connectParticles();
+            pCtx.restore();
             requestAnimationFrame(animate);
-            ctx.clearRect(0, 0, innerWidth, innerHeight);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-            }
         }
 
-        init();
-        animate();
+        /* =========================
+           Interactivity: pulse on hover, click ripple
+           ========================= */
+        const wrap = document.querySelector('.wrap');
+        const glass = document.querySelector('.glass');
+        const nameEl = document.getElementById('name');
+
+        // pointer glow
+        document.addEventListener('mousemove', throttle((e) => {
+            const x = e.clientX; const y = e.clientY;
+            glass.style.setProperty('--mx', x + 'px');
+            glass.style.setProperty('--my', y + 'px');
+        }, 25));
+
+        // click ripple for fun
+        document.addEventListener('click', (e) => {
+            const rip = document.createElement('div');
+            rip.style.position = 'fixed'; rip.style.left = (e.clientX - 24) + 'px'; rip.style.top = (e.clientY - 24) + 'px';
+            rip.style.width = '48px'; rip.style.height = '48px'; rip.style.borderRadius = '50%'; rip.style.pointerEvents = 'none';
+            rip.style.background = 'radial-gradient(circle, rgba(255,255,255,0.08), rgba(255,255,255,0))'; rip.style.zIndex = 30; rip.style.opacity = 0.8;
+            rip.style.transition = 'transform 700ms cubic-bezier(.2,.8,.2,1),opacity 700ms'; rip.style.transform = 'scale(0.2)';
+            document.body.appendChild(rip);
+            requestAnimationFrame(() => rip.style.transform = 'scale(6)');
+            setTimeout(() => { rip.style.opacity = 0; setTimeout(() => rip.remove(), 800) }, 750);
+        });
+
+        /* =========================
+           Init & resize handling
+           ========================= */
+        function initAll() {
+            resizeCanvasCanvas(starsCanvas); resizeCanvasCanvas(pCanvas);
+            initStars(); initParticles();
+        }
+        initAll(); animate();
+
+        addEventListener('resize', () => {
+            // small debounce
+            clearTimeout(window._rTo); window._rTo = setTimeout(() => { initAll() }, 120);
+        });
+
+        // reduce CPU on background tabs
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) { cancelAnimationFrame(window._raf) } else { animate() }
+        });
+
     </script>
 </body>
 
