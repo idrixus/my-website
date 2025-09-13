@@ -4,29 +4,18 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>IDRIS — Landing</title>
-    <meta name="description"
-        content="Placeholder landing page for Idris — dark, glass, glitch, neon, animated background." />
-
+    <title>IDRIS</title>
+    <meta name="robots" content="noindex,nofollow">
     <style>
-        /* =========================
-       Variables & Reset
-       ========================= */
         :root {
-            --bg: #050507;
-            --panel: rgba(255, 255, 255, 0.04);
+            --bg: #030308;
             --accent1: #00ffd6;
-            /* cyan */
             --accent2: #ff00d0;
-            /* magenta */
             --accent3: #7cff00;
-            /* lime */
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text: #e9f6ff;
-            --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Courier New', monospace;
+            --glass-alpha: 0.04;
         }
 
-        /* Reset */
+        /* reset */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -40,8 +29,7 @@
 
         body {
             background: var(--bg);
-            color: var(--text);
-            font-family: var(--mono);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Courier New', monospace;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             overflow: hidden;
@@ -50,260 +38,62 @@
             justify-content: center;
         }
 
-        /* =========================
-       Canvas layers
-       ========================= */
+        /* canvas layers stacked */
         canvas {
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
             display: block;
             z-index: 0
         }
 
-        /* noise & scanlines overlay (subtle) */
-        .overlay {
-            pointer-events: none;
-            position: fixed;
-            inset: 0;
-            z-index: 5;
-            mix-blend-mode: overlay;
-            opacity: 0.06;
-            background-image: repeating-linear-gradient(transparent 0 1px, rgba(255, 255, 255, 0.02) 1px 2px);
-        }
-
-        /* =========================
-       Center panel
-       ========================= */
-        .wrap {
+        /* single centered container for the name (no extra text) */
+        .center {
+            position: relative;
             z-index: 10;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 28px;
-            width: min(90vw, 1100px);
-        }
-
-        .glass {
-            --pad: clamp(28px, 4vw, 72px);
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: calc(var(--pad));
-            border-radius: 28px;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(16px) saturate(140%);
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 60px rgba(0, 255, 255, 0.06) inset;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(.2, .9, .2, 1), box-shadow 0.6s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Neon rim gradient border */
-        .glass:before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 30px;
-            padding: 2px;
-            z-index: 0;
-            background: linear-gradient(90deg, rgba(0, 255, 214, 0.06), rgba(255, 0, 208, 0.05), rgba(124, 255, 0, 0.04));
-            -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
-            mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+            width: min(92vw, 1200px);
+            height: min(70vh, 520px);
             pointer-events: none;
-            filter: blur(14px);
+            /* no accidental focus */
         }
 
-        /* content sits on top */
-        .glass>* {
-            position: relative;
-            z-index: 2
+        /* big neon/glass text using SVG for crispness */
+        svg {
+            width: 100%;
+            height: 100%
         }
 
-        /* Title */
-        .title {
+        /* visually center the text */
+        .brand {
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
-            gap: 18px;
-            flex-direction: column;
-            text-align: center;
-            padding: 8px 12px;
+            justify-content: center;
         }
 
-        h1 {
-            font-size: clamp(40px, 8vw, 120px);
-            letter-spacing: 8px;
-            margin-bottom: 6px;
-            color: var(--text);
-            text-transform: uppercase;
-            line-height: 0.85;
-            mix-blend-mode: screen;
-            filter: drop-shadow(0 6px 18px rgba(0, 255, 214, 0.06));
-        }
-
-        /* subtitle */
-        p.lead {
-            opacity: 0.78;
-            font-size: clamp(12px, 1.6vw, 18px);
-            margin-top: 6px
-        }
-
-        /* Glitch layers (for realism we duplicate text nodes) */
-        .glitch {
-            position: relative;
-            display: inline-block;
-            transform-origin: center;
-        }
-
-        .glitch span {
-            position: relative;
-            display: block
-        }
-
-        .glitch .cli {
+        /* text styles inside svg are defined inline for clarity */
+        /* subtle reflective glow under text */
+        .reflection {
             position: absolute;
-            top: 0;
+            z-index: 9;
+            top: 50%;
             left: 0;
             right: 0;
-            bottom: 0;
+            transform: translateY(34%);
+            height: 28%;
             pointer-events: none;
+            opacity: 0.08;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0));
+            filter: blur(12px);
             mix-blend-mode: screen;
         }
 
-        .glitch .g1 {
-            color: var(--accent1);
-            transform: translateX(-6px) skewX(-8deg);
-            opacity: 0.85;
-            filter: blur(0.6px)
-        }
-
-        .glitch .g2 {
-            color: var(--accent2);
-            transform: translateX(6px) skewX(6deg);
-            opacity: 0.8;
-            filter: blur(0.8px)
-        }
-
-        /* tiny CRT scan flicker */
-        .scanline {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
-            mix-blend-mode: overlay
-        }
-
-        /* action hint */
-        .meta {
-            margin-top: 18px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            justify-content: center
-        }
-
-        .chip {
-            padding: 8px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            font-size: 13px
-        }
-
-        /* small footer */
-        .foot {
-            margin-top: 14px;
-            font-size: 12px;
-            opacity: 0.56
-        }
-
-        /* hover subtle tilt */
-        .glass:hover {
-            transform: translateY(-6px) rotateX(2deg);
-            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.7)
-        }
-
-        /* Glitch keyframes */
-        @keyframes g1 {
-            0% {
-                transform: translate(-8px, 0) skewX(-6deg)
-            }
-
-            10% {
-                transform: translate(6px, -4px) skewX(8deg)
-            }
-
-            20% {
-                transform: translate(-4px, 2px) skewX(-2deg)
-            }
-
-            30% {
-                transform: translate(6px, -6px) skewX(6deg)
-            }
-
-            100% {
-                transform: translate(0, 0) skewX(0)
-            }
-        }
-
-        @keyframes g2 {
-            0% {
-                transform: translate(8px, 0) skewX(6deg)
-            }
-
-            10% {
-                transform: translate(-6px, 3px) skewX(-8deg)
-            }
-
-            20% {
-                transform: translate(4px, -2px) skewX(2deg)
-            }
-
-            30% {
-                transform: translate(-6px, 6px) skewX(-6deg)
-            }
-
-            100% {
-                transform: translate(0, 0) skewX(0)
-            }
-        }
-
-        .glitch .g1 {
-            animation: g1 2.8s infinite linear
-        }
-
-        .glitch .g2 {
-            animation: g2 3.2s infinite linear
-        }
-
-        /* subtle color pulse */
-        @keyframes pulseAccent {
-            0% {
-                filter: drop-shadow(0 0 10px rgba(0, 255, 214, 0.06))
-            }
-
-            50% {
-                filter: drop-shadow(0 0 28px rgba(255, 0, 208, 0.08))
-            }
-
-            100% {
-                filter: drop-shadow(0 0 10px rgba(124, 255, 0, 0.06))
-            }
-        }
-
-        h1 {
-            animation: pulseAccent 6s infinite
-        }
-
-        /* reduced motion */
+        /* support reduced motion */
         @media (prefers-reduced-motion: reduce) {
             * {
                 animation: none !important;
@@ -311,220 +101,352 @@
             }
         }
 
-        /* responsive tweaks */
+        /* responsiveness */
         @media (max-width:640px) {
-            .glass {
-                padding: 22px;
-                border-radius: 18px
-            }
-
-            .chip {
-                font-size: 12px
+            .center {
+                height: 46vh
             }
         }
     </style>
 </head>
 
 <body>
-
-    <!-- canvas layers: far (stars) + mid (particles + links) + near (noise) -->
-    <canvas id="stars"></canvas>
+    <!-- canvases: nebula (blurred blobs), particles, stars -->
+    <canvas id="nebula"></canvas>
     <canvas id="particles"></canvas>
-    <div class="overlay" aria-hidden="true"></div>
+    <canvas id="stars"></canvas>
 
-    <main class="wrap" role="main">
-        <section class="glass" aria-labelledby="brand">
+    <div class="center" aria-hidden="false">
+        <div class="brand" role="img" aria-label="IDRIS">
+            <!-- SVG text (only visible text). No other text elements anywhere. -->
+            <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid meet" aria-hidden="false">
+                <!-- defs: filters for glow / blur / subtle noise -->
+                <defs>
+                    <filter id="big-glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="10" result="b" />
+                        <feMerge>
+                            <feMergeNode in="b" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
 
-            <div class="title" id="brand">
-                <!-- Real text + duplicated glitch layers -->
-                <div class="glitch" aria-hidden="false">
-                    <span class="real">
-                        <h1 id="name">IDRIS</h1>
-                    </span>
-                    <div class="cli">
-                        <span class="g1" aria-hidden="true">
-                            <h1>IDRIS</h1>
-                        </span>
-                        <span class="g2" aria-hidden="true">
-                            <h1>IDRIS</h1>
-                        </span>
-                    </div>
-                </div>
+                    <filter id="soft-bloom" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="24" result="blur1" />
+                        <feColorMatrix in="blur1" type="matrix" values="0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 .8 0" result="b1" />
+                        <feMerge>
+                            <feMergeNode in="b1" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
 
-                <p class="lead">بارتِشول دارك — placeholder احترافي لـ portfolio / landing</p>
+                    <!-- subtle grain -->
+                    <filter id="grain">
+                        <feTurbulence baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="t" />
+                        <feColorMatrix type="saturate" values="0" />
+                        <feBlend in="t" in2="SourceGraphic" mode="overlay" />
+                    </filter>
 
-                <div class="meta" aria-hidden="true">
-                    <div class="chip">Dark · Minimal · Glass</div>
-                    <div class="chip">Animations · Glitch · Space</div>
-                </div>
+                    <!-- clip path to keep text inside bounds when animating -->
+                    <clipPath id="clip">
+                        <rect x="0" y="0" width="1200" height="300" />
+                    </clipPath>
+                </defs>
 
-                <div class="foot">جاهز للانطلاق — حط الكود على GitHub Pages وخلص.</div>
-            </div>
+                <!-- layered text for depth & colour offsets (glow + subtle chroma split) -->
+                <!-- main white core -->
+                <g clip-path="url(#clip)">
+                    <text id="core" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+                        font-family="ui-monospace, 'Courier New', monospace" font-weight="700" font-size="140"
+                        fill="#e9f8ff" style="letter-spacing:12px; filter: url(#soft-bloom);">
+                        IDRIS
+                    </text>
 
-            <div class="scanline" aria-hidden="true"></div>
-        </section>
-    </main>
+                    <!-- colored beveled halos (offsets to simulate chroma/glitch) -->
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+                        font-family="ui-monospace, 'Courier New', monospace" font-weight="700" font-size="140"
+                        fill="none" stroke="rgba(0,255,214,0.28)" stroke-width="12"
+                        style="letter-spacing:12px; transform: translate(-6px,0);">
+                        IDRIS
+                    </text>
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+                        font-family="ui-monospace, 'Courier New', monospace" font-weight="700" font-size="140"
+                        fill="none" stroke="rgba(255,0,208,0.22)" stroke-width="12"
+                        style="letter-spacing:12px; transform: translate(6px,0);">
+                        IDRIS
+                    </text>
+
+                    <!-- thin neon inner stroke -->
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+                        font-family="ui-monospace, 'Courier New', monospace" font-weight="800" font-size="140"
+                        fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" style="letter-spacing:12px;">
+                        IDRIS
+                    </text>
+
+                    <!-- animated subtle scanline clipping to create flicker/glitch -->
+                    <g id="scanGlitch" style="mix-blend-mode:screen; opacity:0.95">
+                        <rect x="-200" y="0" width="1400" height="300" fill="url(#sweep)"></rect>
+                    </g>
+
+                </g>
+            </svg>
+        </div>
+        <div class="reflection" aria-hidden="true"></div>
+    </div>
 
     <script>
-        /* =========================
-           Utilities & config
-           ========================= */
+        /* ============================
+           High-quality background system
+           - nebula: blurred moving color blobs (uses canvas with ctx.filter blur)
+           - particles: small moving points with faint links
+           - stars: tiny twinkling stars
+           Performance minded: dpr scaling, lower density on mobile, reduce motion respect
+           ============================ */
+
         const DPR = Math.max(1, window.devicePixelRatio || 1);
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const isMobile = /Mobi|Android|iPhone|iPad/.test(navigator.userAgent);
 
-        // throttle for mouse
-        function throttle(fn, wait) { let t = 0; return function (...a) { let now = Date.now(); if (now - t > wait) { t = now; fn.apply(this, a) } } }
-
-        /* =========================
-           Stars layer (subtle parallax)
-           ========================= */
-        const starsCanvas = document.getElementById('stars');
-        const sCtx = starsCanvas.getContext('2d');
-
-        function resizeCanvasCanvas(canvas) { canvas.width = Math.floor(innerWidth * DPR); canvas.height = Math.floor(innerHeight * DPR); canvas.style.width = innerWidth + 'px'; canvas.style.height = innerHeight + 'px'; }
-        resizeCanvasCanvas(starsCanvas);
-
-        let stars = [];
-        function initStars() {
-            resizeCanvasCanvas(starsCanvas);
-            stars = [];
-            const count = Math.floor((innerWidth * innerHeight) / (isMobile ? 14000 : 9000));
-            for (let i = 0; i < count; i++) {
-                stars.push({
-                    x: Math.random() * starsCanvas.width,
-                    y: Math.random() * starsCanvas.height,
-                    r: Math.random() * 1.6 * DPR,
-                    a: Math.random() * 0.9 + 0.1
-                })
-            }
-            drawStars();
+        // helper to size canvas for DPR
+        function sizeCanvas(canvas) {
+            const w = Math.max(1, Math.floor(innerWidth * DPR));
+            const h = Math.max(1, Math.floor(innerHeight * DPR));
+            canvas.width = w; canvas.height = h;
+            canvas.style.width = innerWidth + 'px';
+            canvas.style.height = innerHeight + 'px';
+            return { w, h };
         }
 
-        function drawStars() {
-            sCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
-            for (const st of stars) {
-                sCtx.beginPath();
-                sCtx.globalAlpha = st.a * 0.9;
-                sCtx.fillStyle = '#ffffff';
-                sCtx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
-                sCtx.fill();
+        /* ---------- nebula layer ---------- */
+        const nebulaC = document.getElementById('nebula');
+        const nctx = nebulaC.getContext('2d', { alpha: true });
+        let blobs = [];
+        function initNebula() {
+            const { w, h } = sizeCanvas(nebulaC);
+            blobs = [];
+            const baseCount = isMobile ? 3 : 5;
+            for (let i = 0; i < baseCount; i++) {
+                blobs.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() * 0.6 - 0.3) * (isMobile ? 0.4 : 1),
+                    vy: (Math.random() * 0.4 - 0.2) * (isMobile ? 0.4 : 1),
+                    r: (Math.min(w, h) * (0.18 + Math.random() * 0.18)),
+                    hue: Math.random()
+                });
             }
-            sCtx.globalAlpha = 1;
+        }
+        function drawNebula(t) {
+            nctx.clearRect(0, 0, nebulaC.width, nebulaC.height);
+            // subtle radial gradient base
+            const g = nctx.createLinearGradient(0, 0, nebulaC.width, nebulaC.height);
+            g.addColorStop(0, 'rgba(2,6,20,1)');
+            g.addColorStop(1, 'rgba(5,2,10,1)');
+            nctx.fillStyle = g;
+            nctx.fillRect(0, 0, nebulaC.width, nebulaC.height);
+
+            // draw blobs with big blur
+            nctx.save();
+            // make blobs bright and blurred
+            nctx.globalCompositeOperation = 'lighter';
+            nctx.filter = 'blur(48px)';
+            for (const b of blobs) {
+                // color cycling
+                const hue = (b.hue * 360 + (t * 0.00002 * 40)) % 360;
+                const color = `hsla(${hue}, 95%, 55%, 0.28)`;
+                const gx = nctx.createRadialGradient(b.x, b.y, Math.max(1, b.r * 0.1), b.x, b.y, b.r);
+                gx.addColorStop(0, color);
+                gx.addColorStop(0.35, color.replace('0.28', '0.15'));
+                gx.addColorStop(1, 'rgba(0,0,0,0)');
+                nctx.fillStyle = gx;
+                nctx.beginPath();
+                nctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                nctx.fill();
+            }
+            nctx.restore();
+
+            // light soft overlay for depth (simulates atmosphere)
+            nctx.save();
+            nctx.globalAlpha = 0.06;
+            nctx.fillStyle = 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0))';
+            nctx.fillRect(0, 0, nebulaC.width, nebulaC.height);
+            nctx.restore();
         }
 
-        /* =========================
-           Particles + links (main dynamic layer)
-           ========================= */
-        const pCanvas = document.getElementById('particles');
-        const pCtx = pCanvas.getContext('2d');
-        resizeCanvasCanvas(pCanvas);
-
+        /* ---------- particles layer (mid) ---------- */
+        const partC = document.getElementById('particles');
+        const pctx = partC.getContext('2d', { alpha: true });
         let particles = [];
-
-        class P {
-            constructor(x, y, dx, dy, r, c) { this.x = x; this.y = y; this.dx = dx; this.dy = dy; this.r = r; this.c = c }
-            update() {
-                if (this.x + this.r > pCanvas.width || this.x - this.r < 0) this.dx = -this.dx;
-                if (this.y + this.r > pCanvas.height || this.y - this.r < 0) this.dy = -this.dy;
-                this.x += this.dx; this.y += this.dy;
-            }
-            draw() { pCtx.beginPath(); pCtx.fillStyle = this.c; pCtx.globalAlpha = 0.95; pCtx.arc(this.x, this.y, this.r, 0, Math.PI * 2); pCtx.fill(); pCtx.globalAlpha = 1 }
-        }
-
         function initParticles() {
-            resizeCanvasCanvas(pCanvas);
+            const { w, h } = sizeCanvas(partC);
             particles = [];
-            const area = pCanvas.width * pCanvas.height;
-            const base = isMobile ? 1 / 24000 : 1 / 14000; // control density
-            const count = Math.max(18, Math.floor(area * base));
-            const colors = ['#00ffd6', '#ff00d0', '#7cff00', '#ffffff'];
+            const area = w * h;
+            const density = isMobile ? 1 / 24000 : 1 / 14000;
+            const count = Math.max(18, Math.floor(area * density));
             for (let i = 0; i < count; i++) {
-                const r = Math.random() * 1.8 * DPR + 0.6;
-                const x = Math.random() * (pCanvas.width - r * 2) + r;
-                const y = Math.random() * (pCanvas.height - r * 2) + r;
-                const dx = (Math.random() * 0.6 - 0.3) * (isMobile ? 0.6 : 1);
-                const dy = (Math.random() * 0.6 - 0.3) * (isMobile ? 0.6 : 1);
-                const c = colors[Math.floor(Math.random() * colors.length)];
-                particles.push(new P(x, y, dx, dy, r, c));
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() * 0.6 - 0.3) * (isMobile ? 0.45 : 1),
+                    vy: (Math.random() * 0.6 - 0.3) * (isMobile ? 0.45 : 1),
+                    r: (Math.random() * 1.6 + 0.6) * DPR,
+                    col: Math.random()
+                });
             }
         }
-
-        function connectParticles() {
-            const maxD = Math.min(140, innerWidth / 6);
+        function drawParticles() {
+            pctx.clearRect(0, 0, partC.width, partC.height);
+            // draw connections
+            const maxD = Math.min(140 * DPR, partC.width / 6);
             for (let i = 0; i < particles.length; i++) {
+                const a = particles[i];
                 for (let j = i + 1; j < particles.length; j++) {
-                    const a = particles[i], b = particles[j];
-                    const dx = a.x - b.x; const dy = a.y - b.y; const d = Math.hypot(dx, dy);
+                    const b = particles[j];
+                    const dx = a.x - b.x; const dy = a.y - b.y;
+                    const d = Math.hypot(dx, dy);
                     if (d < maxD) {
-                        const alpha = 1 - d / maxD;
-                        pCtx.beginPath();
-                        pCtx.strokeStyle = `rgba(0,255,214,${0.06 * alpha})`;
-                        pCtx.lineWidth = 0.6; pCtx.moveTo(a.x, a.y); pCtx.lineTo(b.x, b.y); pCtx.stroke();
+                        const alpha = 0.06 * (1 - d / maxD);
+                        pctx.strokeStyle = `rgba(0,255,214,${alpha})`;
+                        pctx.lineWidth = 0.6 * DPR;
+                        pctx.beginPath(); pctx.moveTo(a.x, a.y); pctx.lineTo(b.x, b.y); pctx.stroke();
                     }
                 }
             }
+            // draw dots
+            for (const pt of particles) {
+                pctx.beginPath();
+                // color palette subtle variance
+                const c = pt.col;
+                const col = c < 0.33 ? '#00ffd6' : (c < 0.66 ? '#ff00d0' : '#7cff00');
+                pctx.fillStyle = col;
+                pctx.globalAlpha = 0.92;
+                pctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2); pctx.fill();
+                pctx.globalAlpha = 1;
+            }
         }
 
-        /* mouse parallax */
-        let mouseX = 0, mouseY = 0;
-        window.addEventListener('mousemove', throttle((e) => { mouseX = (e.clientX - innerWidth / 2) * 0.02; mouseY = (e.clientY - innerHeight / 2) * 0.02 }, 16));
-
-        function animate() {
-            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
-            // subtle motion based on mouse
-            pCtx.save();
-            pCtx.translate(mouseX, mouseY);
-            for (const pt of particles) { pt.update(); pt.draw() }
-            connectParticles();
-            pCtx.restore();
-            requestAnimationFrame(animate);
+        /* ---------- stars layer (far) ---------- */
+        const starC = document.getElementById('stars');
+        const sctx = starC.getContext('2d', { alpha: true });
+        let stars = [];
+        function initStars() {
+            const { w, h } = sizeCanvas(starC);
+            stars = [];
+            const count = Math.floor((w * h) / (isMobile ? 40000 : 20000));
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * w, y: Math.random() * h,
+                    r: Math.random() * 1.2 * DPR, a: 0.2 + Math.random() * 0.9,
+                    tw: Math.random() * 3000 + 1000
+                });
+            }
+        }
+        function drawStars(t) {
+            sctx.clearRect(0, 0, starC.width, starC.height);
+            for (const st of stars) {
+                const alpha = st.a * (0.6 + 0.4 * Math.sin((t % st.tw) / st.tw * Math.PI * 2));
+                sctx.globalAlpha = alpha * 0.9;
+                sctx.fillStyle = '#fff';
+                sctx.beginPath(); sctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); sctx.fill();
+            }
+            sctx.globalAlpha = 1;
         }
 
-        /* =========================
-           Interactivity: pulse on hover, click ripple
-           ========================= */
-        const wrap = document.querySelector('.wrap');
-        const glass = document.querySelector('.glass');
-        const nameEl = document.getElementById('name');
+        /* ---------- animation loop ---------- */
+        let last = performance.now();
+        let raf;
+        function step(now) {
+            const dt = now - last; last = now;
+            // update blobs positions
+            for (const b of blobs) {
+                b.x += b.vx * Math.max(0.2, dt * 0.06);
+                b.y += b.vy * Math.max(0.2, dt * 0.06);
+                // wrap
+                if (b.x < -b.r) b.x = nebulaC.width + b.r;
+                if (b.x > nebulaC.width + b.r) b.x = -b.r;
+                if (b.y < -b.r) b.y = nebulaC.height + b.r;
+                if (b.y > nebulaC.height + b.r) b.y = -b.r;
+            }
+            // update particles
+            for (const p of particles) {
+                p.x += p.vx * Math.max(0.2, dt * 0.06);
+                p.y += p.vy * Math.max(0.2, dt * 0.06);
+                if (p.x < -10) p.x = partC.width + 10;
+                if (p.x > partC.width + 10) p.x = -10;
+                if (p.y < -10) p.y = partC.height + 10;
+                if (p.y > partC.height + 10) p.y = -10;
+            }
 
-        // pointer glow
-        document.addEventListener('mousemove', throttle((e) => {
-            const x = e.clientX; const y = e.clientY;
-            glass.style.setProperty('--mx', x + 'px');
-            glass.style.setProperty('--my', y + 'px');
-        }, 25));
+            // draw layers
+            drawNebula(now);
+            drawStars(now);
+            drawParticles();
 
-        // click ripple for fun
-        document.addEventListener('click', (e) => {
-            const rip = document.createElement('div');
-            rip.style.position = 'fixed'; rip.style.left = (e.clientX - 24) + 'px'; rip.style.top = (e.clientY - 24) + 'px';
-            rip.style.width = '48px'; rip.style.height = '48px'; rip.style.borderRadius = '50%'; rip.style.pointerEvents = 'none';
-            rip.style.background = 'radial-gradient(circle, rgba(255,255,255,0.08), rgba(255,255,255,0))'; rip.style.zIndex = 30; rip.style.opacity = 0.8;
-            rip.style.transition = 'transform 700ms cubic-bezier(.2,.8,.2,1),opacity 700ms'; rip.style.transform = 'scale(0.2)';
-            document.body.appendChild(rip);
-            requestAnimationFrame(() => rip.style.transform = 'scale(6)');
-            setTimeout(() => { rip.style.opacity = 0; setTimeout(() => rip.remove(), 800) }, 750);
+            // subtle parallax: translate canvases based on mouse
+            if (mouse.x !== null) {
+                const tx = (mouse.x - innerWidth / 2) * 0.02 * DPR;
+                const ty = (mouse.y - innerHeight / 2) * 0.02 * DPR;
+                nebulaC.style.transform = `translate3d(${tx * 0.15}px, ${ty * 0.12}px, 0)`;
+                partC.style.transform = `translate3d(${tx * 0.4}px, ${ty * 0.28}px, 0)`;
+                starC.style.transform = `translate3d(${tx * 0.08}px, ${ty * 0.06}px, 0)`;
+            }
+
+            raf = requestAnimationFrame(step);
+        }
+
+        // mouse tracking for parallax (performance-throttled)
+        let mouse = { x: null, y: null };
+        let tTo = 0;
+        window.addEventListener('mousemove', (e) => {
+            if (reduced) return;
+            const now = Date.now();
+            if (now - tTo > 12) {
+                mouse.x = e.clientX; mouse.y = e.clientY; tTo = now;
+            }
         });
 
-        /* =========================
-           Init & resize handling
-           ========================= */
+        // init everything
         function initAll() {
-            resizeCanvasCanvas(starsCanvas); resizeCanvasCanvas(pCanvas);
-            initStars(); initParticles();
+            initNebula(); initParticles(); initStars();
+            // start loop
+            cancelAnimationFrame(raf);
+            last = performance.now();
+            if (!reduced) raf = requestAnimationFrame(step);
+            else {
+                // if reduced motion, render one frame static
+                drawNebula(performance.now()); drawStars(performance.now()); drawParticles();
+            }
         }
-        initAll(); animate();
+        initAll();
 
-        addEventListener('resize', () => {
-            // small debounce
-            clearTimeout(window._rTo); window._rTo = setTimeout(() => { initAll() }, 120);
-        });
+        // handle resize (debounced)
+        let rto;
+        window.addEventListener('resize', () => { clearTimeout(rto); rto = setTimeout(() => { initAll(); }, 140); });
 
-        // reduce CPU on background tabs
+        // pause on hidden tab
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden) { cancelAnimationFrame(window._raf) } else { animate() }
+            if (document.hidden) cancelAnimationFrame(raf);
+            else { last = performance.now(); raf = requestAnimationFrame(step); }
         });
 
+        /* ---------- small polish: text subtle vertical shimmer + chroma micro-shift ---------- */
+        (function textPolish() {
+            const core = document.getElementById('core');
+            let t0 = performance.now();
+            function animText(now) {
+                const dt = (now - t0) * 0.0006;
+                // vertical micro-breath
+                const vy = Math.sin(dt * 1.2) * 2;
+                core.setAttribute('transform', `translate(0, ${vy})`);
+                requestAnimationFrame(animText);
+            }
+            if (!reduced) requestAnimationFrame(animText);
+        })();
+
+        /* Optional: keep CPU smart on older devices */
+        if (!window.requestIdleCallback) window.requestIdleCallback = (fn) => setTimeout(fn, 200);
     </script>
 </body>
 
