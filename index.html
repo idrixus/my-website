@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idris</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0a0a0a;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* خلفية Particles */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        /* Glitch Text */
+        h1 {
+            font-size: 5rem;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            animation: flicker 2s infinite;
+        }
+
+        h1::before,
+        h1::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            color: #f00;
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0);
+        }
+
+        h1::before {
+            left: 2px;
+            text-shadow: -2px 0 cyan;
+            animation: glitch 2s infinite linear alternate-reverse;
+        }
+
+        h1::after {
+            left: -2px;
+            text-shadow: -2px 0 lime;
+            animation: glitch 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch {
+            0% {
+                clip: rect(0, 9999px, 0, 0);
+            }
+
+            10% {
+                clip: rect(10px, 9999px, 40px, 0);
+            }
+
+            20% {
+                clip: rect(50px, 9999px, 80px, 0);
+            }
+
+            30% {
+                clip: rect(20px, 9999px, 60px, 0);
+            }
+
+            40% {
+                clip: rect(80px, 9999px, 100px, 0);
+            }
+
+            50% {
+                clip: rect(10px, 9999px, 50px, 0);
+            }
+
+            60% {
+                clip: rect(60px, 9999px, 90px, 0);
+            }
+
+            70% {
+                clip: rect(20px, 9999px, 40px, 0);
+            }
+
+            80% {
+                clip: rect(70px, 9999px, 100px, 0);
+            }
+
+            90% {
+                clip: rect(40px, 9999px, 80px, 0);
+            }
+
+            100% {
+                clip: rect(0, 9999px, 0, 0);
+            }
+        }
+
+        @keyframes flicker {
+
+            0%,
+            19%,
+            21%,
+            23%,
+            25%,
+            54%,
+            56%,
+            100% {
+                opacity: 1;
+            }
+
+            20%,
+            24%,
+            55% {
+                opacity: 0.4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="bg"></canvas>
+    <h1 data-text="IDRIS">IDRIS</h1>
+
+    <script>
+        // خلفية Particles متحركة
+        const canvas = document.getElementById('bg');
+        const ctx = canvas.getContext('2d');
+
+        let particlesArray;
+        const colors = ['#ffffff', '#00ffff', '#ff00ff', '#00ff00'];
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', function () {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
+
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y + this.size > canvas.height || this.y - this.size < 0) {
+                    this.directionY = -this.directionY;
+                }
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 15000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 3) + 1;
+                let x = Math.random() * (innerWidth - size * 2);
+                let y = Math.random() * (innerHeight - size * 2);
+                let directionX = (Math.random() * 0.4) - 0.2;
+                let directionY = (Math.random() * 0.4) - 0.2;
+                let color = colors[Math.floor(Math.random() * colors.length)];
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+
+</html>
