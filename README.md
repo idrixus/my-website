@@ -4,11 +4,11 @@ This repository contains a [Hugo](https://github.com/gohugoio/hugo) template to 
 
 ## Documentation
 
-The template is documented at https://pascalmichaillat.org/b/.
+The template is documented at https://idrixus.github.io/b/.
 
 ## Illustration
 
-The website produced by the template can be viewed at https://pascalmichaillat.org/hugo-website/.
+The website produced by the template can be viewed at https://idrixus.github.io/my-website/.
 
 ## Installation
 
@@ -75,7 +75,7 @@ This repository is licensed under the [MIT License](LICENSE.md).
 
 ## Real-world implementations
 
-+ [Pascal Michaillat's website](https://pascalmichaillat.org/) ([source code](https://github.com/pmichaillat/pmichaillat.github.io))
++ [Idris's website](https://idrixus.github.io/) ([source code](https://github.com/idrixus/idrixus.github.io))
 + [Dylan Balla-Elliott's website](https://www.dballaelliott.com) ([source code](https://github.com/dballaelliott/site))
 + [Rosa van den Ende's website](https://rosavandenende.github.io) ([source code](https://github.com/rosavandenende/rosavandenende.github.io))
 + [Samia Kabir's website](https://samiakabir.com) ([source code](https://github.com/SamiaKabir/samiakabir.github.io))

@@ -16,7 +16,7 @@ aliases:
     - /courses/course2/quiz4.pdf
     - /courses/course1/ps1.pdf
 tags: ["Romance languages","philology","irregular verbs","Spanish","Portuguese"]
-author: "Moritz-Maria von Igelfeld"
+author: "Idris (idrixus)"
 description: "This graduate course presents classical results in Romance philology." 
 summary: "This graduate course presents classical results in Romance philology. it focuses especially on Portugese and Spanish irregular verbs." 
 cover:
@@ -24,7 +24,7 @@ cover:
     alt: "Villa of Reduced Circumstances"
     relative: true
 editPost:
-    URL: "https://github.com/pmichaillat/hugo-website"
+    URL: "https://github.com/idrixus/my-website"
     Text: "Course portal"
 showToc: true
 disableAnchoredHeadings: false

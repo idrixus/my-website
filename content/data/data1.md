@@ -2,11 +2,11 @@
 title: "List of Irregular Verbs Across Romance Languages" 
 date: 2013-03-07
 tags: ["Romance languages","philology","irregular verbs","Portuguese","Italian","French","Spanish","simulations","dataset","python"]
-author: ["Patrick Fitzcarron O'Leary","Florianus Prinzel","Walter Schoeffler-Henschell","Detlev Amadeus Unterholzer", "Dieter Vogelsang","Moritz-Maria von Igelfeld"]
+author: ["Patrick Fitzcarron O'Leary","Florianus Prinzel","Walter Schoeffler-Henschell","Detlev Amadeus Unterholzer", "Dieter Vogelsang","Idris (idrixus)"]
 description: "This dataset contains all irregular verbs in known Romance languages."
 summary: "This dataset contains all irregular verbs in known Romance languages."
 editPost:
-    URL: "https://github.com/pmichaillat/hugo-website"
+    URL: "https://github.com/idrixus/my-website"
     Text: "GitHub repository"
 showToc: true
 disableAnchoredHeadings: false

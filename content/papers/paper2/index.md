@@ -2,7 +2,7 @@
 title: "The Finer Points of Sausage Dogs" 
 date: 2004-12-28
 tags: ["zoology","sausage dogs","canine pulmonary efficiency","canine science","experimental zoology"]
-author: ["Florianus Prinzel", "Moritz-Maria von Igelfeld"]
+author: ["Florianus Prinzel", "Idris (idrixus)"]
 description: "This paper studies the pulmonary efficiency of sausage dogs. Published in the Journal of Canine Science, 2004." 
 summary: "This paper studies the pulmonary efficiency of sausage dogs through several experiments." 
 cover:
@@ -10,7 +10,7 @@ cover:
     alt: "Dimensions of a sausage dog"
     relative: true
 editPost:
-    URL: "https://github.com/pmichaillat/hugo-website"
+    URL: "https://github.com/idrixus/my-website"
     Text: "Journal of Canine Science"
 
 ---

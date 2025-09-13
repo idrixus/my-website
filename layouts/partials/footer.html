@@ -12,11 +12,12 @@
     {{- with site.Params.footer.text }}
     {{ . | markdownify }}
     {{- print " · "}}
-    {{- end }}    
+    {{- end }}
     <span>
-    Powered by 
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">hugo</a>, <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">papermod</a>, &amp;
-        <a href="https://github.com/pmichaillat/hugo-website/" rel="noopener" target="_blank">hugo-website</a>.
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">hugo</a>, <a
+            href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">papermod</a>, &amp;
+        <a href="https://github.com/idrixus/my-website/" rel="noopener noreferrer" target="_blank">hugo-website</a>.
     </span>
 </footer>
 {{- end }}
@@ -102,7 +103,7 @@
         function copyingDone() {
             copybutton.innerHTML = '{{- i18n "code_copied" | default "copied!" }}';
             setTimeout(() => {
-                copybutton.innerHTML = '{{- i18n "code_copy" | default "copy" }}';
+                copybutton.innerHTML = '{{- i18n "code_copy" | default "copied!" }}';
             }, 2000);
         }
 

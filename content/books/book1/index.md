@@ -2,7 +2,7 @@
 title: "Portugese Irregular Verbs" 
 date: 1997-01-01
 tags: ["Portugese","irregular verbs","philology"]
-author: ["Moritz-Maria von Igelfeld"]
+author: ["Idris (idrixus)"]
 description: "This book discusses Portugese irregular verbs in great details."
 summary: "This book discusses Portugese irregular verbs in great details."
 cover:
@@ -10,7 +10,7 @@ cover:
     alt: "Portugese Irregular Verbs"
     relative: true
 editPost:
-    URL: "https://github.com/pmichaillat/hugo-website"
+    URL: "https://github.com/idrixus/my-website"
     Text: "Regensburg University Press"
 showToc: false
 disableAnchoredHeadings: false

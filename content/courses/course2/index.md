@@ -2,7 +2,7 @@
 title: "Profanity in Early Irish" 
 date: 1990-06-16
 tags: ["Irish","philology","profanity","Celtic languages","language modernization"]
-author: ["Dieter Vogelsang","Moritz-Maria von Igelfeld"]
+author: ["Dieter Vogelsang","Idris (idrixus)"]
 description: "This undergraduate course discusses profanity in Early Irish." 
 summary: "This undergraduate course discusses profanity in Early Irish, and relates such profanity to profanity in modern English." 
 cover:
@@ -10,7 +10,7 @@ cover:
     alt: "Figure caption"
     relative: true
 editPost:
-    URL: "https://github.com/pmichaillat/hugo-website"
+    URL: "https://github.com/idrixus/my-website"
     Text: "Course portal"
 showToc: true
 disableAnchoredHeadings: false

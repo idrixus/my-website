@@ -5,7 +5,7 @@ url: /course/
 aliases:
     - /old_url.html
 tags: ["keyword 1","keyword 2","keyword 3","keyword 4","keyword 5","keyword 6","keyword 7","keyword 8"]
-author: ["Course Author 1", "Course Author 2"]
+author: ["Idris (idrixus)"]
 description: "Course description for search engines (less than 155 characters)" 
 summary: "Course summary for list page (less than 265 characters)
 cover:
