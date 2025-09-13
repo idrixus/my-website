@@ -1,8 +1,0 @@
-- [x] Update LICENSE.md: Change copyright to Idris (idrixus)
-- [x] Update README.md: Replace Pascal Michaillat with Idris (idrixus), update URLs
-- [x] Update config.yml: Change author to Idris, update baseURL, social URLs to idrixus
-- [x] Update CNAME to idrixus.run.place
-- [x] Update layouts/partials/footer.html: Change link to idrixus/my-website
-- [x] Update content files' authors to Idris
-- [x] Update archetypes' authors to Idris
-- [x] Update site description in config.yml
