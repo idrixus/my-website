@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>⛧ YOUSSEF ⛧</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="shortcut icon" href="favicon.ico">
+
+<style>
+:root{
+  --red:#ff0000;
+  --bg:#000;
+  --matrix-green:#00ff41;
+  --ui-size:16px;
+}
+
+/* reset + accessibility improvements */
+*{ box-sizing:border-box; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+html,body{ height:100%; margin:0; padding:0; background:var(--bg); color:var(--red); font-family: 'Courier New', monospace; }
+body{ overflow:hidden; position:relative; }
+
+/* disable cursor globally on touch devices via JS toggling class 'touch' on <html> */
+html:not(.touch) * { cursor: none; }
+
+/* matrix canvas behind content */
+#matrixCanvas{
+  position:fixed; inset:0; z-index:0; display:block;
+  pointer-events:none; mix-blend-mode:screen;
+  /* opacity tuned for mobile below with media query */
+}
+
+/* dark noise texture */
+.dark-noise{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.95) 0px, rgba(8,0,0,0.96) 1px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.95) 0px, rgba(8,0,0,0.96) 1px);
+  opacity:0.45;
+}
+
+/* main container (centered, mobile-first) */
+.stage{
+  position:relative; z-index:10; min-height:100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:20px; padding:20px;
+}
+
+/* responsive profile: uses clamp for mobile-first sizing */
+.profile-wrap{
+  position:relative;
+  width:clamp(140px, 36vw, 280px);
+  height:clamp(140px, 36vw, 280px);
+  border-radius:14px;
+  overflow:hidden;
+  background:rgba(0,0,0,0.45);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.8), 0 0 18px rgba(255,0,0,0.06);
+  z-index:11;
+  transition: transform .32s ease, box-shadow .32s ease, backdrop-filter .32s ease;
+  -webkit-tap-highlight-color: transparent; /* mobile tap clean */
+  will-change: transform, box-shadow;
+  display:flex; align-items:center; justify-content:center;
+  touch-action: none;
+  backface-visibility: hidden;
+  backdrop-filter: blur(6px); /* subtle glass */
+}
+
+/* image optimised for mobile */
+.profile-wrap img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter: grayscale(30%) contrast(110%);
+  user-select:none; -webkit-user-drag:none;
+  transition: filter .28s ease, transform .28s ease;
+  transform-origin:center center;
+  loading: lazy; /* non-standard prop just for readability; real attribute in HTML tag below */
+  will-change: transform, filter;
+  -webkit-backface-visibility: hidden;
+}
+
+/* subtle scanlines */
+.profile-wrap .scanlines{
+  position:absolute; inset:0; pointer-events:none;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.00) 0px, rgba(255,255,255,0.02) 1px);
+  mix-blend-mode:overlay; opacity:0.06;
+}
+
+/* hover / focus state on non-touch devices */
+html:not(.touch) .profile-wrap:hover,
+html:not(.touch) .profile-wrap:focus{
+  transform: scale(1.03);
+  box-shadow: 0 14px 50px rgba(255,0,0,0.25), 0 0 90px rgba(255,0,0,0.28);
+}
+html:not(.touch) .profile-wrap:hover img{
+  filter: grayscale(0%) brightness(110%);
+}
+
+/* accessible focus ring for keyboard users */
+.profile-wrap:focus{
+  outline: 3px solid rgba(255,0,0,0.14);
+  outline-offset:6px;
+}
+
+/* neon title (mobile-first: smaller letter spacing) */
+.corrupted-text{
+  font-size: clamp(1.6rem, 10vw, 4.2rem);
+  letter-spacing: clamp(.12em, 3vw, .28em);
+  color:var(--red);
+  position:relative;
+  z-index:12;
+  text-shadow: 0 0 4px var(--red), 0 0 8px var(--red), 0 0 14px var(--red);
+  line-height:1;
+  text-align:center;
+  margin:0 6px;
+  user-select:none;
+  -webkit-user-select:none;
+  will-change: text-shadow, opacity;
+  animation: neonFlicker 3.2s infinite;
+}
+
+/* reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .corrupted-text { animation: none; opacity:0.98; }
+  .profile-wrap, .profile-wrap img { transition: none; }
+  #matrixCanvas{ display:none; }
+}
+
+/* neon flicker keyframes (tuned not-too-janky on mobile) */
+@keyframes neonFlicker {
+  0%, 18%, 20%, 22%, 24%, 54%, 56%, 100% {
+    opacity:1;
+    text-shadow: 0 0 4px var(--red), 0 0 8px var(--red), 0 0 14px var(--red), 0 0 30px rgba(255,0,0,0.18);
+  }
+  19%, 23%, 55% {
+    opacity:0.6;
+    text-shadow:none;
+  }
+}
+
+/* terminal / warning: reposition and enlarge for mobile tapability */
+.warning-text{
+  position:fixed; top:12px; left:12px; font-size:12px; color:var(--red); opacity:0.7; font-family:monospace; z-index:12;
+  background: rgba(0,0,0,0.25); padding:6px 8px; border-radius:8px;
+  backdrop-filter: blur(4px);
+}
+
+/* simple terminal minimized on mobile */
+.terminal{
+  position:fixed; bottom:12px; right:12px; width:220px; max-width:45vw; height:auto; background:rgba(0,0,0,0.85);
+  border:1px solid rgba(255,0,0,0.12); padding:8px; font-size:11px; color:var(--red); z-index:10; opacity:0.8;
+  border-radius:10px; box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+}
+
+/* small lines */
+.terminal-line{ margin:4px 0; opacity:0.95; }
+
+/* adjust matrix density & opacity for mobile */
+@media (max-width:600px){
+  #matrixCanvas{ opacity:0.18; }
+  .dark-noise{ opacity:0.28; }
+  .warning-text{ font-size:11px; padding:5px 7px; }
+  .terminal{ width:200px; font-size:10px; padding:6px; right:8px; bottom:8px; }
+}
+
+/* fallback for very small devices */
+@media (max-width:360px){
+  .corrupted-text{ font-size:2rem; letter-spacing:0.12em; }
+  .profile-wrap{ width:150px; height:150px; border-radius:12px; }
+}
+
+/* utility: hide elements gracefully */
+.hidden-mobile{ display:none !important; }
+
+/* ensure good tap target sizes */
+a, button { touch-action: manipulation; }
+</style>
+</head>
+<body>
+  <!-- Matrix canvas -->
+  <canvas id="matrixCanvas" aria-hidden="true"></canvas>
+
+  <div class="dark-noise" aria-hidden="true"></div>
+
+  <main class="stage" role="main">
+    <!-- Profile (focusable for accessibility) -->
+    <div class="profile-wrap" tabindex="0" aria-label="صورة يوسف">
+      <!-- add attributes for performance: loading & decoding -->
+      <img src="me.png" alt="صورة يوسف" loading="lazy" decoding="async">
+      <div class="scanlines" aria-hidden="true"></div>
+    </div>
+
+    <h1 class="corrupted-text" aria-live="polite">YOUSSEF</h1>
+  </main>
+
+  <div class="warning-text" aria-hidden="false">
+    &gt; WARNING: انت داخل موقع مريض نفسي  <br>
+    &gt; WHATSAPP: +201066724157
+  </div>
+
+  <div class="terminal" aria-hidden="true">
+    <div class="terminal-line">&gt; Establishing connection...</div>
+    <div class="terminal-line">&gt; تمام</div>
+    <div class="terminal-line">&gt; Downloading Yossef-Database.db</div>
+    <div class="terminal-line">&gt; ERROR: يوسف لسه مبضون</div>
+  </div>
+
+<script>
+/* ============ Mobile-first JS optimizations ============ */
+
+/* 1) detect touch devices & add class to html: used in CSS to disable cursor etc. */
+(function detectTouch(){
+  const isTouch = (('ontouchstart' in window) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
+  if(isTouch) document.documentElement.classList.add('touch');
+})();
+
+/* 2) Matrix effect with density tuned to screen width (mobile-first) */
+(function matrixEffect(){
+  const canvas = document.getElementById('matrixCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w = canvas.width = innerWidth;
+  let h = canvas.height = innerHeight;
+
+  /* characters (mix for vibe) */
+  const chars = ('アァカサタナハマヤラワン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz٠١٢٣٤٥٦٧٨٩').split('');
+
+  /* mobile-first density: narrower screens -> fewer columns */
+  const fontSize = Math.max(11, Math.floor(window.innerWidth / 64));
+  const columns = Math.floor(w / fontSize);
+  const densityMultiplier = window.innerWidth < 600 ? 0.45 : 1; // mobile = lighter
+  const drops = Array(Math.floor(columns * densityMultiplier)).fill(0);
+
+  ctx.textBaseline = 'top';
+  ctx.font = fontSize + 'px monospace';
+
+  let raf;
+  function draw(){
+    // subtle trail - keep alpha small for mobile
+    ctx.fillStyle = 'rgba(0,0,0,0.06)';
+    ctx.fillRect(0,0,w,h);
+
+    ctx.font = fontSize + 'px monospace';
+    for(let i=0; i<drops.length; i++){
+      const text = chars[Math.floor(Math.random() * chars.length)];
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+
+      ctx.fillStyle = 'rgba(0,255,65,0.9)';
+      ctx.fillText(text, x, y);
+
+      // depth layers
+      ctx.fillStyle = 'rgba(0,200,40,0.22)';
+      ctx.fillText(text, x+1, y-1);
+      ctx.fillStyle = 'rgba(0,150,30,0.10)';
+      ctx.fillText(text, x-2, y+1);
+
+      // reset occasionally
+      if(y > h + Math.random()*10000 || Math.random() > 0.996) drops[i] = 0;
+      drops[i]++;
+    }
+  }
+
+  function loop(){
+    draw();
+    raf = requestAnimationFrame(loop);
+  }
+
+  function onResize(){
+    cancelAnimationFrame(raf);
+    w = canvas.width = innerWidth;
+    h = canvas.height = innerHeight;
+    const newCols = Math.floor(w / fontSize);
+    drops.length = Math.floor(newCols * densityMultiplier);
+    for(let i=0;i<drops.length;i++) if(!drops[i]) drops[i] = Math.floor(Math.random()*h/fontSize);
+    loop();
+  }
+  window.addEventListener('resize', onResize, { passive:true });
+
+  for(let i=0;i<drops.length;i++) drops[i] = Math.floor(Math.random()*h/fontSize);
+  loop();
+})();
+
+/* 3) custom cursor only for non-touch; create small circular indicator (already hidden by CSS on touch) */
+(function customCursor(){
+  if(document.documentElement.classList.contains('touch')) return;
+  const cursor = document.createElement('div');
+  cursor.id = 'customCursor';
+  cursor.style.cssText = 'width:18px;height:18px;border:2px solid rgba(255,0,0,0.95);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:normal;';
+  document.body.appendChild(cursor);
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  }, { passive:true });
+})();
+
+/* 4) small parallax / tilt for profile on mobile via deviceorientation (low-amplitude) and mouse for desktop */
+(function profileTilt(){
+  const wrap = document.querySelector('.profile-wrap');
+  const img = wrap && wrap.querySelector('img');
+  if(!wrap || !img) return;
+
+  let supportsDeviceOrientation = false;
+  function handleOrientation(e){
+    // gamma: left-right tilt [-90,90]  beta: front-back [-180,180]
+    const g = e.gamma || 0;
+    const b = e.beta || 0;
+    // small clamp & scale
+    const rx = Math.max(-8, Math.min(8, b/10));
+    const ry = Math.max(-8, Math.min(8, g/10));
+    wrap.style.transform = `rotateX(${ -rx }deg) rotateY(${ ry }deg) scale(1.01)`;
+    img.style.transform = `translateZ(0) scale(1.02) translate(${ ry/6 }px, ${ -rx/6 }px)`;
+  }
+
+  // request permission for iOS 13+ if available
+  if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    // don't prompt automatically; try listen quietly and fallback to pointer
+    DeviceOrientationEvent.requestPermission().then(resp => {
+      if(resp === 'granted'){
+        supportsDeviceOrientation = true;
+        window.addEventListener('deviceorientation', handleOrientation, { passive:true });
+      }
+    }).catch(()=>{/* silent fail: user denied or not available */});
+  } else if(window.DeviceOrientationEvent){
+    // many android devices
+    supportsDeviceOrientation = true;
+    window.addEventListener('deviceorientation', handleOrientation, { passive:true });
+  }
+
+  // fallback: pointer movement for non-touch (subtle)
+  if(!document.documentElement.classList.contains('touch')){
+    document.addEventListener('mousemove', function(e){
+      const rect = wrap.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2;
+      const dx = (e.clientX - cx) / rect.width; // ~ -0.5 .. 0.5
+      const dy = (e.clientY - cy) / rect.height;
+      const ry = Math.max(-6, Math.min(6, dx * 12));
+      const rx = Math.max(-6, Math.min(6, dy * 12));
+      wrap.style.transform = `rotateX(${ -rx }deg) rotateY(${ ry }deg)`;
+      img.style.transform = `translateZ(0) scale(1.01) translate(${ ry/8 }px, ${ -rx/8 }px)`;
+    }, { passive:true });
+  }
+
+  // restore to neutral when pointer leaves or orientation stops
+  const reset = () => { wrap.style.transform = ''; img.style.transform = ''; };
+  wrap.addEventListener('mouseleave', reset, { passive:true });
+  window.addEventListener('blur', reset, { passive:true });
+})();
+
+/* 5) Accessibility: allow keyboard focus to mimic hover on profile */
+(function keyboardFocus(){
+  const wrap = document.querySelector('.profile-wrap');
+  if(!wrap) return;
+  wrap.addEventListener('focus', ()=> wrap.classList.add('focused'));
+  wrap.addEventListener('blur', ()=> wrap.classList.remove('focused'));
+})();
+
+</script>
+</body>
+</html>
